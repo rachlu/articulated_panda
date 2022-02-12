@@ -65,12 +65,21 @@ if __name__ == '__main__':
         q_start = robot.arm.randomConfiguration()
         while not robot.arm.IsCollisionFree(q_start):
             q_start = robot.arm.randomConfiguration()
+        robot.arm.SetJointValues(q_start)
+        pb_robot.viz.draw_pose(pb_robot.geometry.pose_from_tform(robot.arm.ComputeFK(q_start)), width=10, length=0.2)
+        ans = input("Continue?(y/n)")
+        if ans == 'n':
+            return
         q_goal = robot.arm.randomConfiguration()
         while not robot.arm.IsCollisionFree(q_goal):
             q_goal = robot.arm.randomConfiguration()
-
+        robot.arm.SetJointValues(q_goal)
+        pb_robot.viz.draw_pose(pb_robot.geometry.pose_from_tform(robot.arm.ComputeFK(q_goal)), width=10, length=0.2)
+        ans = input("Continue?(y/n)")
+        if ans == 'n':
+            return
         #motion = RRT(robot, q_start = numpy.array([0,-0.78,0,-2.36,0,1.57,0.79]), q_goal = numpy.array([0,-0.78,0,-1,0,1.57,0.79]), max_time = 20)
-        motion = RRT(robot, q_start, q_goal, 10)
+        motion = RRT(robot, q_start, q_goal)
         motion.execute(motion.motion())
 
     
