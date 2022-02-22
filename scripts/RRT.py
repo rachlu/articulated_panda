@@ -88,6 +88,7 @@ class RRT:
             self.G.add_node(new_node, config = q_rand)
             #pb_robot.viz.draw_pose(pb_robot.geometry.pose_from_tform(self.robot.arm.ComputeFK(q_rand)), width=10, length=0.1)
             self.G.add_edge(node_closest, new_node, weight = self.getDistance(self.G.nodes[node_closest]['config'], q_rand))
+
             if (q_rand == self.q_goal).all():
                 self.G = nx.relabel_nodes(self.G,{new_node:'q_goal'})
                 path = [self.G.nodes['q_goal']]
