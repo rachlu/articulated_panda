@@ -11,6 +11,7 @@ import random
 import time
 from RRT import RRT
 from tsr.tsr import TSR
+from Grasp import Grasp
 
 if __name__ == '__main__':
     # Launch pybullet
@@ -63,13 +64,7 @@ if __name__ == '__main__':
                               [0., 0., 0., 1.]])
     plate.set_transform(plate_pose)
 
-
-    # pb_robot.viz.draw_pose(pb_robot.geometry.pose_from_tform(robot.arm.ComputeFK(robot.arm.GetJointValues())), width=10, length=0.2)
-
-
-    def get_relative(world, pose):
-        return numpy.dot(numpy.linalg.inv(pose), world)
-
+    objects = {'fork': fork, 'spoon': spoon, 'knife': knife, 'plate': plate}
 
     def test():
         q_start = robot.arm.randomConfiguration()
@@ -91,78 +86,7 @@ if __name__ == '__main__':
         motion = RRT(robot, q_start, q_goal)
         motion.execute(motion.motion())
 
-
-    relative = {}
-    bw_range = {}
-
-    def set_info():
-        # plate
-        t_o = plate.get_transform()
-        t_ee = numpy.array([[math.cos(math.pi / 2), -math.sin(math.pi / 2), 0, .70],
-                            [math.sin(math.pi / 2), math.cos(math.pi / 2), 0, 0],
-                            [0, 0, 1, .18],
-                            [0., 0., 0., 1.]])
-        t_e = numpy.array([[1, 0, 0, 0],
-                           [0, math.cos(math.pi), -math.sin(math.pi), 0],
-                           [0, math.sin(math.pi), math.cos(math.pi), 0],
-                           [0., 0., 0., 1.]])
-        rel = get_relative(numpy.dot(t_ee, t_e), t_o)
-        relative[plate] = rel
-
-        bw = numpy.array([[], [], [], [], [], []])
-        bw_range[plate] = bw
-
-        # fork
-        t_o = fork.get_transform()
-        t_ee = numpy.array([[math.cos(math.pi), -math.sin(math.pi), 0, .2],
-                            [math.sin(math.pi), math.cos(math.pi), 0, .2],
-                            [0, 0, 1, .15],
-                            [0., 0., 0., 1.]])
-        rel = get_relative(numpy.dot(t_ee, t_e), t_o)
-        relative[fork] = rel
-
-        bw = numpy.array([[0.2, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]])
-        bw_range[fork] = bw
-
-        # knife
-        t_o = knife.get_transform()
-        t_ee = numpy.array([[math.cos(math.pi), -math.sin(math.pi), 0, -.4],
-                            [math.sin(math.pi), math.cos(math.pi), 0, .4],
-                            [0, 0, 1, .15],
-                            [0., 0., 0., 1.]])
-        rel = get_relative(numpy.dot(t_ee, t_e), t_o)
-        relative[knife] = rel
-
-        bw = numpy.array([[-0.12, 0.12], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]])
-        bw_range[knife] = bw
-
-        # spoon
-        t_o = spoon.get_transform()
-        t_ee = numpy.array([[math.cos(math.pi), -math.sin(math.pi), 0, -.2],
-                            [math.sin(math.pi), math.cos(math.pi), 0, -.2],
-                            [0, 0, 1, .15],
-                            [0., 0., 0., 1.]])
-        rel = get_relative(numpy.dot(t_ee, t_e), t_o)
-        relative[spoon] = rel
-
-        bw = numpy.array([[-0.2, 0.1], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]])
-        bw_range[spoon] = bw
-
-    set_info()
-    #grasp_tsr = TSR(knife.get_transform(), relative[knife], bw_range[knife])
-    #pb_robot.viz.draw_tsr(grasp_tsr)
-
-    def grasp(obj):
-        # r,g,b = x,y,z
-        q = numpy.array(robot.arm.GetJointValues())
-        t_o = obj.get_transform()
-        pose = numpy.dot(t_o, relative[obj])
-        newq = numpy.array(robot.arm.ComputeIK(pose))
-        robot.arm.SetJointValues(newq)
-        motion = RRT(robot, q, newq)
-        motion.execute(motion.motion())
-
-
+    grasp = Grasp(robot, objects)
 
     IPython.embed()
 
