@@ -12,6 +12,7 @@ import time
 from RRT import RRT
 from tsr.tsr import TSR
 from Grasp import Grasp
+from Place import Place
 
 if __name__ == '__main__':
     # Launch pybullet
@@ -83,10 +84,44 @@ if __name__ == '__main__':
         ans = input("Continue?(y/n)")
         if ans == 'n':
             return
-        motion = RRT(robot, q_start, q_goal)
-        motion.execute(motion.motion())
-
+        motion = RRT(robot)
+        motion.execute(motion.motion(q_start, q_goal))
     grasp = Grasp(robot, objects)
+    place = Place(robot, objects, floor)
+
+    # pb_robot.viz.draw_tsr(place.place_tsr['knife'])
+    # pb_robot.viz.draw_tsr(place.place_tsr['fork'])
+    # pb_robot.viz.draw_tsr(place.place_tsr['spoon'])
+    # pb_robot.viz.draw_tsr(place.place_tsr['plate'])
+
+    def execute(obj):
+        q_start = numpy.array(robot.arm.GetJointValues())
+        grasp_pose, q_grasp = grasp.grasp(obj)
+        place_pose = place.place_tsr[obj].sample()
+
+        relative_grasp = numpy.dot(numpy.linalg.inv(objects[obj].get_transform()), grasp_pose)
+        q_goal = robot.arm.ComputeIK(numpy.dot(place_pose, relative_grasp))
+
+        while not robot.arm.IsCollisionFree(q_goal):
+            print('not collision free')
+            place_pose = place.place_tsr[obj].sample()
+
+            relative_grasp = numpy.dot(numpy.linalg.inv(objects[obj].get_transform()), grasp_pose)
+            q_goal = robot.arm.ComputeIK(numpy.dot(place_pose, relative_grasp))
+
+        robot.arm.hand.Open()
+        motion = RRT(robot)
+        motion.execute(motion.motion(q_start, q_grasp))
+        robot.arm.hand.Close()
+
+        robot.arm.Grab(objects[obj], relative_grasp)
+        input('continue')
+        motion.execute(motion.motion(q_grasp, q_goal))
+        robot.arm.Release(objects[obj])
+        robot.arm.hand.Open()
+
+    for obj in objects:
+        execute(obj)
 
     IPython.embed()
 

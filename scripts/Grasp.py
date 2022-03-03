@@ -1,10 +1,5 @@
 #!/usr/bin/env python
 
-#from __future__ import print_function
-
-import os
-import IPython
-import pb_robot
 import numpy
 import random
 import math
@@ -16,8 +11,8 @@ def get_relative(world, pose):
     return numpy.dot(numpy.linalg.inv(pose), world)
 
 class Grasp:
-    def __init__(self, robot, items):
-        self.objects = items
+    def __init__(self, robot, objects):
+        self.objects = objects
         self.robot = robot
         self.relative = {}
         self.bw_range = {}
@@ -88,15 +83,12 @@ class Grasp:
 
     def grasp(self, obj):
         # r,g,b = x,y,z
-        q = numpy.array(self.robot.arm.GetJointValues())
         computed_q = None
         while computed_q is None:
             grasp_idx = random.randint(0, 1)
             pose = self.grasp_tsr[obj][grasp_idx].sample()
             computed_q = self.robot.arm.ComputeIK(pose)
-        newq = numpy.array(computed_q)
-        motion = RRT(self.robot, q, newq)
-        motion.execute(motion.motion())
+        return pose, computed_q
         
     
         

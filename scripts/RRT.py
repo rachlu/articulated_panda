@@ -1,32 +1,37 @@
 #!/usr/bin/env python
 
-# from __future__ import print_function
-
 import numpy as np
 import random
 import networkx as nx
 import time
 
 
+def getDistance(q1, q2):
+    """
+    Returns the total radian distance from configuration q1 to configuration q2.
+    """
+    total_distance = 0
+    for index in range(len(q1)):
+        total_distance += ((q1[index] - q2[index]) ** 2)
+    return total_distance ** (1 / 2)
+
+
 class RRT:
-    def __init__(self, robot, q_start=None, q_goal=None, max_step=2, max_time=10):
-        self.G = nx.DiGraph()
+    def __init__(self, robot, max_step=2, max_time=15):
         self.robot = robot
-        self.q_start = q_start
-        self.q_goal = q_goal
-        self.G.add_node('q_start', config=self.q_start)
         self.max_time = max_time
         self.max_step = max_step
+        self.G = nx.DiGraph()
 
     # Test Completed
     def closest_node(self, q):
-        '''
+        """
         Find the closest node on the Tree from configuration q.
-        '''
+        """
         node = None
         shortest_distance = 999999999999
         for n in self.G.nodes:
-            new_distance = self.getDistance(q, self.G.nodes[n]['config'])
+            new_distance = getDistance(q, self.G.nodes[n]['config'])
             if shortest_distance > new_distance:
                 node = n
                 shortest_distance = new_distance
@@ -34,36 +39,29 @@ class RRT:
 
     # Second Test Completed
     def collisionFree(self, q1, q2, sample):
-        '''
+        """
         Returns [boolean, configuration]
         Returns True if the entire path from configuration q1 to configuration q2 is collison free.
         If false, returns a new configuration where the path from q1 to q_new is conllison free.
-        '''
+        """
         for num in range(sample):
             if not self.robot.arm.IsCollisionFree(q1 + (q2 - q1) / sample * (num + 1)):
                 if num >= 1:
-                    q_new = q1 + (q2 - q1) / sample * (num)
+                    q_new = q1 + (q2 - q1)/sample * num
                     return [False, q_new]
                 else:
                     return [False, None]
         return [True, q2]
 
-    # Test Completed
-    def getDistance(self, q1, q2):
-        '''
-        Returns the total radian distance from configuration q1 to configuration q2.
-        '''
-        total_distance = 0
-        for index in range(len(q1)):
-            total_distance += ((q1[index] - q2[index]) ** 2)
-        return total_distance ** (1 / 2)
-
     # Working?
-    def motion(self):
+    def motion(self, q_start, q_goal):
+        q_start = np.array(q_start)
+        q_goal = np.array(q_goal)
+        self.G.add_node('q_start', config=q_start)
         start = time.time()
         while time.time() - start < self.max_time:
             if random.random() < 0.1:
-                q_rand = self.q_goal
+                q_rand = q_goal
                 node_closest = self.closest_node(q_rand)
             else:
                 q_rand = self.robot.arm.randomConfiguration()
@@ -71,7 +69,7 @@ class RRT:
                 if not self.robot.arm.IsCollisionFree(q_rand):
                     continue
                 node_closest = self.closest_node(q_rand)
-                if self.getDistance(q_rand, self.G.nodes[node_closest]['config']) > self.max_step:
+                if getDistance(q_rand, self.G.nodes[node_closest]['config']) > self.max_step:
                     q_rand = self.max_step / np.linalg.norm(q_rand - self.G.nodes[node_closest]['config']) * (
                                 q_rand - self.G.nodes[node_closest]['config'])
 
@@ -83,11 +81,10 @@ class RRT:
 
             new_node = self.G.number_of_nodes()
             self.G.add_node(new_node, config=q_rand)
-            # pb_robot.viz.draw_pose(pb_robot.geometry.pose_from_tform(self.robot.arm.ComputeFK(q_rand)), width=10, length=0.1)
             self.G.add_edge(node_closest, new_node,
-                            weight=self.getDistance(self.G.nodes[node_closest]['config'], q_rand))
+                            weight=getDistance(self.G.nodes[node_closest]['config'], q_rand))
 
-            if (q_rand == self.q_goal).all():
+            if (q_rand == q_goal).all():
                 self.G = nx.relabel_nodes(self.G, {new_node: 'q_goal'})
                 path = [self.G.nodes['q_goal']]
                 predecessors = list(self.G.predecessors('q_goal'))
@@ -105,10 +102,11 @@ class RRT:
                     if result[0]:
                         prior_distance = 0
                         for n in range(len(path[n1 + 1:n2])):
-                            prior_distance += self.getDistance(path[n - 1]['config'], path[n]['config'])
-                        if self.getDistance(path[n1]['config'], path[n2]['config']) < prior_distance:
+                            prior_distance += getDistance(path[n - 1]['config'], path[n]['config'])
+                        if getDistance(path[n1]['config'], path[n2]['config']) < prior_distance:
                             path = path[:n1 + 1]
                             path.extend(path[n2:])
+                self.G.clear()
                 return path
 
     # Untested
