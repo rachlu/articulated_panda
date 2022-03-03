@@ -4,11 +4,11 @@ import numpy
 import random
 import math
 from tsr.tsr import TSR
-from RRT import RRT
 
 
 def get_relative(world, pose):
     return numpy.dot(numpy.linalg.inv(pose), world)
+
 
 class Grasp:
     def __init__(self, robot, objects):

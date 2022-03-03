@@ -6,9 +6,9 @@ import os
 import IPython
 import pb_robot
 import numpy
-import math
-import random
+
 import time
+import pybullet
 from RRT import RRT
 from tsr.tsr import TSR
 from Grasp import Grasp
@@ -98,7 +98,6 @@ if __name__ == '__main__':
         q_start = numpy.array(robot.arm.GetJointValues())
         grasp_pose, q_grasp = grasp.grasp(obj)
         place_pose = place.place_tsr[obj].sample()
-
         relative_grasp = numpy.dot(numpy.linalg.inv(objects[obj].get_transform()), grasp_pose)
         q_goal = robot.arm.ComputeIK(numpy.dot(place_pose, relative_grasp))
 
@@ -111,16 +110,19 @@ if __name__ == '__main__':
 
         robot.arm.hand.Open()
         motion = RRT(robot)
+        print('start', q_start)
+        print('q_grasp', q_grasp)
         motion.execute(motion.motion(q_start, q_grasp))
         robot.arm.hand.Close()
-
         robot.arm.Grab(objects[obj], relative_grasp)
         input('continue')
+        print('q_goal', q_goal)
         motion.execute(motion.motion(q_grasp, q_goal))
         robot.arm.Release(objects[obj])
         robot.arm.hand.Open()
 
     for obj in objects:
+        print(obj)
         execute(obj)
 
     IPython.embed()
