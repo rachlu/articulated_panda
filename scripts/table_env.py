@@ -66,26 +66,36 @@ if __name__ == '__main__':
     plate.set_transform(plate_pose)
 
     objects = {'fork': fork, 'spoon': spoon, 'knife': knife, 'plate': plate}
+    default = {}
 
-    def test():
-        q_start = robot.arm.randomConfiguration()
-        while not robot.arm.IsCollisionFree(q_start):
-            q_start = robot.arm.randomConfiguration()
-        robot.arm.SetJointValues(q_start)
-        pb_robot.viz.draw_pose(pb_robot.geometry.pose_from_tform(robot.arm.ComputeFK(q_start)), width=10, length=0.2)
-        ans = input("Continue?(y/n)")
-        if ans == 'n':
-            return
-        q_goal = robot.arm.randomConfiguration()
-        while not robot.arm.IsCollisionFree(q_goal):
-            q_goal = robot.arm.randomConfiguration()
-        robot.arm.SetJointValues(q_goal)
-        pb_robot.viz.draw_pose(pb_robot.geometry.pose_from_tform(robot.arm.ComputeFK(q_goal)), width=10, length=0.2)
-        ans = input("Continue?(y/n)")
-        if ans == 'n':
-            return
-        motion = RRT(robot)
-        motion.execute(motion.motion(q_start, q_goal))
+
+    def set_default():
+        for obj in objects:
+            default[obj] = objects[obj].get_transform()
+        default['robot'] = robot.arm.GetJointValues()
+    set_default()
+
+    # def test():
+    #     q_start = robot.arm.randomConfiguration()
+    #     while not robot.arm.IsCollisionFree(q_start):
+    #         q_start = robot.arm.randomConfiguration()
+    #     robot.arm.SetJointValues(q_start)
+    #     pb_robot.viz.draw_pose(pb_robot.geometry.pose_from_tform(robot.arm.ComputeFK(q_start)), width=10, length=0.2)
+    #     ans = input("Continue?(y/n)")
+    #     if ans == 'n':
+    #         return
+    #     q_goal = robot.arm.randomConfiguration()
+    #     while not robot.arm.IsCollisionFree(q_goal):
+    #         q_goal = robot.arm.randomConfiguration()
+    #     robot.arm.SetJointValues(q_goal)
+    #     pb_robot.viz.draw_pose(pb_robot.geometry.pose_from_tform(robot.arm.ComputeFK(q_goal)), width=10, length=0.2)
+    #     ans = input("Continue?(y/n)")
+    #     if ans == 'n':
+    #         return
+    #     motion = RRT(robot)
+    #     execute(motion.motion(q_start, q_goal))
+
+
     grasp = Grasp(robot, objects)
     place = Place(robot, objects, floor)
 
@@ -93,37 +103,83 @@ if __name__ == '__main__':
     # pb_robot.viz.draw_tsr(place.place_tsr['fork'])
     # pb_robot.viz.draw_tsr(place.place_tsr['spoon'])
     # pb_robot.viz.draw_tsr(place.place_tsr['plate'])
+    path = {}
+    relative_grasps = {}
 
-    def execute(obj):
+
+    def reset_env():
+        for item in objects:
+            objects[item].set_transform(default[item])
+        robot.arm.SetJointValues(default['robot'])
+
+
+    def plan_path(obj):
+        moves = {}
         q_start = numpy.array(robot.arm.GetJointValues())
-        grasp_pose, q_grasp = grasp.grasp(obj)
-        place_pose = place.place_tsr[obj].sample()
-        relative_grasp = numpy.dot(numpy.linalg.inv(objects[obj].get_transform()), grasp_pose)
-        q_goal = robot.arm.ComputeIK(numpy.dot(place_pose, relative_grasp))
 
-        while not robot.arm.IsCollisionFree(q_goal):
-            print('not collision free')
-            place_pose = place.place_tsr[obj].sample()
-
-            relative_grasp = numpy.dot(numpy.linalg.inv(objects[obj].get_transform()), grasp_pose)
-            q_goal = robot.arm.ComputeIK(numpy.dot(place_pose, relative_grasp))
-
+        # Pick
         robot.arm.hand.Open()
         motion = RRT(robot)
-        print('start', q_start)
-        print('q_grasp', q_grasp)
-        motion.execute(motion.motion(q_start, q_grasp))
+        new_path = None
+        while new_path is None:
+            grasp_pose, q_grasp = grasp.grasp(obj)
+            new_path = motion.motion(q_start, q_grasp)
+        execute_path(new_path)
+        moves['pick'] = new_path
         robot.arm.hand.Close()
-        robot.arm.Grab(objects[obj], relative_grasp)
-        input('continue')
-        print('q_goal', q_goal)
-        motion.execute(motion.motion(q_grasp, q_goal))
-        robot.arm.Release(objects[obj])
-        robot.arm.hand.Open()
 
-    for obj in objects:
-        print(obj)
-        execute(obj)
+        # Place
+        new_path = None
+        while new_path is None:
+            place_pose = place.place_tsr[obj].sample()
+            relative_grasp = numpy.dot(numpy.linalg.inv(objects[obj].get_transform()), grasp_pose)
+            relative_grasps[obj] = relative_grasp
+            q_goal = robot.arm.ComputeIK(numpy.dot(place_pose, relative_grasps[obj]))
+            while not robot.arm.IsCollisionFree(q_goal):
+                place_pose = place.place_tsr[obj].sample()
+
+                relative_grasps[obj] = numpy.dot(numpy.linalg.inv(objects[obj].get_transform()), grasp_pose)
+                q_goal = robot.arm.ComputeIK(numpy.dot(place_pose, relative_grasps[obj]))
+            new_path = motion.motion(q_grasp, q_goal)
+        robot.arm.Grab(objects[obj], relative_grasps[obj])
+        execute_path(new_path)
+        moves['place'] = new_path
+        robot.arm.Release(objects[obj])
+        path[obj] = moves
+
+    def execute_path(q_list):
+        if q_list is None:
+            print("No path")
+            return
+        # input("Execute path?")
+        for q in q_list:
+            robot.arm.SetJointValues(q)
+            time.sleep(.1)
+
+    def execute_path_all():
+        for item in objects:
+            for q in path[item]['pick']:
+                robot.arm.SetJointValues(q)
+                time.sleep(1)
+            robot.arm.hand.Close()
+            robot.arm.Grab(objects[item], relative_grasps[item])
+            for q in path[item]['place']:
+                robot.arm.SetJointValues(q)
+                time.sleep(1)
+            robot.arm.Release(objects[item])
+            robot.arm.hand.Open()
+        robot.arm.SetJointValues(default['robot'])
+
+
+    def plan():
+        pybullet.configureDebugVisualizer(pybullet.COV_ENABLE_RENDERING, False)
+        print('Calculating Path...')
+        for obj in objects:
+            print(obj)
+            plan_path(obj)
+        reset_env()
+        pybullet.configureDebugVisualizer(pybullet.COV_ENABLE_RENDERING, True)
+        print("Done")
 
     IPython.embed()
 
