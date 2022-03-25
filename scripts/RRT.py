@@ -17,7 +17,7 @@ def getDistance(q1, q2):
 
 
 class RRT:
-    def __init__(self, robot, max_step=2, max_time=15):
+    def __init__(self, robot, max_step=2, max_time=10):
         self.robot = robot
         self.max_time = max_time
         self.max_step = max_step
