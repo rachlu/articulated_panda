@@ -47,11 +47,18 @@ class RRT:
         for num in range(sample):
             if not self.robot.arm.IsCollisionFree(q1 + (q2 - q1) / sample * (num + 1)):
                 if num >= 1:
-                    q_new = q1 + (q2 - q1)/sample * num
+                    q_new = q1 + (q2 - q1) / sample * num
                     return [False, q_new]
                 else:
                     return [False, None]
         return [True, q2]
+
+    def sample_config(self):
+        q_rand = self.robot.arm.randomConfiguration()
+        while not self.robot.arm.IsCollisionFree(q_rand):
+            q_rand = self.robot.arm.randomConfiguration()
+
+        return q_rand
 
     # Working?
     def motion(self, q_start, q_goal):
@@ -65,14 +72,12 @@ class RRT:
                 q_rand = q_goal
                 node_closest = self.closest_node(q_rand)
             else:
-                q_rand = self.robot.arm.randomConfiguration()
+                q_rand = self.sample_config()
 
-                if not self.robot.arm.IsCollisionFree(q_rand):
-                    continue
                 node_closest = self.closest_node(q_rand)
                 if getDistance(q_rand, self.G.nodes[node_closest]['config']) > self.max_step:
                     q_rand = self.max_step / np.linalg.norm(q_rand - self.G.nodes[node_closest]['config']) * (
-                                q_rand - self.G.nodes[node_closest]['config'])
+                            q_rand - self.G.nodes[node_closest]['config'])
 
             result = self.collisionFree(self.G.nodes[node_closest]['config'], q_rand, 5)
             if not result[0] or result[1] is None:
@@ -101,10 +106,10 @@ class RRT:
                     result = self.collisionFree(path[n1], path[n2], 10)
                     if result[0]:
                         prior_distance = 0
-                        for n in range(len(path[n1+1:n2+1])):
-                            prior_distance += getDistance(path[n-1], path[n])
+                        for n in range(len(path[n1 + 1:n2 + 1])):
+                            prior_distance += getDistance(path[n - 1], path[n])
                         if getDistance(path[n1], path[n2]) < prior_distance:
-                            new_path = path[:n1+1]
+                            new_path = path[:n1 + 1]
                             new_path.extend(path[n2:])
                             path = new_path
                 return path

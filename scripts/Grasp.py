@@ -17,6 +17,7 @@ class Grasp:
         self.relative = {}
         self.bw_range = {}
         self.utensils = ('fork', 'knife', 'spoon')
+
         self.grasp_tsr = {}
         self.set_info()
         self.set_tsr()
@@ -24,6 +25,7 @@ class Grasp:
     def set_info(self):
         # plate
         t_o = self.objects.get('plate').get_transform()
+
         t_ee = numpy.array([[math.cos(math.pi / 2), -math.sin(math.pi / 2), 0, .70],
                             [math.sin(math.pi / 2), math.cos(math.pi / 2), 0, 0],
                             [0, 0, 1, .18],
@@ -49,7 +51,7 @@ class Grasp:
 
         bw = numpy.array([[0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [-math.pi, math.pi]])
         self.bw_range[('plate')] = bw
-
+        #
         t_ee = numpy.array([[math.cos(math.pi), -math.sin(math.pi), 0, -.4],
                             [math.sin(math.pi), math.cos(math.pi), 0, .4],
                             [0, 0, 1, .15],
@@ -58,6 +60,7 @@ class Grasp:
                            [0, 1, 0, 0],
                            [-math.sin(math.pi), 0, math.cos(math.pi), 0],
                            [0., 0., 0., 1.]])
+        t_o = self.objects.get('knife').get_transform()
         rel = get_relative(numpy.dot(t_ee, t_e), t_o)
         self.relative[self.utensils] = [rel]
 
@@ -80,6 +83,7 @@ class Grasp:
 
         self.grasp_tsr['plate'] = [TSR(self.objects['plate'].get_transform(), self.relative['plate'][0], self.bw_range['plate'])]
         self.grasp_tsr['plate'].append(TSR(self.objects['plate'].get_transform(), self.relative['plate'][1], self.bw_range['plate']))
+
 
     def grasp(self, obj):
         # r,g,b = x,y,z

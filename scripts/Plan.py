@@ -11,14 +11,13 @@ from Place import Place
 
 
 class Plan:
-    def __init__(self, robot, objects, floor):
+    def __init__(self, robot, objects=None, floor=None):
         self.objects = objects
         self.robot = robot
         self.default = {}
-        self.grasp = Grasp(robot, objects)
-        self.place = Place(robot, objects, floor)
         self.path = {}
         self.relative_grasps = {}
+        self.floor = floor
 
     def set_default(self):
         for obj in self.objects:
@@ -31,6 +30,8 @@ class Plan:
         self.robot.arm.SetJointValues(self.default['robot'])
 
     def plan_path(self, obj):
+        place = Place(self.robot, self.objects, self.floor)
+        grasp = Grasp(self.robot, self.objects)
         moves = {}
         q_start = numpy.array(self.robot.arm.GetJointValues())
 
@@ -39,7 +40,7 @@ class Plan:
         motion = RRT(self.robot)
         new_path = None
         while new_path is None:
-            grasp_pose, q_grasp = self.grasp.grasp(obj)
+            grasp_pose, q_grasp = grasp.grasp(obj)
             new_path = motion.motion(q_start, q_grasp)
         self.execute_path(new_path)
         moves['pick'] = new_path
@@ -48,12 +49,12 @@ class Plan:
         # Place
         new_path = None
         while new_path is None:
-            place_pose = self.place.place_tsr[obj].sample()
+            place_pose = place.samplePlacePose(obj)
             relative_grasp = numpy.dot(numpy.linalg.inv(self.objects[obj].get_transform()), grasp_pose)
             self.relative_grasps[obj] = relative_grasp
             q_goal = self.robot.arm.ComputeIK(numpy.dot(place_pose, self.relative_grasps[obj]))
             while not self.robot.arm.IsCollisionFree(q_goal):
-                place_pose = self.place.place_tsr[obj].sample()
+                place_pose = place.place_tsr[obj].sample()
 
                 self.relative_grasps[obj] = numpy.dot(numpy.linalg.inv(self.objects[obj].get_transform()), grasp_pose)
                 q_goal = self.robot.arm.ComputeIK(numpy.dot(place_pose, self.relative_grasps[obj]))
