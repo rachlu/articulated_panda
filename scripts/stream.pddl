@@ -7,23 +7,23 @@
     )
 
     (:stream sampleGraspPose
-        :inputs (?o)
-        :domain (Graspable ?o)
-        :outputs (?p)
-        :certified (and (Pose ?p) (GraspPose ?o ?p))
+        :inputs (?o ?p)
+        :domain (and (Graspable ?o) (ObjPose ?o ?p))
+        :outputs (?g)
+        :certified (Grasp ?o ?g)
     )
 
     (:stream inverse-kinematics
-        :inputs (?p)
-        :domain (Pose ?p)
+        :inputs (?o ?p ?g)
+        :domain (and (ObjPose ?o ?p) (Graspable ?o) (GraspPose ?o ?g))
         :outputs (?q)
-        :certified (and (Conf ?q) (Kin ?q ?p))
+        :certified (and (Conf ?q) (Kin ?o ?p ?q ?g))
     )
 
     (:stream samplePlacePose
-        :inputs (?o ?g)
-        :domain (and (Graspable ?o) (GraspPose ?o ?g))
+        :inputs (?o ?r)
+        :domain (and (Graspable ?o) (Region ?r))
         :outputs (?p)
-        :certified (and (Pose ?p) (PlacePose ?o ?g ?p))
+        :certified (and (ObjPose ?o ?p) (Supported ?o ?p ?r))
     )
 )

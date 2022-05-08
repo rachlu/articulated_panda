@@ -31,23 +31,24 @@ def pddlstream_from_tamp(robot, movable, tamp):
         ('Region', 'fork_region'),
         ('Region', 'plate_region'),
         ('Region', 'knife_region')
-
     ]
     # goal_config = tamp.sample_config()
     # init += [('Conf', goal_config)]
 
     # ('not', ('HandEmpty'))
     # goal = ('and', ('AtConf', goal_config))
-    #goal = (('Holding', 'knife'))
+    goal = (('Holding', 'knife'))
     # goal = ('and', ('Placed', 'knife'), ('Placed', 'fork'), ('Placed', 'spoon'), ('Placed', 'plate'), ('AtConf', conf))
-    goal = ('and', ('On', 'knife', 'knife_region'), ('On', 'fork', 'fork_region'), ('On', 'spoon', 'spoon_region'),
-            ('On', 'plate', 'plate_region'), ('AtConf', conf))
+    # goal = ('and', ('On', 'knife', 'knife_region'), ('On', 'fork', 'fork_region'), ('On', 'spoon', 'spoon_region'),
+    #         ('On', 'plate', 'plate_region'), ('AtConf', conf))
     # goal = ('and', ('Placed', 'knife'), ('Placed', 'fork'))
     # goal = (('Placed', 'fork'))
     for obj in movable:
         init.extend([('Graspable', obj),
-                 ('AtPose', obj, vobj.Pose(robot, objects[obj].get_transform()))
+                 ('AtPose', obj, vobj.Pose(robot, objects[obj].get_transform())),
+                  ('ObjPose', obj, vobj.Pose(robot, objects[obj].get_transform()))
         ])
+    print(init)
 
     stream_map = {
         'get_trajectory': from_gen_fn(tamp.calculate_path),
