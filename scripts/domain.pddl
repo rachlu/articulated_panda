@@ -38,7 +38,7 @@
     )
 
     (:action place
-        :parameters (?o ?p ?g ?q)
+        :parameters (?o ?p ?q ?g)
         :precondition (and (not (HandEmpty))
                           (AtConf ?q)
                           (Kin ?o ?p ?q ?g)

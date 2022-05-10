@@ -15,7 +15,7 @@
 
     (:stream inverse-kinematics
         :inputs (?o ?p ?g)
-        :domain (and (ObjPose ?o ?p) (Graspable ?o) (GraspPose ?o ?g))
+        :domain (and (ObjPose ?o ?p) (Graspable ?o) (Grasp ?o ?g))
         :outputs (?q)
         :certified (and (Conf ?q) (Kin ?o ?p ?q ?g))
     )

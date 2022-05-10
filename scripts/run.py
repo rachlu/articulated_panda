@@ -32,23 +32,22 @@ def pddlstream_from_tamp(robot, movable, tamp):
         ('Region', 'plate_region'),
         ('Region', 'knife_region')
     ]
-    # goal_config = tamp.sample_config()
+    # goal_config = tamp.sample_config()[0]
     # init += [('Conf', goal_config)]
 
-    # ('not', ('HandEmpty'))
+    # goal =  ('and', ('not', ('HandEmpty', )))
     # goal = ('and', ('AtConf', goal_config))
-    goal = (('Holding', 'knife'))
-    # goal = ('and', ('Placed', 'knife'), ('Placed', 'fork'), ('Placed', 'spoon'), ('Placed', 'plate'), ('AtConf', conf))
-    # goal = ('and', ('On', 'knife', 'knife_region'), ('On', 'fork', 'fork_region'), ('On', 'spoon', 'spoon_region'),
-    #         ('On', 'plate', 'plate_region'), ('AtConf', conf))
-    # goal = ('and', ('Placed', 'knife'), ('Placed', 'fork'))
-    # goal = (('Placed', 'fork'))
+    # goal = (('Holding', 'knife'))
+
+    goal = ('and', ('On', 'knife', 'knife_region'), ('On', 'fork', 'fork_region'), ('On', 'spoon', 'spoon_region'),
+            ('On', 'plate', 'plate_region'), ('AtConf', conf))
+
     for obj in movable:
+        position = vobj.Pose(robot, objects[obj].get_transform())
         init.extend([('Graspable', obj),
-                 ('AtPose', obj, vobj.Pose(robot, objects[obj].get_transform())),
-                  ('ObjPose', obj, vobj.Pose(robot, objects[obj].get_transform()))
+                 ('AtPose', obj, position),
+                  ('ObjPose', obj, position)
         ])
-    print(init)
 
     stream_map = {
         'get_trajectory': from_gen_fn(tamp.calculate_path),
@@ -71,7 +70,7 @@ if __name__ == '__main__':
     objects_path = pb_robot.helper.getDirectory("YCB_Robot")
     floor_file = os.path.join(objects_path, 'short_floor.urdf')
     floor = pb_robot.body.createBody(floor_file)
-    #
+
     # # Add fork object
     fork_file = os.path.join(objects_path, 'fork.urdf')
     fork = pb_robot.body.createBody(fork_file)
@@ -119,7 +118,7 @@ if __name__ == '__main__':
     print_solution(solution)
     plan, cost, evaluations = solution
     print('plan', plan)
-    #TO DO: Why does it work when i removed trajectory
+
     if plan is None:
         print('No plan found')
     else:

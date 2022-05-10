@@ -1,6 +1,5 @@
 import rospy
 from franka_interface import ArmInterface
-import RRT
 
 if __name__ == '__main__':
     rospy.init_node('testing_node')
