@@ -25,9 +25,10 @@ class Grasp:
     def set_info(self):
         # plate
         t_o = self.objects.get('plate').get_transform()
+        print(t_o)
 
-        t_ee = numpy.array([[math.cos(math.pi / 2), -math.sin(math.pi / 2), 0, .70],
-                            [math.sin(math.pi / 2), math.cos(math.pi / 2), 0, 0],
+        t_ee = numpy.array([[math.cos(math.pi / 2), -math.sin(math.pi / 2), 0, .40],
+                            [math.sin(math.pi / 2), math.cos(math.pi / 2), 0, -.25],
                             [0, 0, 1, .18],
                             [0., 0., 0., 1.]])
         t_e = numpy.array([[1, 0, 0, 0],

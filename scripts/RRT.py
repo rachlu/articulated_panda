@@ -12,7 +12,11 @@ def getDistance(q1, q2):
     """
     total_distance = 0
     for index in range(len(q1)):
-        total_distance += ((q1[index] - q2[index]) ** 2)
+        try:
+            total_distance += ((q1[index] - q2[index]) ** 2)
+        except:
+            print('dis', q1, q2)
+            return
     return total_distance ** (1 / 2)
 
 

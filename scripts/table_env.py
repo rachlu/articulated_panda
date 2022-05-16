@@ -11,12 +11,12 @@ from Plan import Plan
 from Grasp import Grasp
 from RRT import RRT
 
-if __name__ == '__main__':
+def execute():
     # Launch pybullet
-    pb_robot.utils.connect(use_gui=True)
-    pb_robot.utils.disable_real_time()
-    pb_robot.utils.set_default_camera()
-    pb_robot.viz.draw_pose(pb_robot.geometry.pose_from_tform(numpy.eye(4)), length=0.5, width=10)
+    # pb_robot.utils.connect(use_gui=True)
+    # pb_robot.utils.disable_real_time()
+    # pb_robot.utils.set_default_camera()
+    # pb_robot.viz.draw_pose(pb_robot.geometry.pose_from_tform(numpy.eye(4)), length=0.5, width=10)
 
     # Create robot object
     robot = pb_robot.panda.Panda()
@@ -56,15 +56,15 @@ if __name__ == '__main__':
     # Add plate object
     plate_file = os.path.join(objects_path, 'plate.urdf')
     plate = pb_robot.body.createBody(plate_file)
-    plate_pose = numpy.array([[0., 0., 1., 0.8],
-                              [0., 1., 0., 0],
+    plate_pose = numpy.array([[0., 0., 1., 0.3],
+                              [0., 1., 0., -.2],
                               [1., 0., 0., pb_robot.placements.stable_z(plate, floor)],
                               [0., 0., 0., 1.]])
     plate.set_transform(plate_pose)
     objects = {'fork': fork, 'spoon': spoon, 'knife': knife, 'plate': plate}
 
-    plan = Plan(robot, objects, floor)
-    plan.set_default()
+    # plan = Plan(robot, objects, floor)
+    # plan.set_default()
 
     # grasp = Grasp(robot, objects)
     # # Pick
@@ -73,10 +73,10 @@ if __name__ == '__main__':
     # new_path = None
     # q_start = robot.arm.GetJointValues()
     # while new_path is None:
-    #     grasp_pose, q_grasp = grasp.grasp('knife')
-    #     relative_grasp = numpy.dot(numpy.linalg.inv(objects['knife'].get_transform()), grasp_pose)
+    #     grasp_pose, q_grasp = grasp.grasp('plate')
+    #     relative_grasp = numpy.dot(numpy.linalg.inv(objects['plate'].get_transform()), grasp_pose)
     #     print(relative_grasp)
-    #     grasp_in_world = numpy.dot(objects['knife'].get_transform(), relative_grasp)
+    #     grasp_in_world = numpy.dot(objects['plate'].get_transform(), relative_grasp)
     #     conf = robot.arm.ComputeIK(grasp_in_world)
     #     print(q_grasp, conf)
     #     new_path = motion.motion(q_start, conf)
@@ -84,8 +84,9 @@ if __name__ == '__main__':
     #     robot.arm.SetJointValues(q)
     # robot.arm.hand.Close()
 
-    IPython.embed()
-
-    # Close out Pybullet
-    pb_robot.utils.wait_for_user()
-    pb_robot.utils.disconnect()
+    # IPython.embed()
+    #
+    # # Close out Pybullet
+    # pb_robot.utils.wait_for_user()
+    # pb_robot.utils.disconnect()
+    return objects, floor, robot
