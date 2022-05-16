@@ -29,7 +29,7 @@ class Place:
                             [0., 0., 0., 1.]])
         self.relative['plate'] = t_ee
         # Allowable range for placement
-        bw = numpy.array([[0, 0], [-.05, .05], [0, 0], [0, 0], [0, 0], [-math.pi, math.pi]])
+        bw = numpy.array([[0, 0], [-.04, .04], [0, 0], [0, 0], [0, 0], [-math.pi, math.pi]])
         self.bw_range['plate'] = bw
 
         t_ee = numpy.array([[1, 0, 0, -.5],
@@ -48,7 +48,7 @@ class Place:
                             [0., 0., 0., 1.]])
         self.relative['spoon'] = t_ee
 
-        bw = numpy.array([[0, 0], [-.05, .03], [0, 0], [0, 0], [0, 0], [0, 0]])
+        bw = numpy.array([[0, 0], [-.04, .02], [0, 0], [0, 0], [0, 0], [0, 0]])
         self.bw_range[self.utensils] = bw
 
     def set_tsr(self):

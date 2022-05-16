@@ -14,11 +14,6 @@ class TAMP_Functions:
         self.objects = objects
         self.floor = floor
 
-    def sample_config(self):
-        rrt = RRT(self.robot)
-        config = vobj.BodyConf(self.robot, rrt.sample_config())
-        return (config, )
-
     def calculate_path(self, q1, q2):
         print(q1, q2)
         rrt = RRT(self.robot)
@@ -58,6 +53,8 @@ class TAMP_Functions:
         # grasp is grasp in object frame
         grasp_in_world = numpy.dot(obj_pose.pose, grasp.pose)
         conf = self.robot.arm.ComputeIK(grasp_in_world)
+        if conf == None:
+            print('NO IKKKKK')
         cmd = [vobj.BodyConf(obj, conf)]
         return (cmd, )
 
