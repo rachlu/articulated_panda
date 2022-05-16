@@ -8,7 +8,8 @@ import pb_robot
 import numpy
 
 from Plan import Plan
-
+from Grasp import Grasp
+from RRT import RRT
 
 if __name__ == '__main__':
     # Launch pybullet
@@ -64,6 +65,24 @@ if __name__ == '__main__':
 
     plan = Plan(robot, objects, floor)
     plan.set_default()
+
+    # grasp = Grasp(robot, objects)
+    # # Pick
+    # robot.arm.hand.Open()
+    # motion = RRT(robot)
+    # new_path = None
+    # q_start = robot.arm.GetJointValues()
+    # while new_path is None:
+    #     grasp_pose, q_grasp = grasp.grasp('knife')
+    #     relative_grasp = numpy.dot(numpy.linalg.inv(objects['knife'].get_transform()), grasp_pose)
+    #     print(relative_grasp)
+    #     grasp_in_world = numpy.dot(objects['knife'].get_transform(), relative_grasp)
+    #     conf = robot.arm.ComputeIK(grasp_in_world)
+    #     print(q_grasp, conf)
+    #     new_path = motion.motion(q_start, conf)
+    # for q in new_path:
+    #     robot.arm.SetJointValues(q)
+    # robot.arm.hand.Close()
 
     IPython.embed()
 

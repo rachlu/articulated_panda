@@ -20,6 +20,7 @@ class TAMP_Functions:
         return (config, )
 
     def calculate_path(self, q1, q2):
+        print(q1, q2)
         rrt = RRT(self.robot)
         path = rrt.motion(q1.conf, q2.conf)
         while path is None:
@@ -31,8 +32,8 @@ class TAMP_Functions:
         grasp = Grasp(self.robot, self.objects)
         # grasp_pose is grasp in world frame
         grasp_pose, q = grasp.grasp(obj)
+
         # Grasp in object frame
-        print('obj', obj_pose)
         relative_grasp = numpy.dot(numpy.linalg.inv(obj_pose.pose), grasp_pose)
         cmd = [vobj.Pose(obj, relative_grasp)]
         return (cmd, )
@@ -43,7 +44,6 @@ class TAMP_Functions:
         for action in path:
             time.sleep(1)
             if action.name == 'grab':
-                #relative_grasp = numpy.dot(numpy.linalg.inv(self.objects[action.args[0]].get_transform()), action.args[-1].pose)
                 self.robot.arm.Grab(self.objects[action.args[0]], action.args[-1].pose)
                 self.robot.arm.hand.Close()
                 continue
@@ -57,20 +57,14 @@ class TAMP_Functions:
     def computeIK(self, obj, obj_pose, grasp):
         # grasp is grasp in object frame
         grasp_in_world = numpy.dot(obj_pose.pose, grasp.pose)
-        conf = robot.arm.ComputeIK(grasp_in_world)
+        conf = self.robot.arm.ComputeIK(grasp_in_world)
         cmd = [vobj.BodyConf(obj, conf)]
         return (cmd, )
 
 
     def samplePlacePose(self, obj, region):
         place = Place(self.robot, self.objects, self.floor)
+        # Obj pose in world frame
         place_pose = place.place_tsr[obj].sample()
-        # grasp = robot.arm.ComputeFK(q)
-        # # relative_grasp in object frame
-        # relative_grasp = numpy.dot(numpy.linalg.inv(obj_pose), grasp)
-        #
-        # grasp_in_world = numpy.dot(place_pose, relative_grasp)
-        # print('grasp', grasp_in_world)
-        # cmd = [vobj.Pose(obj, grasp_in_world)]
         cmd = [vobj.Pose(obj, place_pose)]
         return (cmd,)
