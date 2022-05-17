@@ -28,4 +28,3 @@ if __name__ == '__main__':
         final_path.append(arm.convertToDict(q))
     print(final_path)
     # arm.execute_position_path(final_path)
->>>>>>> 4b440a135ac8cd4811294b6b629649b3dded08d7
