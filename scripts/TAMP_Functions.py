@@ -18,8 +18,8 @@ class TAMP_Functions:
         print(q1, q2)
         rrt = RRT(self.robot)
         path = rrt.motion(q1.conf, q2.conf)
-        while path is None:
-            path = rrt.motion(q1.conf, q2.conf)
+        if path is None:
+            return (None, )
         cmd = [vobj.TrajPath(self.robot, path)]
         return (cmd, )
 
@@ -54,7 +54,7 @@ class TAMP_Functions:
         grasp_in_world = numpy.dot(obj_pose.pose, grasp.pose)
         conf = self.robot.arm.ComputeIK(grasp_in_world)
         if conf == None:
-            print('NO IKKKKK')
+            return (None, )
         cmd = [vobj.BodyConf(obj, conf)]
         return (cmd, )
 
