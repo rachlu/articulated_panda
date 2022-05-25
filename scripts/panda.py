@@ -35,3 +35,7 @@ if __name__ == '__main__':
     print(final_path)
     # arm.execute_position_path(final_path)
 
+    IPython.embed()
+    pb_robot.utils.wait_for_user()
+    pb_robot.utils.disconnect()
+

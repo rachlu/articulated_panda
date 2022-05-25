@@ -38,7 +38,10 @@ def pddlstream_from_tamp(robot, movable, tamp):
 
     # goal =  ('and', ('not', ('HandEmpty', )))
     # goal = ('and', ('AtConf', goal_config))
-    # goal = (('Holding', 'knife'))
+    # goal = (('Holding', 'plate'))
+    # goal = ('and', ('On', 'knife', 'knife_region'), ('On', 'fork', 'fork_region'))
+
+    # goal = ('and', ('On', 'knife', 'knife_region'), ('On', 'fork', 'fork_region'), ('On', 'spoon', 'spoon_region'))
 
     goal = ('and', ('On', 'knife', 'knife_region'), ('On', 'fork', 'fork_region'), ('On', 'spoon', 'spoon_region'),
             ('On', 'plate', 'plate_region'), ('AtConf', conf))

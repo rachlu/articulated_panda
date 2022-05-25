@@ -23,32 +23,35 @@ class Place:
 
     def set_info(self):
         # Relative offset to valid position. Object in table frame
-        t_ee = numpy.array([[1, 0, 0, -.5],
+        t_ee = numpy.array([[1, 0, 0, -.4],
                             [0, 1, 0, .1],
                             [0, 0, 1, 0],
                             [0., 0., 0., 1.]])
         self.relative['plate'] = t_ee
         # Allowable range for placement
         bw = numpy.array([[0, 0], [-.04, .04], [0, 0], [0, 0], [0, 0], [-math.pi, math.pi]])
+
         self.bw_range['plate'] = bw
 
-        t_ee = numpy.array([[1, 0, 0, -.5],
+        t_ee = numpy.array([[1, 0, 0, -.4],
                             [0, math.cos(math.pi / 2), -math.sin(math.pi / 2), .3],
-                            [0, math.sin(math.pi / 2), math.cos(math.pi / 2), .01],
-                            [0., 0., 0., 1.]])
+                            [0, math.sin(math.pi / 2), math.cos(math.pi / 2), .03],
+                            [0., 0., 0., 2.]])
         self.relative['fork'] = t_ee
-        t_ee = numpy.array([[1, 0, 0, -.5],
+
+        t_ee = numpy.array([[1, 0, 0, -.4],
                             [0, math.cos(math.pi / 2), -math.sin(math.pi / 2), -.1],
-                            [0, math.sin(math.pi / 2), math.cos(math.pi / 2), .01],
-                            [0., 0., 0., 1.]])
+                            [0, math.sin(math.pi / 2), math.cos(math.pi / 2), .03],
+                            [0., 0., 0., 2.]])
         self.relative['knife'] = t_ee
-        t_ee = numpy.array([[1, 0, 0, -.45],
-                            [0, math.cos(math.pi / 2), -math.sin(math.pi / 2), -.2],
-                            [0, math.sin(math.pi / 2), math.cos(math.pi / 2), .01],
-                            [0., 0., 0., 1.]])
+
+        t_ee = numpy.array([[1, 0, 0, -.4],
+                            [0, math.cos(math.pi / 2), -math.sin(math.pi / 2), -.3],
+                            [0, math.sin(math.pi / 2), math.cos(math.pi / 2), .03],
+                            [0., 0., 0., 2.]])
         self.relative['spoon'] = t_ee
 
-        bw = numpy.array([[0, 0], [-.04, .02], [0, 0], [0, 0], [0, 0], [0, 0]])
+        bw = numpy.array([[0, 0], [-.01, .01], [0, 0], [0, 0], [0, 0], [0, 0]])
         self.bw_range[self.utensils] = bw
 
     def set_tsr(self):

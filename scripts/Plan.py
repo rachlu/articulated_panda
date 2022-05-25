@@ -18,6 +18,7 @@ class Plan:
         self.path = {}
         self.relative_grasps = {}
         self.floor = floor
+        self.set_default()
 
     def set_default(self):
         for obj in self.objects:
@@ -64,6 +65,7 @@ class Plan:
         moves['place'] = new_path
         self.robot.arm.Release(self.objects[obj])
         self.path[obj] = moves
+        return moves
 
     def execute_path(self, q_list):
         if q_list is None:

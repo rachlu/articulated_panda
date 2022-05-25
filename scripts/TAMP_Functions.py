@@ -13,6 +13,9 @@ class TAMP_Functions:
         self.robot = robot
         self.objects = objects
         self.floor = floor
+        self.place = Place(robot, objects, floor)
+        self.grasp = Grasp(robot, objects)
+
 
     def calculate_path(self, q1, q2):
         print(q1, q2)
@@ -24,10 +27,10 @@ class TAMP_Functions:
         return (cmd, )
 
     def sampleGrabPose(self, obj, obj_pose):
-        grasp = Grasp(self.robot, self.objects)
         # grasp_pose is grasp in world frame
-        grasp_pose, q = grasp.grasp(obj)
-
+        grasp_pose, q = self.grasp.grasp(obj)
+        if not self.robot.arm.IsCollisionFree(q):
+            return (False, )
         # Grasp in object frame
         relative_grasp = numpy.dot(numpy.linalg.inv(obj_pose.pose), grasp_pose)
         cmd = [vobj.Pose(obj, relative_grasp)]
@@ -60,8 +63,7 @@ class TAMP_Functions:
 
 
     def samplePlacePose(self, obj, region):
-        place = Place(self.robot, self.objects, self.floor)
         # Obj pose in world frame
-        place_pose = place.place_tsr[obj].sample()
+        place_pose = self.place.place_tsr[obj].sample()
         cmd = [vobj.Pose(obj, place_pose)]
         return (cmd,)
