@@ -15,6 +15,7 @@
         (Region ?r)
         (Supported ?o ?p ?r)
         (AtGrasp ?o ?g)
+        (ObjPoses ?l)
     )
 
     (:action move

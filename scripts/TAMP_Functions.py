@@ -6,6 +6,7 @@ from Grasp import Grasp
 import vobj
 import numpy
 from Place import Place
+import pb_robot
 
 
 class TAMP_Functions:
@@ -65,5 +66,19 @@ class TAMP_Functions:
     def samplePlacePose(self, obj, region):
         # Obj pose in world frame
         place_pose = self.place.place_tsr[obj].sample()
+        # original_pose = self.objects[obj].get_transform()
+        # for obj in objPoses:
+        #     self.objects
+        # self.objects[obj].set_transform(place_pose)
+        # for other in self.objects:
+        #     if other != obj and \
+        #             pb_robot.collisions.body_collision(self.objects[obj], self.objects[other]):
+        #         return (None, )
+        # self.objects[obj].set_transform(original_pose)
         cmd = [vobj.Pose(obj, place_pose)]
-        return (cmd,)
+        return (cmd, )
+
+
+    def sampleTable(self, obj, floor):
+        pass
+

@@ -39,20 +39,22 @@ def pddlstream_from_tamp(robot, movable, tamp):
     # goal =  ('and', ('not', ('HandEmpty', )))
     # goal = ('and', ('AtConf', goal_config))
     # goal = (('Holding', 'plate'))
+    # goal = ('On', 'knife', 'knife_region')
     # goal = ('and', ('On', 'knife', 'knife_region'), ('On', 'fork', 'fork_region'))
 
     # goal = ('and', ('On', 'knife', 'knife_region'), ('On', 'fork', 'fork_region'), ('On', 'spoon', 'spoon_region'))
 
     goal = ('and', ('On', 'knife', 'knife_region'), ('On', 'fork', 'fork_region'), ('On', 'spoon', 'spoon_region'),
             ('On', 'plate', 'plate_region'), ('AtConf', conf))
-
+    # objPoses = {}
     for obj in movable:
         position = vobj.Pose(robot, objects[obj].get_transform())
+        # objPoses[obj] = position
         init.extend([('Graspable', obj),
                  ('AtPose', obj, position),
                   ('ObjPose', obj, position)
         ])
-
+    # init += ('ObjPoses', objPoses)
     stream_map = {
         'get_trajectory': from_gen_fn(tamp.calculate_path),
         'sampleGraspPose': from_gen_fn(tamp.sampleGrabPose),
