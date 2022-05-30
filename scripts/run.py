@@ -40,12 +40,12 @@ def pddlstream_from_tamp(robot, movable, tamp):
     # goal = ('and', ('AtConf', goal_config))
     # goal = (('Holding', 'plate'))
     # goal = ('On', 'knife', 'knife_region')
-    # goal = ('and', ('On', 'knife', 'knife_region'), ('On', 'fork', 'fork_region'))
+    goal = ('and', ('On', 'knife', 'knife_region'), ('On', 'fork', 'fork_region'))
 
     # goal = ('and', ('On', 'knife', 'knife_region'), ('On', 'fork', 'fork_region'), ('On', 'spoon', 'spoon_region'))
 
-    goal = ('and', ('On', 'knife', 'knife_region'), ('On', 'fork', 'fork_region'), ('On', 'spoon', 'spoon_region'),
-            ('On', 'plate', 'plate_region'), ('AtConf', conf))
+    # goal = ('and', ('On', 'knife', 'knife_region'), ('On', 'fork', 'fork_region'), ('On', 'spoon', 'spoon_region'),
+    #         ('On', 'plate', 'plate_region'), ('AtConf', conf))
     # objPoses = {}
     for obj in movable:
         position = vobj.Pose(robot, objects[obj].get_transform())
@@ -66,10 +66,6 @@ def pddlstream_from_tamp(robot, movable, tamp):
 
 
 if __name__ == '__main__':
-    pb_robot.utils.connect(use_gui=True)
-    pb_robot.utils.disable_real_time()
-    pb_robot.utils.set_default_camera()
-
     objects, floor, robot = table_env.execute()
     robot.arm.hand.Open()
 

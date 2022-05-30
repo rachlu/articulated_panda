@@ -6,6 +6,7 @@ import table_env
 import IPython
 from Grasp import Grasp
 import math
+from TAMP_Functions import TAMP_Functions
 
 
 if __name__ == '__main__':
@@ -39,13 +40,18 @@ if __name__ == '__main__':
     # while True:
     #     robot.arm.SetJointValues(grasp.grasp('spoon')[1])
     #     input('next')
-    obj = 'spoon'
-    for other in objects:
-        print(other, obj)
-        if other != obj and \
-                pb_robot.collisions.body_collision(objects[obj], objects[other], 0.001):
-            print('None')
-
+    # obj = 'spoon'
+    # for other in objects:
+    #     print(other, obj)
+    #     if other != obj and \
+    #             pb_robot.collisions.body_collision(objects[obj], objects[other], 0.001):
+    #         print('None')
+    tamp = TAMP_Functions(robot, objects, floor)
+    while True:
+        new_pose = tamp.sampleTable('spoon', objects['spoon'].get_transform())[0][0]
+        print(new_pose.pose)
+        objects['spoon'].set_transform(new_pose.pose)
+        input('next')
 
     IPython.embed()
     pb_robot.utils.wait_for_user()

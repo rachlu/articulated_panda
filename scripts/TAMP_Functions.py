@@ -7,7 +7,7 @@ import vobj
 import numpy
 from Place import Place
 import pb_robot
-
+import random
 
 class TAMP_Functions:
     def __init__(self, robot, objects, floor):
@@ -79,6 +79,13 @@ class TAMP_Functions:
         return (cmd, )
 
 
-    def sampleTable(self, obj, floor):
-        pass
+    def sampleTable(self, obj, objPose):
+        x = random.uniform(-0.5, 0.5)
+        y = random.uniform(-0.6, 0.6)
+        pose = numpy.array(objPose.pose)
+        pose[0][3] = x
+        pose[1][3] = y
+        cmd = [vobj.Pose(obj, pose)]
+        return (cmd, )
+
 

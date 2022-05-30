@@ -14,9 +14,9 @@ from Place import Place
 
 def execute():
     # Launch pybullet
-    # pb_robot.utils.connect(use_gui=True)
-    # pb_robot.utils.disable_real_time()
-    # pb_robot.utils.set_default_camera()
+    pb_robot.utils.connect(use_gui=True)
+    pb_robot.utils.disable_real_time()
+    pb_robot.utils.set_default_camera()
     pb_robot.viz.draw_pose(pb_robot.geometry.pose_from_tform(numpy.eye(4)), length=0.5, width=10)
 
     # Create robot object
@@ -40,7 +40,7 @@ def execute():
     knife_file = os.path.join(objects_path, 'knife.urdf')
     knife = pb_robot.body.createBody(knife_file)
     knife_pose = numpy.array([[1., 0., 0., -0.4],
-                              [0., 0., -1., 0.4],
+                              [0., 0., -1., 0.3],
                               [0., 1., 0., pb_robot.placements.stable_z(knife, floor) + 0.01],
                               [0., 0., 0., 1.]])
     knife.set_transform(knife_pose)
@@ -64,58 +64,4 @@ def execute():
     plate.set_transform(plate_pose)
     objects = {'fork': fork, 'spoon': spoon, 'knife': knife, 'plate': plate}
 
-    # plan = Plan(robot, objects, floor)
-    # plan.set_default()
-    #
-    # grasp = Grasp(robot, objects)
-    # place = Place(robot, objects, floor)
-    # # Pick
-    # robot.arm.hand.Open()
-    # motion = RRT(robot)
-    # pick = None
-    # obj = 'plate'
-    # while True:
-    #     # q_start = robot.arm.GetJointValues()
-    #     grasp_pose, q_grasp = grasp.grasp(obj)
-    #     relative_grasp = numpy.dot(numpy.linalg.inv(objects[obj].get_transform()), grasp_pose)
-    #     # print(relative_grasp)
-    #     grasp_in_world = numpy.dot(objects[obj].get_transform(), relative_grasp)
-    #     conf = robot.arm.ComputeIK(grasp_in_world)
-    #     print(robot.arm.IsCollisionFree(conf))
-    #     robot.arm.SetJointValues(conf)
-    #     # pick = motion.motion(q_start, conf)
-    #     input('next')
-    # for q in pick:
-    #     robot.arm.SetJointValues(q)
-    # # robot.arm.Grab(objects[obj], relative_grasp)
-    # print('picked')
-    # # Place
-    # place_path = None
-    # while True:
-    #     place_pose = place.samplePlacePose(obj)
-    #     relative_grasp = numpy.dot(numpy.linalg.inv(objects[obj].get_transform()), grasp_pose)
-    #     q_goal = robot.arm.ComputeIK(numpy.dot(place_pose, relative_grasp))
-    #     # while not robot.arm.IsCollisionFree(q_goal):
-    #     #     place_pose = place.place_tsr[obj].sample()
-    #     #
-    #     #     relative_grasp = numpy.dot(numpy.linalg.inv(objects[obj].get_transform()), grasp_pose)
-    #     #     q_goal = robot.arm.ComputeIK(numpy.dot(place_pose, relative_grasp))
-    #     print(robot.arm.IsCollisionFree(q_goal))
-    #     robot.arm.SetJointValues(q_goal)
-    #     input('next')
-
-    # robot.arm.hand.Close()
-    #
-    # for q in place:
-    #     robot.arm.SetJointValues(q)
-    #
-    # robot.arm.Release(objects[obj])
-    #
-    # input('hi')
-
-    # IPython.embed()
-
-    # Close out Pybullet
-    # pb_robot.utils.wait_for_user()
-    # pb_robot.utils.disconnect()
     return objects, floor, robot
