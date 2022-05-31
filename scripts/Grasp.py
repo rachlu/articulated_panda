@@ -23,7 +23,7 @@ class Grasp:
         self.set_tsr()
 
     def set_info(self):
-        # # plate
+        # plate
         t_o = self.objects.get('plate').get_transform()
 
         t_1 = numpy.array([[1, 0, 0, 0],
@@ -81,14 +81,13 @@ class Grasp:
         rel = numpy.dot(rotation, translation)
         self.relative[self.utensils] = [rel]
 
-        # t_o = self.objects.get('knife').get_transform()
         t_3 = numpy.array([[math.cos(3 * math.pi / 2), -math.sin(3 * math.pi / 2), 0, 0],
                            [math.sin(3 * math.pi / 2), math.cos(3 * math.pi / 2), 0, 0],
                            [0, 0, 1, 0],
                            [0., 0., 0., 1.]])
         translation = numpy.array([[1, 0, 0, 0],
                                    [0, 1, 0, 0],
-                                   [0, 0, 1, -.11],
+                                   [0, 0, 1, -.07],
                                    [0., 0., 0., 1.]])
         rotation = numpy.linalg.multi_dot([t_1, t_2, t_3])
         rel = numpy.dot(rotation, translation)
