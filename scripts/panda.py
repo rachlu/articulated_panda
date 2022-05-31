@@ -4,6 +4,8 @@ import table_env
 from Grasp import Grasp
 import numpy
 import pb_robot
+from RRT import RRT
+import IPython
 
 if __name__ == '__main__':
     # pb_robot.utils.connect(use_gui=True)
@@ -19,7 +21,7 @@ if __name__ == '__main__':
     arm.hand.open()
     motion = RRT(robot)
     new_path = None
-    q_start = arm.convertToList(arm.joint_angles)
+    q_start = arm.convertToList(arm.joint_angles())
     while new_path is None:
         grasp_pose, q_grasp = grasp.grasp('plate')
         relative_grasp = numpy.dot(numpy.linalg.inv(objects['plate'].get_transform()), grasp_pose)
@@ -33,7 +35,7 @@ if __name__ == '__main__':
     for q in new_path:
         final_path.append(arm.convertToDict(q))
     print(final_path)
-    # arm.execute_position_path(final_path)
+    arm.execute_position_path(final_path)
 
     IPython.embed()
     pb_robot.utils.wait_for_user()
