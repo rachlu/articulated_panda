@@ -46,10 +46,10 @@ if __name__ == '__main__':
     #     if other != obj and \
     #             pb_robot.collisions.body_collision(objects[obj], objects[other], 0.001):
     #         print('None')
-    tamp = TAMP_Functions(robot, objects, floor)
-    while True:
-        print(tamp.collisionCheck('knife', objects['knife'].get_transform(), 'spoon', objects['spoon'].get_transform()))
-        input('next')
+    # tamp = TAMP_Functions(robot, objects, floor)
+    # while True:
+    #     print(tamp.collisionCheck('knife', objects['knife'].get_transform(), 'spoon', objects['spoon'].get_transform()))
+    #     input('next')
 
     IPython.embed()
     pb_robot.utils.wait_for_user()

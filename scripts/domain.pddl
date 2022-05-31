@@ -69,6 +69,6 @@
     )
 
     (:derived (InCollision ?o ?p)
-        (exists (?o2 ?p2) (and (AtPose ?o2 ?p2) (Collision ?o ?p ?o2 ?p2)))
+        (exists (?o2 ?p2) (and (ObjPose ?o ?p) (AtPose ?o2 ?p2) (Collision ?o ?p ?o2 ?p2)))
     )
 )
