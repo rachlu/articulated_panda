@@ -23,6 +23,7 @@ def pddlstream_from_tamp(robot, movable, tamp, panda = None):
     if panda is None:
         conf = vobj.BodyConf(robot, robot.arm.GetJointValues())
     else:
+        robot.arm.SetJointValues(panda.convertToList(panda.joint_angles()))
         conf = vobj.BodyConf(robot, panda.convertToList(panda.joint_angles()))
     # ('Pose', obj, obj.GetTransform()),
 
