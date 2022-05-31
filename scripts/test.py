@@ -10,9 +10,9 @@ from TAMP_Functions import TAMP_Functions
 
 
 if __name__ == '__main__':
-    pb_robot.utils.connect(use_gui=True)
-    pb_robot.utils.disable_real_time()
-    pb_robot.utils.set_default_camera()
+    # pb_robot.utils.connect(use_gui=True)
+    # pb_robot.utils.disable_real_time()
+    # pb_robot.utils.set_default_camera()
 
     objects, floor, robot = table_env.execute()
     # knife_pose = objects['spoon'].get_transform()
@@ -48,9 +48,7 @@ if __name__ == '__main__':
     #         print('None')
     tamp = TAMP_Functions(robot, objects, floor)
     while True:
-        new_pose = tamp.sampleTable('spoon', objects['spoon'].get_transform())[0][0]
-        print(new_pose.pose)
-        objects['spoon'].set_transform(new_pose.pose)
+        print(tamp.collisionCheck('knife', objects['knife'].get_transform(), 'spoon', objects['spoon'].get_transform()))
         input('next')
 
     IPython.embed()

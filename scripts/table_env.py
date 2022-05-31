@@ -40,7 +40,7 @@ def execute():
     knife_file = os.path.join(objects_path, 'knife.urdf')
     knife = pb_robot.body.createBody(knife_file)
     knife_pose = numpy.array([[1., 0., 0., -0.4],
-                              [0., 0., -1., 0.3],
+                              [0., 0., -1., 0.4],
                               [0., 1., 0., pb_robot.placements.stable_z(knife, floor) + 0.01],
                               [0., 0., 0., 1.]])
     knife.set_transform(knife_pose)

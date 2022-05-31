@@ -6,9 +6,9 @@ import numpy
 import pb_robot
 
 if __name__ == '__main__':
-    pb_robot.utils.connect(use_gui=True)
-    pb_robot.utils.disable_real_time()
-    pb_robot.utils.set_default_camera()
+    # pb_robot.utils.connect(use_gui=True)
+    # pb_robot.utils.disable_real_time()
+    # pb_robot.utils.set_default_camera()
 
     rospy.init_node('testing_node')
     arm = ArmInterface()

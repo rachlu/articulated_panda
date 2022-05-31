@@ -35,19 +35,19 @@ class Place:
 
         t_ee = numpy.array([[1, 0, 0, -.4],
                             [0, math.cos(math.pi / 2), -math.sin(math.pi / 2), .3],
-                            [0, math.sin(math.pi / 2), math.cos(math.pi / 2), .03],
+                            [0, math.sin(math.pi / 2), math.cos(math.pi / 2), .04],
                             [0., 0., 0., 2.]])
         self.relative['fork'] = t_ee
 
         t_ee = numpy.array([[1, 0, 0, -.4],
                             [0, math.cos(math.pi / 2), -math.sin(math.pi / 2), -.1],
-                            [0, math.sin(math.pi / 2), math.cos(math.pi / 2), .03],
+                            [0, math.sin(math.pi / 2), math.cos(math.pi / 2), .04],
                             [0., 0., 0., 2.]])
         self.relative['knife'] = t_ee
 
         t_ee = numpy.array([[1, 0, 0, -.4],
                             [0, math.cos(math.pi / 2), -math.sin(math.pi / 2), -.3],
-                            [0, math.sin(math.pi / 2), math.cos(math.pi / 2), .03],
+                            [0, math.sin(math.pi / 2), math.cos(math.pi / 2), .04],
                             [0., 0., 0., 2.]])
         self.relative['spoon'] = t_ee
 

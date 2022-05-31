@@ -59,7 +59,10 @@ def pddlstream_from_tamp(robot, movable, tamp):
         'get_trajectory': from_gen_fn(tamp.calculate_path),
         'sampleGraspPose': from_gen_fn(tamp.sampleGrabPose),
         'inverse-kinematics': from_gen_fn(tamp.computeIK),
-        'samplePlacePose': from_gen_fn(tamp.samplePlacePose)
+        'samplePlacePose': from_gen_fn(tamp.samplePlacePose),
+        'get_trajectory_holding': from_gen_fn(tamp.calculate_path_holding),
+        'collisionCheck': from_gen_fn(tamp.collisionCheck),
+        'sampleTable': from_gen_fn(tamp.sampleTable)
     }
 
     return domain_pddl, constant_map, stream_pddl, stream_map, init, goal

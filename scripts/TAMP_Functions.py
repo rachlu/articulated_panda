@@ -23,9 +23,20 @@ class TAMP_Functions:
         rrt = RRT(self.robot)
         path = rrt.motion(q1.conf, q2.conf)
         if path is None:
+            print(q2.conf)
             return (None, )
         cmd = [vobj.TrajPath(self.robot, path)]
         return (cmd, )
+
+    def calculate_path_holding(self, q1, q2, obj, grasp):
+        original_position = self.objects[obj].get_transform()
+        self.robot.arm.Grab(self.objects[obj], grasp.pose)
+        self.robot.arm.hand.Close()
+        path = self.calculate_path(q1, q2)
+        self.robot.arm.Release(self.objects[obj])
+        self.robot.arm.hand.Open()
+        self.objects[obj].set_transform(original_position)
+        return path
 
     def sampleGrabPose(self, obj, obj_pose):
         # grasp_pose is grasp in world frame
@@ -88,4 +99,17 @@ class TAMP_Functions:
         cmd = [vobj.Pose(obj, pose)]
         return (cmd, )
 
+    def collisionCheck(self, obj, pos, other, other_pos):
+        obj_oldpos = self.objects[obj].get_transform()
+        other_oldpos = self.objects[other].get_transform()
+        if other != obj:
+            self.objects[obj].set_transform(pos)
+            self.objects[other].set_transform(other_pos)
+            if pb_robot.collisions.body_collision(self.objects[obj], self.objects[other]):
+                self.objects[obj].set_transform(obj_oldpos)
+                self.objects[other].set_transform(other_oldpos)
+                return ( )
+        self.objects[obj].set_transform(obj_oldpos)
+        self.objects[other].set_transform(other_oldpos)
+        return (None, )
 
