@@ -15,12 +15,15 @@ from pddlstream.utils import user_input, read, INF
 from pddlstream.algorithms.meta import solve, create_parser
 
 
-def pddlstream_from_tamp(robot, movable, tamp):
+def pddlstream_from_tamp(robot, movable, tamp, panda = None):
     domain_pddl = read('domain.pddl')
     stream_pddl = read('stream.pddl')
 
     constant_map = {}
-    conf = vobj.BodyConf(robot, robot.arm.GetJointValues())
+    if panda is None:
+        conf = vobj.BodyConf(robot, robot.arm.GetJointValues())
+    else:
+        conf = vobj.BodyConf(robot, panda.convertToList(panda.joint_angles()))
     # ('Pose', obj, obj.GetTransform()),
 
     init = [

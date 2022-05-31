@@ -18,7 +18,7 @@ if __name__ == '__main__':
 
     tamp = TAMP_Functions(robot, objects, floor)
 
-    pddlstream_problem = pddlstream_from_tamp(robot, objects, tamp)
+    pddlstream_problem = pddlstream_from_tamp(robot, objects, tamp, arm)
     _, _, _, stream_map, init, goal = pddlstream_problem
     print('stream', stream_map)
     print('init', init)
