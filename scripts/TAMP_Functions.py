@@ -42,7 +42,7 @@ class TAMP_Functions:
         # grasp_pose is grasp in world frame
         grasp_pose, q = self.grasp.grasp(obj)
         if not self.robot.arm.IsCollisionFree(q):
-            return (False, )
+            return (None, )
         # Grasp in object frame
         relative_grasp = numpy.dot(numpy.linalg.inv(obj_pose.pose), grasp_pose)
         cmd = [vobj.Pose(obj, relative_grasp)]
