@@ -38,11 +38,11 @@ if __name__ == '__main__':
     # robot.arm.SetJointValues(robot.arm.ComputeIK(knife_pose))
     robot.arm.hand.Open()
     grasp = Grasp(robot, objects)
-    while True:
-        q = grasp.grasp('fork')[1]
-        robot.arm.SetJointValues(q)
-        print(robot.arm.IsCollisionFree(q))
-        input('next')
+    #while True:
+       # q = grasp.grasp('fork')[1]
+       # robot.arm.SetJointValues(q)
+       # print(robot.arm.IsCollisionFree(q))
+       # input('next')
     # obj = 'spoon'
     # for other in objects:
     #     print(other, obj)

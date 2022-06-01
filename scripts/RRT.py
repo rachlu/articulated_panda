@@ -22,7 +22,7 @@ def getDistance(q1, q2):
 
 class RRT:
     # Test step size
-    def __init__(self, robot, nonmovable = None, max_step=0.03, max_time=15):
+    def __init__(self, robot, nonmovable = None, max_step=0.03, max_time=20):
         self.robot = robot
         self.max_time = max_time
         self.max_step = max_step
