@@ -32,7 +32,7 @@ def execute():
     fork = pb_robot.body.createBody(fork_file)
     fork_pose = numpy.array([[1, 0, 0, 0.3],
                              [0, 0, -1, 0.2],
-                             [0, 1, 0, pb_robot.placements.stable_z(fork, floor) + 0.01],
+                             [0, 1, 0, pb_robot.placements.stable_z(fork, floor)],
                              [0., 0., 0., 1.]])
     fork.set_transform(fork_pose)
 
@@ -41,7 +41,7 @@ def execute():
     knife = pb_robot.body.createBody(knife_file)
     knife_pose = numpy.array([[1., 0., 0., -0.4],
                               [0., 0., -1., 0.4],
-                              [0., 1., 0., pb_robot.placements.stable_z(knife, floor) + 0.01],
+                              [0., 1., 0., pb_robot.placements.stable_z(knife, floor)],
                               [0., 0., 0., 1.]])
     knife.set_transform(knife_pose)
 
@@ -50,7 +50,7 @@ def execute():
     spoon = pb_robot.body.createBody(spoon_file)
     spoon_pose = numpy.array([[1, 0, 0, 0.35],
                               [0, 0, -1, 0.4],
-                              [0, 1, 0, pb_robot.placements.stable_z(spoon, floor) + 0.01],
+                              [0, 1, 0, pb_robot.placements.stable_z(spoon, floor)],
                               [0., 0., 0., 1.]])
     spoon.set_transform(spoon_pose)
 

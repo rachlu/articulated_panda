@@ -21,11 +21,13 @@ def getDistance(q1, q2):
 
 
 class RRT:
-    def __init__(self, robot, max_step=1.5, max_time=15):
+    # Test step size
+    def __init__(self, robot, nonmovable = None, max_step=0.05, max_time=15):
         self.robot = robot
         self.max_time = max_time
         self.max_step = max_step
         self.G = nx.DiGraph()
+        self.nonmovable = nonmovable
 
     # Test Completed
     def closest_node(self, q):
@@ -49,7 +51,7 @@ class RRT:
         If false, returns a new configuration where the path from q1 to q_new is conllison free.
         """
         for num in range(sample):
-            if not self.robot.arm.IsCollisionFree(q1 + (q2 - q1) / sample * (num + 1)):
+            if not self.robot.arm.IsCollisionFree(q1 + (q2 - q1) / sample * (num + 1), self.nonmovable):
                 if num >= 1:
                     q_new = q1 + (q2 - q1) / sample * num
                     return [False, q_new]
@@ -59,7 +61,7 @@ class RRT:
 
     def sample_config(self):
         q_rand = self.robot.arm.randomConfiguration()
-        while not self.robot.arm.IsCollisionFree(q_rand):
+        while not self.robot.arm.IsCollisionFree(q_rand, self.nonmovable):
             q_rand = self.robot.arm.randomConfiguration()
 
         return q_rand

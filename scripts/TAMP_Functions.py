@@ -108,8 +108,8 @@ class TAMP_Functions:
             if pb_robot.collisions.body_collision(self.objects[obj], self.objects[other]):
                 self.objects[obj].set_transform(obj_oldpos)
                 self.objects[other].set_transform(other_oldpos)
-                return ( )
+                return True
         self.objects[obj].set_transform(obj_oldpos)
         self.objects[other].set_transform(other_oldpos)
-        return (None, )
+        return False
 

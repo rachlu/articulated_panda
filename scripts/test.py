@@ -36,10 +36,10 @@ if __name__ == '__main__':
     # rel = numpy.dot(rotation, translation)
     # robot.arm.SetJointValues(robot.arm.ComputeIK(numpy.dot(knife_pose, rel)))
     # robot.arm.SetJointValues(robot.arm.ComputeIK(knife_pose))
-    # grasp = Grasp(robot, objects)
-    # while True:
-    #     robot.arm.SetJointValues(grasp.grasp('spoon')[1])
-    #     input('next')
+    grasp = Grasp(robot, objects)
+    while True:
+        robot.arm.SetJointValues(grasp.grasp('fork')[1])
+        input('next')
     # obj = 'spoon'
     # for other in objects:
     #     print(other, obj)

@@ -43,12 +43,12 @@ def pddlstream_from_tamp(robot, movable, tamp, panda = None):
     # goal = ('and', ('AtConf', goal_config))
     # goal = (('Holding', 'knife'))
     # goal = (('On', 'fork', 'fork_region'))
-    goal = ('and', ('On', 'knife', 'knife_region'), ('On', 'fork', 'fork_region'))
+    # goal = ('and', ('On', 'knife', 'knife_region'), ('On', 'fork', 'fork_region'))
 
     # goal = ('and', ('On', 'knife', 'knife_region'), ('On', 'fork', 'fork_region'), ('On', 'spoon', 'spoon_region'))
 
-    # goal = ('and', ('On', 'knife', 'knife_region'), ('On', 'fork', 'fork_region'), ('On', 'spoon', 'spoon_region'),
-    #         ('On', 'plate', 'plate_region'), ('AtConf', conf))
+    goal = ('and', ('On', 'knife', 'knife_region'), ('On', 'fork', 'fork_region'), ('On', 'spoon', 'spoon_region'),
+             ('On', 'plate', 'plate_region'), ('AtConf', conf))
     # objPoses = {}
     for obj in movable:
         position = vobj.Pose(robot, movable[obj].get_transform())
@@ -64,7 +64,7 @@ def pddlstream_from_tamp(robot, movable, tamp, panda = None):
         'inverse-kinematics': from_gen_fn(tamp.computeIK),
         'samplePlacePose': from_gen_fn(tamp.samplePlacePose),
         'get_trajectory_holding': from_gen_fn(tamp.calculate_path_holding),
-        'collisionCheck': from_gen_fn(tamp.collisionCheck),
+        'collisionCheck': from_test(tamp.collisionCheck),
         'sampleTable': from_gen_fn(tamp.sampleTable)
     }
 

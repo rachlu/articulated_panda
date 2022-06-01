@@ -59,7 +59,7 @@
                           (Kin ?o ?p ?q ?g)
                           (Holding ?o)
                           (AtGrasp ?o ?g)
-                         ;(not (InCollision ?o ?p))
+                          (not (InCollision ?o ?p))
                           )
         :effect (and (not (Holding ?o)) (HandEmpty) (AtPose ?o ?p) (not (AtGrasp ?o ?g)))
     )
@@ -69,6 +69,6 @@
     )
 
     (:derived (InCollision ?o ?p)
-        (exists (?o2 ?p2) (and (ObjPose ?o ?p) (AtPose ?o2 ?p2) (Collision ?o ?p ?o2 ?p2)))
+        (exists (?o2 ?p2) (and (AtPose ?o2 ?p2) (Collision ?o ?p ?o2 ?p2)))
     )
 )
