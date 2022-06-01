@@ -1,4 +1,5 @@
 import numpy
+import time
 
 
 class BodyConf:
@@ -21,6 +22,7 @@ class TrajPath:
     def execute(self):
         for q in self.path:
             try:
+                time.sleep(1)
                 self.robot.arm.SetJointValues(q)
             except:
                 print('failed')

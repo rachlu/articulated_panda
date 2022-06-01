@@ -37,11 +37,13 @@ if __name__ == '__main__':
             if action.name == 'grab':
                 robot.arm.Grab(objects[action.args[0]], action.args[-1].pose)
                 robot.arm.hand.Close()
+                input('Execute Robot?')
                 arm.hand.close()
                 continue
             if action.name == 'place':
                 robot.arm.Release(objects[action.args[0]])
                 robot.arm.hand.Open()
+                input('Execute Robot?')
                 arm.hand.open()
                 continue
 
@@ -50,6 +52,7 @@ if __name__ == '__main__':
             final_path = []
             for q in path:
                 final_path.append(arm.convertToDict(q))
+            input('Execute Robot?')
             arm.execute_position_path(final_path)
 
     # grasp = Grasp(robot, objects)

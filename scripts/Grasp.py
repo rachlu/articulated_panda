@@ -37,8 +37,8 @@ class Grasp:
         rotation = numpy.dot(t_1, t_2)
 
         translation = numpy.array([[1, 0, 0, 0],
-                                   [0, 1, 0, -.1],
-                                   [0, 0, 1, -.18],
+                                   [0, 1, 0, -.07],
+                                   [0, 0, 1, -.14], 
                                    [0., 0., 0., 1.]])
 
         rel = numpy.dot(rotation, translation)

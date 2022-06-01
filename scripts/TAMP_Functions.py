@@ -30,12 +30,15 @@ class TAMP_Functions:
 
     def calculate_path_holding(self, q1, q2, obj, grasp):
         original_position = self.objects[obj].get_transform()
+        old_pos = self.robot.arm.GetJointValues()
+        self.robot.arm.SetJointValues(q1.conf)
         self.robot.arm.Grab(self.objects[obj], grasp.pose)
         self.robot.arm.hand.Close()
         path = self.calculate_path(q1, q2)
         self.robot.arm.Release(self.objects[obj])
         self.robot.arm.hand.Open()
         self.objects[obj].set_transform(original_position)
+        self.robot.arm.SetJointValues(old_pos)
         return path
 
     def sampleGrabPose(self, obj, obj_pose):

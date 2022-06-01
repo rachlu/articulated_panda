@@ -41,14 +41,13 @@ def pddlstream_from_tamp(robot, movable, tamp, panda = None):
 
     # goal =  ('and', ('not', ('HandEmpty', )))
     # goal = ('and', ('AtConf', goal_config))
-    # goal = (('Holding', 'knife'))
-    # goal = (('On', 'fork', 'fork_region'))
-    # goal = ('and', ('On', 'knife', 'knife_region'), ('On', 'fork', 'fork_region'))
+    #goal = (('Holding', 'plate'))
+    #goal = (('On', 'fork', 'fork_region'))
+    goal = ('and', ('On', 'knife', 'knife_region'), ('On', 'fork', 'fork_region'))
 
     # goal = ('and', ('On', 'knife', 'knife_region'), ('On', 'fork', 'fork_region'), ('On', 'spoon', 'spoon_region'))
 
-    goal = ('and', ('On', 'knife', 'knife_region'), ('On', 'fork', 'fork_region'), ('On', 'spoon', 'spoon_region'),
-             ('On', 'plate', 'plate_region'), ('AtConf', conf))
+    #goal = ('and', ('On', 'knife', 'knife_region'), ('On', 'fork', 'fork_region'), ('On', 'spoon', 'spoon_region'), ('On', 'plate', 'plate_region'), ('AtConf', conf))
     # objPoses = {}
     for obj in movable:
         position = vobj.Pose(robot, movable[obj].get_transform())
