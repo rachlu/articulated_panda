@@ -6,6 +6,7 @@ import table_env
 import IPython
 from Grasp import Grasp
 import math
+import vobj
 from TAMP_Functions import TAMP_Functions
 
 
@@ -38,6 +39,17 @@ if __name__ == '__main__':
     # robot.arm.SetJointValues(robot.arm.ComputeIK(knife_pose))
     robot.arm.hand.Open()
     grasp = Grasp(robot, objects)
+    rrt = RRT(robot)
+    while True:
+        q_start = robot.arm.GetJointValues()
+        q_goal = rrt.sample_config()
+        path = rrt.motion(q_start, q_goal)
+        print(path)
+        if path is None:
+            continue
+        p = vobj.TrajPath(robot, path)
+        p.execute()
+        input('next')
     #while True:
        # q = grasp.grasp('fork')[1]
        # robot.arm.SetJointValues(q)

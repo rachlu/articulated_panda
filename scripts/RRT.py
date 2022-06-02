@@ -22,7 +22,7 @@ def getDistance(q1, q2):
 
 class RRT:
     # Test step size
-    def __init__(self, robot, nonmovable = None, max_step=0.03, max_time=20):
+    def __init__(self, robot, nonmovable = None, max_step=0.00001, max_time=20):
         self.robot = robot
         self.max_time = max_time
         self.max_step = max_step
@@ -82,11 +82,10 @@ class RRT:
 
                 node_closest = self.closest_node(q_rand)
                 if getDistance(q_rand, self.G.nodes[node_closest]['config']) > self.max_step:
-                    q_rand = self.max_step / np.linalg.norm(q_rand - self.G.nodes[node_closest]['config']) * (
-                            q_rand - self.G.nodes[node_closest]['config'])
+                    q_rand = self.max_step * ((q_rand - self.G.nodes[node_closest]['config'])/(np.linalg.norm(q_rand - self.G.nodes[node_closest]['config'])))
 
-            result = self.collisionFree(self.G.nodes[node_closest]['config'], q_rand, 5)
-            if not result[0] or result[1] is None:
+            result = self.collisionFree(self.G.nodes[node_closest]['config'], q_rand, 10)
+            if not result[0] and result[1] is None:
                 continue
             if result[1] is not None:
                 q_rand = result[1]
@@ -99,10 +98,12 @@ class RRT:
                 self.G = nx.relabel_nodes(self.G, {new_node: 'q_goal'})
                 path = [self.G.nodes['q_goal']['config']]
                 predecessors = list(self.G.predecessors('q_goal'))
-
+                print(self.G)
+                
                 while len(predecessors) != 0:
                     path.insert(0, self.G.nodes[predecessors[0]]['config'])
                     predecessors = list(self.G.predecessors(predecessors[0]))
+                '''
                 while time.time() - start < self.max_time:
                     if len(path) < 3:
                         break
@@ -118,4 +119,5 @@ class RRT:
                             new_path = path[:n1 + 1]
                             new_path.extend(path[n2:])
                             path = new_path
+                '''
                 return path
