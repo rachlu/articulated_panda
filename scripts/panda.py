@@ -8,6 +8,13 @@ from RRT import RRT
 import IPython
 
 from pddl_setup import *
+import vobj
+
+def execute_path_panda(path):
+    final_path = []
+    for q in path:
+        final_path.append(arm.convertToDict(q))
+    arm.execute_position_path(final_path)
 
 if __name__ == '__main__':
     rospy.init_node('testing_node')
@@ -39,6 +46,14 @@ if __name__ == '__main__':
                 robot.arm.hand.Close()
                 input('Execute Robot?')
                 arm.hand.close()
+                move_up = numpy.array(action.args[1].pose)
+                move_up[2][-1] += 0.1
+                move_up = vobj.Pose(action.args[0], move_up)
+                new_q = tamp.computeIK(action.args[0], move_up, action.args[-1])[0][0]
+                path = tamp.calculate_path(action.args[2], new_q)[0][0]
+                path.execute()
+                input('Execute Robot?')
+                execute_path_panda(path.path)
                 continue
             if action.name == 'place':
                 robot.arm.Release(objects[action.args[0]])
@@ -49,11 +64,8 @@ if __name__ == '__main__':
 
             action.args[-1].execute()
             path = action.args[-1].path
-            final_path = []
-            for q in path:
-                final_path.append(arm.convertToDict(q))
             input('Execute Robot?')
-            arm.execute_position_path(final_path)
+            execute_path_panda(path)
 
     # grasp = Grasp(robot, objects)
     #

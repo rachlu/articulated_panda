@@ -59,6 +59,12 @@ class TAMP_Functions:
             if action.name == 'grab':
                 self.robot.arm.Grab(self.objects[action.args[0]], action.args[-1].pose)
                 self.robot.arm.hand.Close()
+                move_up = numpy.array(action.args[1].pose)
+                move_up[2][-1] += 0.1
+                move_up = vobj.Pose(action.args[0], move_up)
+                new_q = self.computeIK(action.args[0], move_up, action.args[-1])[0][0]
+                path = self.calculate_path(action.args[2], new_q)[0][0]
+                path.execute()
                 continue
             if action.name == 'place':
                 self.robot.arm.Release(self.objects[action.args[0]])
