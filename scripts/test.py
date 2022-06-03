@@ -38,26 +38,25 @@ if __name__ == '__main__':
     # robot.arm.SetJointValues(robot.arm.ComputeIK(numpy.dot(knife_pose, rel)))
     # robot.arm.SetJointValues(robot.arm.ComputeIK(knife_pose))
     robot.arm.hand.Open()
-    '''
     grasp = Grasp(robot, objects)
     rrt = RRT(robot)
+    # while True:
+    #     q_start = robot.arm.GetJointValues()
+    #     q_goal = rrt.sample_config()
+    #     path = rrt.motion(q_start, q_goal)
+    #     print(path)
+    #     if path is None:
+    #         continue
+    #     p = vobj.TrajPath(robot, path)
+    #     p.execute()
+    #     input('next')
     while True:
-        q_start = robot.arm.GetJointValues()
-        q_goal = rrt.sample_config()
-        path = rrt.motion(q_start, q_goal)
-        print(path)
-        if path is None:
-            continue
-        p = vobj.TrajPath(robot, path)
-        p.execute()
-        input('next')
-    #while True:
-       # q = grasp.grasp('fork')[1]
-       # robot.arm.SetJointValues(q)
-       # print(robot.arm.IsCollisionFree(q))
-       # input('next')
+       q = grasp.grasp('plate')[1]
+       robot.arm.SetJointValues(q)
+       print(robot.arm.IsCollisionFree(q, obstacles= [objects['plate']], self_collisions = False))
+       input('next')
        
-       '''
+    '''
     # obj = 'spoon'
     # for other in objects:
     #     print(other, obj)
@@ -68,7 +67,7 @@ if __name__ == '__main__':
     # while True:
     #     print(tamp.collisionCheck('knife', objects['knife'].get_transform(), 'spoon', objects['spoon'].get_transform()))
     #     input('next')
-
+    '''
     IPython.embed()
     pb_robot.utils.wait_for_user()
     pb_robot.utils.disconnect()

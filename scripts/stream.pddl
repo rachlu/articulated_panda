@@ -43,7 +43,7 @@
 
     (:stream collisionCheck
         :inputs (?o ?p ?o2 ?p2)
-        :domain (and (ObjPose ?o ?p) (ObjPose ?o2 ?p2)s)
+        :domain (and (ObjPose ?o ?p) (ObjPose ?o2 ?p2))
         :certified (Collision ?o ?p ?o2 ?p2)
     )
 )

@@ -47,6 +47,8 @@ def pddlstream_from_tamp(robot, movable, tamp, panda = None):
 
     # goal = ('and', ('On', 'knife', 'knife_region'), ('On', 'fork', 'fork_region'), ('On', 'spoon', 'spoon_region'))
 
+    # goal = ('and', ('On', 'knife', 'knife_region'), ('On', 'fork', 'fork_region'), ('On', 'spoon', 'spoon_region'),
+    #          ('On', 'plate', 'plate_region'), ('AtConf', conf))
     #goal = ('and', ('On', 'knife', 'knife_region'), ('On', 'fork', 'fork_region'), ('On', 'spoon', 'spoon_region'), ('On', 'plate', 'plate_region'), ('AtConf', conf))
     # objPoses = {}
     for obj in movable:
