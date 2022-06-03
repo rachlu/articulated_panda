@@ -26,33 +26,49 @@ class Grasp:
         # plate
         t_o = self.objects.get('plate').get_transform()
 
+        # t_1 = numpy.array([[1, 0, 0, 0],
+        #                    [0, math.cos(math.pi), -math.sin(math.pi), 0],
+        #                    [0, math.sin(math.pi), math.cos(math.pi), 0],
+        #                    [0., 0., 0., 1.]])
+        # t_2 = numpy.array([[math.cos(math.pi / 2), -math.sin(math.pi / 2), 0, 0],
+        #                    [math.sin(math.pi / 2), math.cos(math.pi / 2), 0, 0],
+        #                    [0, 0, 1, 0],
+        #                    [0., 0., 0., 1.]])
         t_1 = numpy.array([[1, 0, 0, 0],
-                           [0, math.cos(math.pi), -math.sin(math.pi), 0],
-                           [0, math.sin(math.pi), math.cos(math.pi), 0],
+                           [0, math.cos(math.pi/4), -math.sin(math.pi/4), 0],
+                           [0, math.sin(math.pi/4), math.cos(math.pi/4), 0],
                            [0., 0., 0., 1.]])
-        t_2 = numpy.array([[math.cos(math.pi / 2), -math.sin(math.pi / 2), 0, 0],
-                           [math.sin(math.pi / 2), math.cos(math.pi / 2), 0, 0],
+        t_2 = numpy.array([[math.cos(3 * math.pi / 4), -math.sin(3 * math.pi / 4), 0, 0],
+                           [math.sin(3 * math.pi / 4), math.cos(3 * math.pi / 4), 0, 0],
                            [0, 0, 1, 0],
                            [0., 0., 0., 1.]])
-        rotation = numpy.dot(t_1, t_2)
-
+        # rotation = numpy.dot(t_1, t_2)
+        rotation = t_1
         translation = numpy.array([[1, 0, 0, 0],
                                    [0, 1, 0, -.07],
-                                   [0, 0, 1, -.14], 
+                                   [0, 0, 1, -.16],
                                    [0., 0., 0., 1.]])
 
         rel = numpy.dot(rotation, translation)
         self.relative[('plate')] = [rel]
 
-        t_1 = numpy.array([[math.cos(3 * math.pi / 2), -math.sin(3 * math.pi / 2), 0, 0],
-                            [math.sin(3 * math.pi / 2), math.cos(3 * math.pi / 2), 0, 0],
-                            [0, 0, 1, 0],
-                            [0., 0., 0., 1.]])
-        t_2 = numpy.array([[1, 0, 0, 0],
-                           [0, math.cos(math.pi), -math.sin(math.pi), 0],
-                           [0, math.sin(math.pi), math.cos(math.pi), 0],
+        # t_1 = numpy.array([[math.cos(3 * math.pi / 2), -math.sin(3 * math.pi / 2), 0, 0],
+        #                     [math.sin(3 * math.pi / 2), math.cos(3 * math.pi / 2), 0, 0],
+        #                     [0, 0, 1, 0],
+        #                     [0., 0., 0., 1.]])
+        # t_2 = numpy.array([[1, 0, 0, 0],
+        #                    [0, math.cos(math.pi), -math.sin(math.pi), 0],
+        #                    [0, math.sin(math.pi), math.cos(math.pi), 0],
+        #                    [0., 0., 0., 1.]])
+        t_1 = numpy.array([[1, 0, 0, 0],
+                           [0, math.cos(math.pi/4), -math.sin(math.pi/4), 0],
+                           [0, math.sin(math.pi/4), math.cos(math.pi/4), 0],
                            [0., 0., 0., 1.]])
-        rotation = numpy.dot(t_1, t_2)
+        t_2 = numpy.array([[math.cos(3 * math.pi / 4), -math.sin(3 * math.pi / 4), 0, 0],
+                           [math.sin(3 * math.pi / 4), math.cos(3 * math.pi / 4), 0, 0],
+                           [0, 0, 1, 0],
+                           [0., 0., 0., 1.]])
+        rotation = t_1
 
         rel = numpy.dot(rotation, translation)
         self.relative[('plate')].append(rel)
