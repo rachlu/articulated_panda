@@ -30,40 +30,45 @@ class TAMP_Functions:
 
     def calculate_path_holding(self, q1, q2, obj, grasp):
         original_position = self.objects[obj].get_transform()
-        old_pos = self.robot.arm.GetJointValues()
-        self.robot.arm.SetJointValues(q1.conf)
+        #old_pos = self.robot.arm.GetJointValues()
+        #self.robot.arm.SetJointValues(q1.conf)
         self.robot.arm.Grab(self.objects[obj], grasp.pose)
         self.robot.arm.hand.Close()
         path = self.calculate_path(q1, q2)
         self.robot.arm.Release(self.objects[obj])
         self.robot.arm.hand.Open()
         self.objects[obj].set_transform(original_position)
-        self.robot.arm.SetJointValues(old_pos)
+        #self.robot.arm.SetJointValues(old_pos)
         return path
 
     def sampleGrabPose(self, obj, obj_pose):
         # grasp_pose is grasp in world frame
         grasp_pose, q = self.grasp.grasp(obj)
-        if not self.robot.arm.IsCollisionFree(q):
-            return (None, )
-        # Grasp in object frame
-        relative_grasp = numpy.dot(numpy.linalg.inv(obj_pose.pose), grasp_pose)
-        cmd = [vobj.Pose(obj, relative_grasp)]
-        return (cmd, )
-
+        for _ in range(20):
+            if self.robot.arm.IsCollisionFree(q):
+                # Grasp in object frame
+                relative_grasp = numpy.dot(numpy.linalg.inv(obj_pose.pose), grasp_pose)
+                cmd = [vobj.Pose(obj, relative_grasp)]
+                return (cmd, )
+        return (None, )
+        
     def execute_path(self, path):
         # Check type for open or close hand
         print(path)
         for action in path:
             time.sleep(1)
             if action.name == 'grab':
+                # print(action.args[-1].pose)
+                move_down = numpy.array(action.args[1].pose)
+                move_down[2][-1] -= 0.05
+                move_down = vobj.Pose(action.args[0], move_down)
+                new_q = self.computeIK(action.args[0], move_down, action.args[-1], seed_q=action.args[2].conf)[0][0]
+                path = vobj.TrajPath(self.robot, [action.args[2].conf, new_q.conf])
+                path.execute()
+                input('next?')
                 self.robot.arm.Grab(self.objects[action.args[0]], action.args[-1].pose)
                 self.robot.arm.hand.Close()
-                move_up = numpy.array(action.args[1].pose)
-                move_up[2][-1] += 0.1
-                move_up = vobj.Pose(action.args[0], move_up)
-                new_q = self.computeIK(action.args[0], move_up, action.args[-1])[0][0]
-                path = self.calculate_path(action.args[2], new_q)[0][0]
+                path = vobj.TrajPath(self.robot, [new_q.conf, action.args[2].conf])
                 path.execute()
                 continue
             if action.name == 'place':
@@ -73,10 +78,11 @@ class TAMP_Functions:
 
             action.args[-1].execute()
 
-    def computeIK(self, obj, obj_pose, grasp):
+    def computeIK(self, obj, obj_pose, grasp, seed_q=None):
         # grasp is grasp in object frame
         grasp_in_world = numpy.dot(obj_pose.pose, grasp.pose)
-        conf = self.robot.arm.ComputeIK(grasp_in_world)
+        print(grasp_in_world)
+        conf = self.robot.arm.ComputeIK(grasp_in_world, seed_q)
         if conf == None:
             return (None, )
         cmd = [vobj.BodyConf(obj, conf)]

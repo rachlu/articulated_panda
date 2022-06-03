@@ -76,7 +76,7 @@ class Grasp:
         rotation = numpy.linalg.multi_dot([t_1, t_2, t_3])
         translation = numpy.array([[1, 0, 0, 0],
                                    [0, 1, 0, 0],
-                                   [0, 0, 1, -.11],
+                                   [0, 0, 1, -.15],
                                    [0., 0., 0., 1.]])
         rel = numpy.dot(rotation, translation)
         self.relative[self.utensils] = [rel]
@@ -85,16 +85,12 @@ class Grasp:
                            [math.sin(3 * math.pi / 2), math.cos(3 * math.pi / 2), 0, 0],
                            [0, 0, 1, 0],
                            [0., 0., 0., 1.]])
-        translation = numpy.array([[1, 0, 0, 0],
-                                   [0, 1, 0, 0],
-                                   [0, 0, 1, -.11],
-                                   [0., 0., 0., 1.]])
         rotation = numpy.linalg.multi_dot([t_1, t_2, t_3])
         rel = numpy.dot(rotation, translation)
 
         self.relative[self.utensils].append(rel)
 
-        bw = numpy.array([[-0.12, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]])
+        bw = numpy.array([[-0.10, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]])
         self.bw_range[self.utensils] = bw
 
     def set_tsr(self):

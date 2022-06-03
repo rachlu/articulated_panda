@@ -21,13 +21,8 @@ class TrajPath:
 
     def execute(self):
         for q in self.path:
-            try:
                 time.sleep(0.5)
                 self.robot.arm.SetJointValues(q)
-            except:
-                print('failed')
-                print(q.path)
-                return
 
 
 class Pose:

@@ -42,19 +42,26 @@ if __name__ == '__main__':
         for action in plan:
             time.sleep(1)
             if action.name == 'grab':
+                move_down = numpy.array(action.args[1].pose)
+                move_down[2][-1] -= 0.05
+                move_down = vobj.Pose(action.args[0], move_down)
+                new_q = tamp.computeIK(action.args[0], move_down, action.args[-1], seed_q=action.args[2].conf)[0][0]
+                path = vobj.TrajPath(robot, [action.args[2].conf, new_q.conf])
+                path.execute()
+                input('robot?')
+                execute_path_panda(path.path)
+
                 robot.arm.Grab(objects[action.args[0]], action.args[-1].pose)
                 robot.arm.hand.Close()
                 input('Execute Robot?')
                 arm.hand.close()
-                move_up = numpy.array(action.args[1].pose)
-                move_up[2][-1] += 0.1
-                move_up = vobj.Pose(action.args[0], move_up)
-                new_q = tamp.computeIK(action.args[0], move_up, action.args[-1])[0][0]
-                path = tamp.calculate_path(action.args[2], new_q)[0][0]
+                
+                path = vobj.TrajPath(robot, [new_q.conf, action.args[2].conf])
                 path.execute()
                 input('Execute Robot?')
                 execute_path_panda(path.path)
                 continue
+
             if action.name == 'place':
                 robot.arm.Release(objects[action.args[0]])
                 robot.arm.hand.Open()
