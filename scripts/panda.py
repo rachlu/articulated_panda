@@ -42,31 +42,38 @@ if __name__ == '__main__':
         for action in plan:
             time.sleep(1)
             if action.name == 'grab':
-                move_down = numpy.array(action.args[1].pose)
-                move_down[2][-1] -= 0.05
-                move_down = vobj.Pose(action.args[0], move_down)
-                new_q = tamp.computeIK(action.args[0], move_down, action.args[-1], seed_q=action.args[2].conf)[0][0]
-                path = vobj.TrajPath(robot, [action.args[2].conf, new_q.conf])
+                down = tamp.computeIK(action.args[0], action.args[1], action.args[-1], seed_q=action.args[2].conf)[0][0]
+                path = vobj.TrajPath(robot, [action.args[2].conf, down.conf])
                 path.execute()
-                input('robot?')
+                ans = input('Execute Robot? (Y/N)')
+                if ans.upper() == 'N':
+                    break
                 execute_path_panda(path.path)
-
                 robot.arm.Grab(objects[action.args[0]], action.args[-1].pose)
                 robot.arm.hand.Close()
-                input('Execute Robot?')
                 arm.hand.close()
-                
-                path = vobj.TrajPath(robot, [new_q.conf, action.args[2].conf])
+                path = vobj.TrajPath(robot, [down.conf, action.args[2].conf])
                 path.execute()
-                input('Execute Robot?')
                 execute_path_panda(path.path)
                 continue
-
             if action.name == 'place':
+                down_pose = numpy.array(action.args[1].pose)
+                down_pose[2][-1] -= 0.04
+                down_pose = vobj.Pose(action.args[0], down_pose)
+                new_q = tamp.computeIK(action.args[0], down_pose, action.args[-1], seed_q=action.args[-2].conf)[0][0]
+                path = vobj.TrajPath(robot, [action.args[-2].conf, new_q.conf])
+                path.execute()
+                ans = input('Execute Robot? (Y/N)')
+                if ans.upper() == 'N':
+                    break
+                execute_path_panda(path.path)
                 robot.arm.Release(objects[action.args[0]])
                 robot.arm.hand.Open()
-                input('Execute Robot?')
                 arm.hand.open()
+                input('next?')
+                path = vobj.TrajPath(robot, [new_q.conf, action.args[-2].conf])
+                path.execute()
+                execute_path_panda(path.path)
                 continue
 
             action.args[-1].execute()
