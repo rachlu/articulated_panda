@@ -62,26 +62,28 @@ class TAMP_Functions:
         for action in path:
             time.sleep(1)
             if action.name == 'grab':
-                down = self.computeIK(action.args[0], action.args[1], action.args[-1], seed_q=action.args[2].conf)[0][0]
-                path = vobj.TrajPath(self.robot, [action.args[2].conf, down.conf])
+                obj, obj_pose, conf, pre_grasp, grasp = action.args
+                down = self.computeIK(obj, obj_pose, grasp, seed_q=conf.conf)[0][0]
+                path = vobj.TrajPath(self.robot, [conf.conf, down.conf])
                 path.execute()
                 input('next?')
-                self.robot.arm.Grab(self.objects[action.args[0]], action.args[-1].pose)
+                self.robot.arm.Grab(self.objects[obj], grasp.pose)
                 self.robot.arm.hand.Close()
-                path = vobj.TrajPath(self.robot, [down.conf, action.args[2].conf])
+                path = vobj.TrajPath(self.robot, [down.conf, conf.conf])
                 path.execute()
                 continue
             if action.name == 'place':
-                down_pose = numpy.array(action.args[1].pose)
+                obj, obj_pose, conf, grasp = action.args
+                down_pose = numpy.array(obj_pose.pose)
                 down_pose[2][-1] -= 0.04
-                down_pose = vobj.Pose(action.args[0], down_pose)
-                new_q = self.computeIK(action.args[0], down_pose, action.args[-1], seed_q=action.args[-2].conf)[0][0]
-                path = vobj.TrajPath(self.robot, [action.args[-2].conf, new_q.conf])
+                down_pose = vobj.Pose(obj, down_pose)
+                new_q = self.computeIK(obj, down_pose, grasp, seed_q=conf.conf)[0][0]
+                path = vobj.TrajPath(self.robot, [conf.conf, new_q.conf])
                 path.execute()
-                self.robot.arm.Release(self.objects[action.args[0]])
+                self.robot.arm.Release(self.objects[obj])
                 self.robot.arm.hand.Open()
                 input('next?')
-                path = vobj.TrajPath(self.robot, [new_q.conf, action.args[-2].conf])
+                path = vobj.TrajPath(self.robot, [new_q.conf, conf.conf])
                 path.execute()
                 continue
 
