@@ -57,8 +57,8 @@ def execute():
     # Add plate object
     plate_file = os.path.join(objects_path, 'plate.urdf')
     plate = pb_robot.body.createBody(plate_file)
-    plate_pose = numpy.array([[0., 0., 1., -0.5],
-                              [0., 1., 0., 0.6],
+    plate_pose = numpy.array([[0., 0., 1., 0.2],
+                              [0., 1., 0., -0.3],
                               [1., 0., 0., pb_robot.placements.stable_z(plate, floor)],
                               [0., 0., 0., 1.]])
     plate.set_transform(plate_pose)

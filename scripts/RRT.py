@@ -84,7 +84,7 @@ class RRT:
                 if getDistance(q_rand, self.G.nodes[node_closest]['config']) > self.max_step:
                     q_rand = self.max_step * ((q_rand - self.G.nodes[node_closest]['config'])/(np.linalg.norm(q_rand - self.G.nodes[node_closest]['config'])))
 
-            result = self.collisionFree(self.G.nodes[node_closest]['config'], q_rand, 10)
+            result = self.collisionFree(self.G.nodes[node_closest]['config'], q_rand, 50)
             if not result[0] and result[1] is None:
                 continue
             if result[1] is not None:
