@@ -25,7 +25,7 @@ class Place:
         # Relative offset to valid position. Object in table frame
         t_ee = numpy.array([[1, 0, 0, -.4],
                             [0, 1, 0, .1],
-                            [0, 0, 1, 0],
+                            [0, 0, 1, 0.045],
                             [0., 0., 0., 1.]])
         self.relative['plate'] = t_ee
         # Allowable range for placement

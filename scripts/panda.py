@@ -81,25 +81,6 @@ if __name__ == '__main__':
             input('Execute Robot?')
             execute_path_panda(path)
 
-    # grasp = Grasp(robot, objects)
-    #
-    # arm.hand.open()
-    # motion = RRT(robot)
-    # new_path = None
-    # q_start = arm.convertToList(arm.joint_angles())
-    # while new_path is None:
-    #     grasp_pose, q_grasp = grasp.grasp('plate')
-    #     relative_grasp = numpy.dot(numpy.linalg.inv(objects['plate'].get_transform()), grasp_pose)
-    #     grasp_in_world = numpy.dot(objects['plate'].get_transform(), relative_grasp)
-    #     conf = robot.arm.ComputeIK(grasp_in_world)
-    #     new_path = motion.motion(q_start, conf)
-    #
-    # final_path = []
-    # for q in new_path:
-    #     final_path.append(arm.convertToDict(q))
-    # print(final_path)
-    # arm.execute_position_path(final_path)
-
     IPython.embed()
     pb_robot.utils.wait_for_user()
     pb_robot.utils.disconnect()

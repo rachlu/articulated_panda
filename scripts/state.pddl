@@ -54,3 +54,23 @@
         (exists (?p) (and (Region ?r) (AtPose ?o ?p) (Supported ?o ?p)))
     )
 )
+
+    (:stream cfree
+        :inputs (?t ?o ?p)
+        :domain (and (ObjPose ?o ?p) (Traj ?t))
+        :certified (CFree ?t ?o ?p)
+    )
+
+    (:stream cfreeholding
+        :inputs (?t ?o ?g ?o2 ?p)
+        :domain (and (ObjPose ?o ?p) (Traj_Holding ?t ?o ?g))
+        :certified (CFreeHolding ?t ?o ?g ?o2 ?p)
+    )
+
+    (:derived (UnSafeTraj ?t)
+        (exists (?o ?p) (and (AtPose ?o ?p) (not (CFree ?t ?o ?p))))
+    )
+
+    (:derived (UnSafeTrajHolding ?t ?o ?g)
+        (exists (?o2 ?p) (and (AtGrasp ?o ?g) (AtPose ?o ?p) (not (CFreeHolding ?t ?o ?g ?o2 ?p))))
+    )

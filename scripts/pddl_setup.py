@@ -36,13 +36,11 @@ def pddlstream_from_tamp(robot, movable, tamp, panda = None):
         ('Region', 'plate_region'),
         ('Region', 'knife_region')
     ]
-    #goal_config = tamp.sample_config()[0]
-    #init += [('Conf', goal_config)]
 
-    # goal =  ('and', ('not', ('HandEmpty', )))
-    #goal = ('and', ('AtConf', goal_config))
     #goal = (('Holding', 'plate'))
     goal = (('On', 'plate', 'plate_region'))
+    # goal = (('On', 'knife', 'knife_region'))
+
     #goal = ('and', ('On', 'knife', 'knife_region'), ('On', 'fork', 'fork_region'))
 
     # goal = ('and', ('On', 'knife', 'knife_region'), ('On', 'fork', 'fork_region'), ('On', 'spoon', 'spoon_region'))
@@ -66,7 +64,9 @@ def pddlstream_from_tamp(robot, movable, tamp, panda = None):
         'samplePlacePose': from_gen_fn(tamp.samplePlacePose),
         'get_trajectory_holding': from_gen_fn(tamp.calculate_path_holding),
         'collisionCheck': from_test(tamp.collisionCheck),
-        'sampleTable': from_gen_fn(tamp.sampleTable)
+        'sampleTable': from_gen_fn(tamp.sampleTable),
+        'cfree': from_test(tamp.cfreeTraj_Check),
+        'cfreeholding': from_test(tamp.cfreeTrajHolding_Check)
     }
 
     return domain_pddl, constant_map, stream_pddl, stream_map, init, goal

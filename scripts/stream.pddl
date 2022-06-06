@@ -3,14 +3,14 @@
         :inputs (?q1 ?q2)
         :domain (and (Conf ?q1) (Conf ?q2))
         :outputs (?t)
-        :certified (CF-Trajectory ?q1 ?q2 ?t)
+        :certified (and (Trajectory ?q1 ?q2 ?t) (Traj ?t))
     )
 
     (:stream get_trajectory_holding
         :inputs (?q1 ?q2 ?o ?g)
         :domain (and (Conf ?q1) (Conf ?q2) (Graspable ?o) (Grasp ?o ?g))
         :outputs (?t)
-        :certified (CF-Trajectory_Holding ?o ?g ?q1 ?q2 ?t)
+        :certified (and (Trajectory_Holding ?o ?g ?q1 ?q2 ?t) (Traj_Holding ?t ?o ?g))
     )
 
     (:stream sampleGraspPose
@@ -47,5 +47,17 @@
         :inputs (?o ?p ?o2 ?p2)
         :domain (and (ObjPose ?o ?p) (ObjPose ?o2 ?p2))
         :certified (Collision ?o ?p ?o2 ?p2)
+    )
+
+    (:stream cfree
+        :inputs (?t ?o ?p)
+        :domain (and (ObjPose ?o ?p) (Traj ?t))
+        :certified (CFreeTraj ?t ?o ?p)
+    )
+
+    (:stream cfreeholding
+        :inputs (?t ?o ?g ?o2 ?p)
+        :domain (and (ObjPose ?o2 ?p) (Traj_Holding ?t ?o ?g))
+        :certified (CFreeHolding ?t ?o ?g ?o2 ?p)
     )
 )
