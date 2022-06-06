@@ -50,12 +50,12 @@ if __name__ == '__main__':
     #     p = vobj.TrajPath(robot, path)
     #     p.execute()
     #     input('next')
-    while True:
-       q = grasp.grasp('plate')[1]
-       robot.arm.SetJointValues(q)
-       print(robot.arm.IsCollisionFree(q, obstacles= [objects['plate']], self_collisions = False))
-       input('next')
-       
+    # while True:
+    #    q = grasp.grasp('plate')[1]
+    #    robot.arm.SetJointValues(q)
+    #    print(robot.arm.IsCollisionFree(q, obstacles= [objects['plate']], self_collisions = False))
+    #    input('next')
+    print(pb_robot.collisions.body_collision(objects['knife'], objects['fork']))
     '''
     # obj = 'spoon'
     # for other in objects:
