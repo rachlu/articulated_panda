@@ -124,12 +124,12 @@ class TAMP_Functions:
             if pb_robot.collisions.body_collision(self.objects[obj], self.objects[other]):
                 self.objects[obj].set_transform(obj_oldpos)
                 self.objects[other].set_transform(other_oldpos)
-                print('True', obj, other)
-                return True
+                print('False', obj, other)
+                return False
         self.objects[obj].set_transform(obj_oldpos)
         self.objects[other].set_transform(other_oldpos)
-        print('False', obj, other)
-        return False
+        print('True', obj, other)
+        return True
 
     def cfreeTraj_Check(self, traj, obj, pose):
         obj_oldpos = self.objects[obj].get_transform()

@@ -24,7 +24,7 @@
         (Supported ?o ?p ?r)
         (AtGrasp ?o ?g)
         (InCollision ?o ?p)
-        (Collision ?o ?p ?o2 ?p2)
+        (Safe ?o ?p ?o2 ?p2)
 
     )
 
@@ -86,7 +86,7 @@
     )
 
     (:derived (InCollision ?o ?p)
-        (exists (?o2 ?p2) (and (AtPose ?o2 ?p2) (Collision ?o ?p ?o2 ?p2)))
+        (exists (?o2 ?p2) (and (AtPose ?o2 ?p2) (not (Safe ?o ?p ?o2 ?p2))))
     )
 
     (:derived (UnSafeTraj ?t)
