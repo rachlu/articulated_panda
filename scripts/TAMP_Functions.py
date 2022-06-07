@@ -20,7 +20,7 @@ class TAMP_Functions:
 
     def calculate_path(self, q1, q2):
         print(q1, q2)
-        rrt = RRT(self.robot)
+        rrt = RRT(self.robot, nonmovable = [self.floor])
         path = rrt.motion(q1.conf, q2.conf)
         if path is None:
             print(q2.conf)
@@ -42,18 +42,18 @@ class TAMP_Functions:
         # grasp_pose is grasp in world frame
         grasp_pose, q = self.grasp.grasp(obj)
         for _ in range(20):
-            up = numpy.array([[1, 0, 0, 0],
-                              [0, 1, 0, 0],
-                              [0, 0, 1, -.03],
-                              [0., 0., 0., 1.]])
-            pre_grasp = numpy.dot(grasp_pose, up)
-            pre_q = self.robot.arm.ComputeIK(pre_grasp)
-            if self.robot.arm.IsCollisionFree(q) and self.robot.arm.IsCollisionFree(pre_q):
+            # up = numpy.array([[1, 0, 0, 0],
+            #                   [0, 1, 0, 0],
+            #                   [0, 0, 1, -.03],
+            #                   [0., 0., 0., 1.]])
+            # pre_grasp = numpy.dot(grasp_pose, up)
+            # pre_q = self.robot.arm.ComputeIK(pre_grasp)
+            if self.robot.arm.IsCollisionFree(q):
                 # Grasp in object frame
                 relative_grasp = numpy.dot(numpy.linalg.inv(obj_pose.pose), grasp_pose)
 
-                relative_pregrasp = numpy.dot(numpy.linalg.inv(obj_pose.pose), pre_grasp)
-                cmd1 = [vobj.Pose(obj, relative_pregrasp), vobj.Pose(obj, relative_grasp)]
+                # relative_pregrasp = numpy.dot(numpy.linalg.inv(obj_pose.pose), pre_grasp)
+                cmd1 = [vobj.Pose(obj, relative_grasp)]
                 return (cmd1, )
         return (None, )
         
@@ -62,41 +62,48 @@ class TAMP_Functions:
         for action in path:
             time.sleep(1)
             if action.name == 'grab':
-                obj, obj_pose, conf, pre_grasp, grasp = action.args
-                down = self.computeIK(obj, obj_pose, grasp, seed_q=conf.conf)[0][0]
-                path = vobj.TrajPath(self.robot, [conf.conf, down.conf])
-                path.execute()
-                input('next?')
+                obj, obj_pose, grasp, conf, traj = action.args
+                start = vobj.TrajPath(self.robot, traj.path[:2])
+                end = vobj.TrajPath(self.robot, traj.path[1:])
+                start.execute()
                 self.robot.arm.Grab(self.objects[obj], grasp.pose)
                 self.robot.arm.hand.Close()
-                path = vobj.TrajPath(self.robot, [down.conf, conf.conf])
-                path.execute()
+                end.execute()
                 continue
             if action.name == 'place':
-                obj, obj_pose, conf, grasp = action.args
-                down_pose = numpy.array(obj_pose.pose)
-                down_pose[2][-1] -= 0.04
-                down_pose = vobj.Pose(obj, down_pose)
-                new_q = self.computeIK(obj, down_pose, grasp, seed_q=conf.conf)[0][0]
-                path = vobj.TrajPath(self.robot, [conf.conf, new_q.conf])
-                path.execute()
+                obj, obj_pose, grasp, conf, traj = action.args
+                start = vobj.TrajPath(self.robot, traj.path[:2])
+                end = vobj.TrajPath(self.robot, traj.path[1:])
+                start.execute()
                 self.robot.arm.Release(self.objects[obj])
                 self.robot.arm.hand.Open()
-                input('next?')
-                path = vobj.TrajPath(self.robot, [new_q.conf, conf.conf])
-                path.execute()
+                end.execute()
                 continue
 
             action.args[-1].execute()
 
-    def computeIK(self, obj, obj_pose, grasp, seed_q=None):
-        # grasp is grasp in object frame
+    def computeIK(self, obj, obj_pose, grasp):
+        """
+        :param obj: string of object name
+        :param obj_pose: Pose Object
+        :param grasp: Relative grasp in object frame
+        :return: start and end configuration and trajectory
+        """
         grasp_in_world = numpy.dot(obj_pose.pose, grasp.pose)
-        conf = self.robot.arm.ComputeIK(grasp_in_world, seed_q)
-        if conf == None:
+        q_g = self.robot.arm.ComputeIK(grasp_in_world)
+        up = numpy.array([[1, 0, 0, 0],
+                          [0, 1, 0, 0],
+                          [0, 0, 1, -.03],
+                          [0., 0., 0., 1.]])
+        new_g = numpy.dot(grasp_in_world, up)
+        translated_q = self.robot.arm.ComputeIK(new_g, seed_q = q_g)
+        if translated_q == None:
             return (None, )
-        cmd = [vobj.BodyConf(obj, conf)]
+        q = vobj.BodyConf(self.robot, translated_q)
+        traj = vobj.TrajPath(self.robot, [translated_q, q_g, translated_q])
+        cmd = [q, traj]
         return (cmd, )
+
 
 
     def samplePlacePose(self, obj, region):
@@ -119,8 +126,8 @@ class TAMP_Functions:
         obj_oldpos = self.objects[obj].get_transform()
         other_oldpos = self.objects[other].get_transform()
         if other != obj:
-            self.objects[obj].set_transform(pos)
-            self.objects[other].set_transform(other_pos)
+            self.objects[obj].set_transform(pos.pose)
+            self.objects[other].set_transform(other_pos.pose)
             if pb_robot.collisions.body_collision(self.objects[obj], self.objects[other]):
                 self.objects[obj].set_transform(obj_oldpos)
                 self.objects[other].set_transform(other_oldpos)

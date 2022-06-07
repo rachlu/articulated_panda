@@ -51,7 +51,7 @@ class RRT:
         If false, returns a new configuration where the path from q1 to q_new is conllison free.
         """
         for num in range(sample):
-            if not self.robot.arm.IsCollisionFree(q1 + (q2 - q1) / sample * (num + 1), self.nonmovable):
+            if not self.robot.arm.IsCollisionFree(q1 + (q2 - q1) / sample * (num + 1), obstacles = self.nonmovable):
                 if num >= 1:
                     q_new = q1 + (q2 - q1) / sample * num
                     return [False, q_new]
@@ -61,7 +61,7 @@ class RRT:
 
     def sample_config(self):
         q_rand = self.robot.arm.randomConfiguration()
-        while not self.robot.arm.IsCollisionFree(q_rand, self.nonmovable):
+        while not self.robot.arm.IsCollisionFree(q_rand, obstacles = self.nonmovable):
             q_rand = self.robot.arm.randomConfiguration()
 
         return q_rand

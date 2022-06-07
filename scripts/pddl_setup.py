@@ -37,7 +37,7 @@ def pddlstream_from_tamp(robot, movable, tamp, panda = None):
         ('Region', 'knife_region')
     ]
 
-    #goal = (('Holding', 'plate'))
+    # goal = (('Holding', 'knife'))
     # goal = (('On', 'plate', 'plate_region'))
     goal = (('On', 'knife', 'knife_region'))
 
