@@ -141,7 +141,7 @@ class TAMP_Functions:
     def cfreeTraj_Check(self, traj, obj, pose):
         obj_oldpos = self.objects[obj].get_transform()
         self.objects[obj].set_transform(pose.pose)
-        for q in traj:
+        for q in traj.path:
             if not self.robot.arm.IsCollisionFree(q):
                 self.objects[obj].set_transform(obj_oldpos)
                 return False
