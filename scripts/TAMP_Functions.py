@@ -98,10 +98,11 @@ class TAMP_Functions:
         new_g = numpy.dot(grasp_in_world, up)
         translated_q = self.robot.arm.ComputeIK(new_g, seed_q = q_g)
         if translated_q == None:
-            return (None, )
+            return None
         q = vobj.BodyConf(self.robot, translated_q)
         traj = vobj.TrajPath(self.robot, [translated_q, q_g, translated_q])
         cmd = [q, traj]
+        # return ([q], [traj], )
         return (cmd, )
 
 
@@ -109,6 +110,7 @@ class TAMP_Functions:
     def samplePlacePose(self, obj, region):
         # Obj pose in world frame
         place_pose = self.place.place_tsr[obj].sample()
+        # Maybe doesnt have to be a list
         cmd = [vobj.Pose(obj, place_pose)]
         return (cmd, )
 
