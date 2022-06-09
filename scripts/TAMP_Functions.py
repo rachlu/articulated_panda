@@ -20,6 +20,8 @@ class TAMP_Functions:
 
     def calculate_path(self, q1, q2):
         print(q1, q2)
+        if not self.robot.arm.IsCollisionFree(q2.conf):
+            return (None, )
         rrt = RRT(self.robot, nonmovable = [self.floor])
         path = rrt.motion(q1.conf, q2.conf)
         if path is None:

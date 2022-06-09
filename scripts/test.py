@@ -32,7 +32,9 @@ if __name__ == '__main__':
         input('execute?')
         p = vobj.TrajPath(robot, path)
         p.execute()
-        input('next')
+        ans = input('next')
+        if ans.upper() == 'N':
+            break
     
     #while True:
     #     q_start = robot.arm.GetJointValues()

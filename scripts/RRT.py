@@ -16,7 +16,7 @@ def getDistance(q1, q2):
 
 class RRT:
     # Test step size
-    def __init__(self, robot, nonmovable = None, max_step=2, max_time=20):
+    def __init__(self, robot, nonmovable = None, max_step=0.5, max_time=10):
         self.robot = robot
         self.max_time = max_time
         self.max_step = max_step
@@ -114,6 +114,7 @@ class RRT:
                     config = self.G.nodes[predecessors[0]]['config']
                     path.insert(0, config)
                     predecessors = list(self.G.predecessors(predecessors[0]))
+                '''
                 while time.time() - start < self.max_time:
                      if len(path) < 3:
                          break
@@ -129,4 +130,6 @@ class RRT:
                              new_path = path[:n1 + 1]
                              new_path.extend(path[n2:])
                              path = new_path
+                '''
+                print('path length:', len(path))
                 return path

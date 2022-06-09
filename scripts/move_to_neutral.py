@@ -5,5 +5,6 @@ import IPython
 if __name__ == '__main__':
     rospy.init_node('reset')
     arm = ArmInterface()
+    arm.hand.open()
     arm.move_to_neutral()
     IPython.embed()
