@@ -93,12 +93,12 @@ class TAMP_Functions:
         q_g = self.robot.arm.ComputeIK(grasp_in_world)
         up = numpy.array([[1, 0, 0, 0],
                           [0, 1, 0, 0],
-                          [0, 0, 1, -.03],
+                          [0, 0, 1, -.04],
                           [0., 0., 0., 1.]])
         new_g = numpy.dot(grasp_in_world, up)
         translated_q = self.robot.arm.ComputeIK(new_g, seed_q = q_g)
-        if translated_q == None:
-            return None
+        if translated_q is None:
+            return (None, )
         q = vobj.BodyConf(self.robot, translated_q)
         traj = vobj.TrajPath(self.robot, [translated_q, q_g, translated_q])
         cmd = [q, traj]

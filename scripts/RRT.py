@@ -10,21 +10,13 @@ def getDistance(q1, q2):
     """
     Returns the total radian distance from configuration q1 to configuration q2.
     """
-    # total_distance = 0
-    # for index in range(len(q1)):
-    #     try:
-    #         total_distance += ((q1[index] - q2[index]) ** 2)
-    #     except:
-    #         print('dis', q1, q2)
-    #         return
-    # return total_distance ** (1 / 2)
     x = q1-q2
     return np.sqrt(x.dot(x))
 
 
 class RRT:
     # Test step size
-    def __init__(self, robot, nonmovable = None, max_step=0.05, max_time=20):
+    def __init__(self, robot, nonmovable = None, max_step=0.02, max_time=20):
         self.robot = robot
         self.max_time = max_time
         self.max_step = max_step

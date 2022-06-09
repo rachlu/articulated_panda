@@ -50,7 +50,7 @@ if __name__ == '__main__':
                 ans = input('Execute Robot? (Y/N)')
                 if ans.upper() == 'N':
                     break
-                execute_path_panda(start)
+                execute_path_panda(start.path)
 
                 robot.arm.Grab(objects[obj], grasp.pose)
                 robot.arm.hand.Close()
@@ -65,7 +65,7 @@ if __name__ == '__main__':
                 ans = input('Execute Robot? (Y/N)')
                 if ans.upper() == 'N':
                     break
-                execute_path_panda(end)
+                execute_path_panda(end.path)
                 continue
             if action.name == 'place':
                 obj, obj_pose, grasp, conf, traj = action.args
@@ -76,7 +76,7 @@ if __name__ == '__main__':
                 ans = input('Execute Robot? (Y/N)')
                 if ans.upper() == 'N':
                     break
-                execute_path_panda(start)
+                execute_path_panda(start.path)
 
                 robot.arm.Release(objects[obj])
                 robot.arm.hand.Open()
@@ -91,7 +91,7 @@ if __name__ == '__main__':
                 ans = input('Execute Robot? (Y/N)')
                 if ans.upper() == 'N':
                     break
-                execute_path_panda(end)
+                execute_path_panda(end.path)
                 continue
 
             action.args[-1].execute()
