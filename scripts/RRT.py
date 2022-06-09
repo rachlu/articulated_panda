@@ -43,16 +43,22 @@ class RRT:
         """
         sample = int(np.sqrt((q1-q2).dot(q1-q2))/self.max_step)
         q_list = []
-        for num in range(1, sample):
-            if self.robot.arm.IsCollisionFree(q1 + (q2 - q1) / sample * (num + 1), obstacles = self.nonmovable):
+        for num in range(1, sample+1):
+            if self.collision_Test(q1, q2, 20):
                 q_new = q1 + (q2 - q1) / sample * num
                 q_list.append(q_new)
             else:
                 break
-        if self.robot.arm.IsCollisionFree(q2, obstacles = self.nonmovable):
+        if len(q_list) == sample and self.robot.arm.IsCollisionFree(q2, obstacles = self.nonmovable):
             q_list.append(q2)
 
         return q_list
+
+    def collision_Test(self, q1, q2, sample):
+        for num in range(1, sample+1):
+            if not self.robot.arm.IsCollisionFree(q1 + (q2 - q1) / sample * num, obstacles = self.nonmovable):
+                return False
+        return True
 
     def sample_config(self):
         q_rand = self.robot.arm.randomConfiguration()
