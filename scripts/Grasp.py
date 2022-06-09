@@ -77,7 +77,7 @@ class Grasp:
         rotation = numpy.linalg.multi_dot([t_1, t_2, t_3])
         translation = numpy.array([[1, 0, 0, 0],
                                    [0, 1, 0, 0],
-                                   [0, 0, 1, -.11],
+                                   [0, 0, 1, -.10],
                                    [0., 0., 0., 1.]])
         rel = numpy.dot(rotation, translation)
         self.relative[self.utensils] = [rel]

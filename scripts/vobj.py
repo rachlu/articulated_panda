@@ -21,7 +21,7 @@ class TrajPath:
 
     def execute(self):
         for q in self.path:
-                time.sleep(0.5)
+                time.sleep(0.1)
                 self.robot.arm.SetJointValues(q)
 
 

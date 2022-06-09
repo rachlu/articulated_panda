@@ -41,7 +41,7 @@ class TAMP_Functions:
     def sampleGrabPose(self, obj, obj_pose):
         # grasp_pose is grasp in world frame
         grasp_pose, q = self.grasp.grasp(obj)
-        for _ in range(20):
+        for _ in range(40):
             # up = numpy.array([[1, 0, 0, 0],
             #                   [0, 1, 0, 0],
             #                   [0, 0, 1, -.03],
@@ -93,7 +93,7 @@ class TAMP_Functions:
         q_g = self.robot.arm.ComputeIK(grasp_in_world)
         up = numpy.array([[1, 0, 0, 0],
                           [0, 1, 0, 0],
-                          [0, 0, 1, -.04],
+                          [0, 0, 1, -.03],
                           [0., 0., 0., 1.]])
         new_g = numpy.dot(grasp_in_world, up)
         translated_q = self.robot.arm.ComputeIK(new_g, seed_q = q_g)

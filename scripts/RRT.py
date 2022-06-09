@@ -16,7 +16,7 @@ def getDistance(q1, q2):
 
 class RRT:
     # Test step size
-    def __init__(self, robot, nonmovable = None, max_step=0.02, max_time=20):
+    def __init__(self, robot, nonmovable = None, max_step=2, max_time=20):
         self.robot = robot
         self.max_time = max_time
         self.max_step = max_step
@@ -42,14 +42,21 @@ class RRT:
         Returns list of collision-free configurations along q1 to q2 with given step-size.
         """
         sample = int(np.sqrt((q1-q2).dot(q1-q2))/self.max_step)
+        #print('sample', sample)
         q_list = []
-        for num in range(1, sample+1):
-            if self.collision_Test(q1, q2, 20):
-                q_new = q1 + (q2 - q1) / sample * num
+        num = 1
+        while num < sample:   
+        #for num in range(1, sample+1):
+            q_new = q1 + (q2 - q1) / sample * num
+            #print(q_new)
+            if self.collision_Test(q1, q_new, 5):
+                #q_new = q1 + (q2 - q1) / sample * num
                 q_list.append(q_new)
             else:
-                break
-        if len(q_list) == sample and self.robot.arm.IsCollisionFree(q2, obstacles = self.nonmovable):
+                return q_list
+            q1 = q_new
+            num += 1
+        if self.robot.arm.IsCollisionFree(q2, obstacles = self.nonmovable):
             q_list.append(q2)
 
         return q_list
@@ -75,6 +82,8 @@ class RRT:
         self.G.add_node('q_start', config=q_start)
         start = time.time()
         while time.time() - start < self.max_time:
+            #if int((time.time() - start)) % 5 == 0:
+                #print('Time', time.time()-start)
             if random.random() < 0.1:
                 q_rand = q_goal
                 node_closest = self.closest_node(q_rand)
@@ -83,35 +92,43 @@ class RRT:
 
                 node_closest = self.closest_node(q_rand)
 
-            for q in self.collisionFree(self.G.nodes[node_closest]['config'], q_rand):
+            q_list = self.collisionFree(self.G.nodes[node_closest]['config'], q_rand)
+            for q in q_list:
                 new_node = self.G.number_of_nodes()
-                self.G.add_node(new_node, config=q_rand)
+                self.G.add_node(new_node, config=q)
                 self.G.add_edge(node_closest, new_node)
                 node_closest = self.closest_node(q)
 
+            if not q_list:
+                continue
+            q_rand = q_list[-1]
+            
             if (q_rand == q_goal).all():
+                #print('found')
                 self.G = nx.relabel_nodes(self.G, {new_node: 'q_goal'})
                 path = [self.G.nodes['q_goal']['config']]
                 predecessors = list(self.G.predecessors('q_goal'))
                 print(self.G)
                 
                 while len(predecessors) != 0:
-                    path.insert(0, self.G.nodes[predecessors[0]]['config'])
+                    config = self.G.nodes[predecessors[0]]['config']
+                    path.insert(0, config)
                     predecessors = list(self.G.predecessors(predecessors[0]))
-                # while time.time() - start < self.max_time:
-                #     if len(path) < 3:
-                #         break
-                #     n1 = random.randint(0, len(path) - 2)
-                #     n2 = random.randint(n1 + 1, len(path) - 1)
-                #
-                #     result = self.collisionFree(path[n1], path[n2])
-                #     if result:
-                #         prior_distance = 0
-                #         for n in range(len(path[n1 + 1:n2 + 1])):
-                #             prior_distance += getDistance(path[n - 1], path[n])
-                #         if getDistance(path[n1], path[n2]) < prior_distance:
-                #             new_path = path[:n1 + 1]
-                #             new_path.extend(path[n2:])
-                #             path = new_path
-
+                '''
+                while time.time() - start < self.max_time:
+                     if len(path) < 3:
+                         break
+                     n1 = random.randint(0, len(path) - 2)
+                     n2 = random.randint(n1 + 1, len(path) - 1)
+                 
+                     result = self.collisionFree(path[n1], path[n2])
+                     if result:
+                         prior_distance = 0
+                         for n in range(len(path[n1 + 1:n2 + 1])):
+                             prior_distance += getDistance(path[n - 1], path[n])
+                         if getDistance(path[n1], path[n2]) < prior_distance:
+                             new_path = path[:n1 + 1]
+                             new_path.extend(path[n2:])
+                             path = new_path
+                 '''
                 return path
