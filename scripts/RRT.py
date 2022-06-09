@@ -114,21 +114,19 @@ class RRT:
                     config = self.G.nodes[predecessors[0]]['config']
                     path.insert(0, config)
                     predecessors = list(self.G.predecessors(predecessors[0]))
-                '''
                 while time.time() - start < self.max_time:
                      if len(path) < 3:
                          break
                      n1 = random.randint(0, len(path) - 2)
                      n2 = random.randint(n1 + 1, len(path) - 1)
                  
-                     result = self.collisionFree(path[n1], path[n2])
+                     result = self.collision_Test(path[n1], path[n2], 50)
                      if result:
                          prior_distance = 0
-                         for n in range(len(path[n1 + 1:n2 + 1])):
+                         for n in range(len(path[n1 + 1 : n2 + 1])):
                              prior_distance += getDistance(path[n - 1], path[n])
                          if getDistance(path[n1], path[n2]) < prior_distance:
                              new_path = path[:n1 + 1]
                              new_path.extend(path[n2:])
                              path = new_path
-                 '''
                 return path
