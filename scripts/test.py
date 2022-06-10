@@ -48,12 +48,13 @@ if __name__ == '__main__':
     #     p.execute()
     #     input('next')
     '''
+    '''
     while True:
         q = grasp.grasp('fork')[1]
         robot.arm.SetJointValues(q)
         print(robot.arm.IsCollisionFree(q, obstacles= [objects['plate']], self_collisions = False))
         input('next')
-    
+    '''
     IPython.embed()
     pb_robot.utils.wait_for_user()
     pb_robot.utils.disconnect()
