@@ -24,7 +24,7 @@
         (AtGrasp ?o ?g)
         (InCollision ?o ?p)
         (Safe ?o ?p ?o2 ?p2)
-
+	(CanMove)
     )
 
     (:action move_free
@@ -35,8 +35,9 @@
                             (AtConf ?q1)
                             (HandEmpty)
                             (not (UnSafeTraj ?t))
-                            )
-        :effect (and (AtConf ?q2) (not (AtConf ?q1)))
+                      	    (CanMove)      
+		      )
+        :effect (and (AtConf ?q2) (not (AtConf ?q1)) (not (CanMove)))
     )
 
     (:action move_holding
@@ -48,8 +49,9 @@
                             (Holding ?o)
                             (AtGrasp ?o ?g)
                             (not (UnSafeHolding ?t ?o ?g))
+			    (CanMove)
                             )
-        :effect (and (AtConf ?q2) (not (AtConf ?q1)))
+        :effect (and (AtConf ?q2) (not (AtConf ?q1)) (not (CanMove)))
     )
 
     (:action grab
@@ -61,7 +63,7 @@
                           (Grasp ?o ?g)
                           (Graspable ?o)
                           )
-        :effect (and (Holding ?o) (not (HandEmpty)) (not (AtPose ?o ?p)) (AtGrasp ?o ?g))
+        :effect (and (Holding ?o) (not (HandEmpty)) (not (AtPose ?o ?p)) (AtGrasp ?o ?g) (CanMove))
     )
 
     (:action place
@@ -74,7 +76,7 @@
                           (AtGrasp ?o ?g)
                           (not (InCollision ?o ?p))
                           )
-        :effect (and (not (Holding ?o)) (HandEmpty) (AtPose ?o ?p) (not (AtGrasp ?o ?g)))
+        :effect (and (not (Holding ?o)) (HandEmpty) (AtPose ?o ?p) (not (AtGrasp ?o ?g)) (CanMove))
     )
 
     (:derived (On ?o ?r)

@@ -19,7 +19,7 @@ if __name__ == '__main__':
     robot.arm.hand.Open()
     grasp = Grasp(robot, objects)
     rrt = RRT(robot)
-
+    '''
     while True:
         q_start = robot.arm.GetJointValues()
         print('start', q_start)
@@ -35,12 +35,13 @@ if __name__ == '__main__':
         ans = input('next')
         if ans.upper() == 'N':
             break
-    
-    #while True:
-    #     q_start = robot.arm.GetJointValues()
-    #     q_goal = rrt.sample_config()
-    #     path = rrt.motion(q_start, q_goal)
-    #     print(path)
+    '''
+    '''
+    while True:
+        q_start = robot.arm.GetJointValues()
+        q_goal = rrt.sample_config()
+        path = rrt.motion(q_start, q_goal)
+        print(path)
     #     if path is None:
     #         continue
     #     p = vobj.TrajPath(robot, path)
@@ -52,7 +53,7 @@ if __name__ == '__main__':
         robot.arm.SetJointValues(q)
         print(robot.arm.IsCollisionFree(q, obstacles= [objects['plate']], self_collisions = False))
         input('next')
-    '''
+    
     IPython.embed()
     pb_robot.utils.wait_for_user()
     pb_robot.utils.disconnect()

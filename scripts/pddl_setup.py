@@ -31,6 +31,7 @@ def pddlstream_from_tamp(robot, movable, tamp, panda = None):
         ('Conf', conf),
         ('AtConf', conf),
         ('HandEmpty',),
+        ('CanMove',),
         ('Region', 'spoon_region'),
         ('Region', 'fork_region'),
         ('Region', 'plate_region'),
