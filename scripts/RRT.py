@@ -60,7 +60,6 @@ class RRT:
             num += 1
         if self.robot.arm.IsCollisionFree(q2, obstacles = self.nonmovable):
             q_list.append(q2)
-        q_list = filter(q_list)
         return q_list
 
     def collision_Test(self, q1, q2, sample):
@@ -116,7 +115,8 @@ class RRT:
                     config = self.G.nodes[predecessors[0]]['config']
                     path.insert(0, config)
                     predecessors = list(self.G.predecessors(predecessors[0]))
-
+                
+                path = filter(path)
                 start = time.time()
                 while time.time() - start < self.max_shortcut:
                      if len(path) < 3:
@@ -134,7 +134,6 @@ class RRT:
                              new_path.extend(result)
                              new_path.extend(path[n2:])
                              path = new_path
-
                 path = filter(path)
                 print('path length:', len(path))
                 return path
