@@ -16,12 +16,13 @@ def getDistance(q1, q2):
 
 class RRT:
     # Test step size
-    def __init__(self, robot, nonmovable = None, max_step=0.5, max_time=10):
+    def __init__(self, robot, nonmovable = None, max_step=0.5, max_time=10, max_shortcut=2):
         self.robot = robot
         self.max_time = max_time
         self.max_step = max_step
         self.G = nx.DiGraph()
         self.nonmovable = nonmovable
+        self.max_shortcut = max_shortcut
 
     # Test Completed
     def closest_node(self, q):
@@ -114,22 +115,24 @@ class RRT:
                     config = self.G.nodes[predecessors[0]]['config']
                     path.insert(0, config)
                     predecessors = list(self.G.predecessors(predecessors[0]))
-                '''
-                while time.time() - start < self.max_time:
+
+                start = time.time()
+                while time.time() - start < self.max_shortcut:
                      if len(path) < 3:
                          break
                      n1 = random.randint(0, len(path) - 2)
                      n2 = random.randint(n1 + 1, len(path) - 1)
-                 
-                     result = self.collision_Test(path[n1], path[n2], 50)
-                     if result:
-                         prior_distance = 0
-                         for n in range(len(path[n1 + 1 : n2 + 1])):
-                             prior_distance += getDistance(path[n - 1], path[n])
-                         if getDistance(path[n1], path[n2]) < prior_distance:
+
+                     prior_distance = 0
+                     for n in range(len(path[n1 + 1: n2 + 1])):
+                         prior_distance += getDistance(path[n - 1], path[n])
+                     if getDistance(path[n1], path[n2]) < prior_distance:
+                         result = self.collisionFree(path[n1], path[n2])
+                         if result and (result[-1] == path[n2]).all():
                              new_path = path[:n1 + 1]
+                             new_path.extend(result)
                              new_path.extend(path[n2:])
                              path = new_path
-                '''
+
                 print('path length:', len(path))
                 return path
