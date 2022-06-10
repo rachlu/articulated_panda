@@ -36,18 +36,18 @@ if __name__ == '__main__':
         if ans.upper() == 'N':
             break
     '''
-    '''
+
     while True:
         q_start = robot.arm.GetJointValues()
         q_goal = rrt.sample_config()
         path = rrt.motion(q_start, q_goal)
         print(path)
-    #     if path is None:
-    #         continue
-    #     p = vobj.TrajPath(robot, path)
-    #     p.execute()
-    #     input('next')
-    '''
+        if path is None:
+            continue
+        p = vobj.TrajPath(robot, path)
+        p.execute()
+        input('next')
+
     '''
     while True:
         q = grasp.grasp('fork')[1]

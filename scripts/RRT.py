@@ -14,6 +14,11 @@ def getDistance(q1, q2):
     return np.sqrt(x.dot(x))
 
 
+def filter(arraylist):
+    temp = {array.tostring(): array for array in arraylist}
+    return list(temp.values())
+
+
 class RRT:
     # Test step size
     def __init__(self, robot, nonmovable = None, max_step=0.5, max_time=10, max_shortcut=2):
@@ -43,15 +48,11 @@ class RRT:
         Returns list of collision-free configurations along q1 to q2 with given step-size.
         """
         sample = int(np.sqrt((q1-q2).dot(q1-q2))/self.max_step)
-        #print('sample', sample)
         q_list = []
         num = 1
         while num < sample:   
-        #for num in range(1, sample+1):
             q_new = q1 + (q2 - q1) / sample * num
-            #print(q_new)
             if self.collision_Test(q1, q_new, 10):
-                #q_new = q1 + (q2 - q1) / sample * num
                 q_list.append(q_new)
             else:
                 return q_list
@@ -59,7 +60,7 @@ class RRT:
             num += 1
         if self.robot.arm.IsCollisionFree(q2, obstacles = self.nonmovable):
             q_list.append(q2)
-
+        q_list = filter(q_list)
         return q_list
 
     def collision_Test(self, q1, q2, sample):
@@ -134,5 +135,6 @@ class RRT:
                              new_path.extend(path[n2:])
                              path = new_path
 
+                path = filter(path)
                 print('path length:', len(path))
                 return path
