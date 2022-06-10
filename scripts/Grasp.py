@@ -88,7 +88,7 @@ class Grasp:
 
         self.relative[self.utensils].append(rel)
 
-        bw = numpy.array([[-0.04, 0.04], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]])
+        bw = numpy.array([[-0.035, 0.035], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]])
         self.bw_range[self.utensils] = bw
 
     def set_tsr(self):

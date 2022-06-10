@@ -12,7 +12,10 @@ import vobj
 
 def execute_path_panda(path):
     final_path = []
-    for q in path:
+    for num in range(len(path)):
+        q = path[num]
+        print(q)
+        print(num+1, '/', len(path), '...')
         final_path.append(arm.convertToDict(q))
     arm.execute_position_path(final_path)
 
@@ -58,7 +61,7 @@ if __name__ == '__main__':
                 ans = input('Execute Robot? (Y/N)')
                 if ans.upper() == 'N':
                     break
-                arm.hand.close()
+                arm.hand.grasp(0.02, 40, epsilon_inner=0.1, epsilon_outer=0.1)
 
                 end.execute()
 

@@ -93,6 +93,8 @@ class TAMP_Functions:
         """
         grasp_in_world = numpy.dot(obj_pose.pose, grasp.pose)
         q_g = self.robot.arm.ComputeIK(grasp_in_world)
+        if q_g is None:
+            return (None, )
         up = numpy.array([[1, 0, 0, 0],
                           [0, 1, 0, 0],
                           [0, 0, 1, -.03],

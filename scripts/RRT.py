@@ -50,7 +50,7 @@ class RRT:
         #for num in range(1, sample+1):
             q_new = q1 + (q2 - q1) / sample * num
             #print(q_new)
-            if self.collision_Test(q1, q_new, 5):
+            if self.collision_Test(q1, q_new, 10):
                 #q_new = q1 + (q2 - q1) / sample * num
                 q_list.append(q_new)
             else:
