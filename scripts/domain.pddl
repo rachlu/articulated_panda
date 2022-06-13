@@ -92,6 +92,6 @@
     )
 
     (:derived (UnSafeHolding ?t ?o ?g)
-        (exists (?o2 ?p) (and (AtGrasp ?o ?g) (AtPose ?o ?p) (not (CFreeHolding ?t ?o ?g ?o2 ?p))))
+        (exists (?o2 ?p) (and (AtGrasp ?o ?g) (AtPose ?o2 ?p) (not (CFreeHolding ?t ?o ?g ?o2 ?p))))
     )
 )

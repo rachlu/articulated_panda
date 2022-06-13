@@ -51,6 +51,7 @@ if __name__ == '__main__':
                 start.execute()
 
                 ans = input('Execute Robot? (Y/N)')
+
                 if ans.upper() == 'N':
                     break
                 execute_path_panda(start.path)
@@ -66,6 +67,7 @@ if __name__ == '__main__':
                 end.execute()
 
                 ans = input('Execute Robot? (Y/N)')
+
                 if ans.upper() == 'N':
                     break
                 execute_path_panda(end.path)
@@ -77,6 +79,7 @@ if __name__ == '__main__':
                 start.execute()
 
                 ans = input('Execute Robot? (Y/N)')
+
                 if ans.upper() == 'N':
                     break
                 execute_path_panda(start.path)
@@ -100,7 +103,10 @@ if __name__ == '__main__':
             action.args[-1].execute()
             path = action.args[-1].path
 
-            ans = input('Execute Robot? (Y/N)')
+            ans = input('Execute Robot? (Y/N/R)')
+            while ans.upper() == 'R':
+                action.args[-1].execute()
+                ans = input('Execute Robot? (Y/N/R)')
             if ans.upper() == 'N':
                 break
             execute_path_panda(path)

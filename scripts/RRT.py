@@ -52,7 +52,7 @@ class RRT:
         num = 1
         while num < sample:   
             q_new = q1 + (q2 - q1) / sample * num
-            if self.collision_Test(q1, q_new, 10):
+            if self.collision_Test(q1, q_new, 20):
                 q_list.append(q_new)
             else:
                 return q_list

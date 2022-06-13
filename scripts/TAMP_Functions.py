@@ -97,7 +97,7 @@ class TAMP_Functions:
             return (None, )
         up = numpy.array([[1, 0, 0, 0],
                           [0, 1, 0, 0],
-                          [0, 0, 1, -.03],
+                          [0, 0, 1, -.05],
                           [0., 0., 0., 1.]])
         new_g = numpy.dot(grasp_in_world, up)
         translated_q = self.robot.arm.ComputeIK(new_g, seed_q = q_g)
@@ -155,9 +155,11 @@ class TAMP_Functions:
         return True
 
     def cfreeTrajHolding_Check(self, traj, obj, grasp, obj2, pose):
+        old_pos = self.objects[obj].get_transform()
         self.robot.arm.Grab(self.objects[obj], grasp.pose)
         result = self.cfreeTraj_Check(traj, obj2, pose)
         self.robot.arm.Release(self.objects[obj])
+        self.objects[obj].set_transform(old_pos)
         return result
 
 

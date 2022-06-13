@@ -41,17 +41,17 @@ class Place:
 
         t_ee = numpy.array([[1, 0, 0, -.4],
                             [0, math.cos(math.pi / 2), -math.sin(math.pi / 2), -.1],
-                            [0, math.sin(math.pi / 2), math.cos(math.pi / 2), .027],
+                            [0, math.sin(math.pi / 2), math.cos(math.pi / 2), .022],
                             [0., 0., 0., 1.]])
         self.relative['knife'] = t_ee
 
         t_ee = numpy.array([[1, 0, 0, -.4],
                             [0, math.cos(math.pi / 2), -math.sin(math.pi / 2), -.3],
-                            [0, math.sin(math.pi / 2), math.cos(math.pi / 2), .027],
+                            [0, math.sin(math.pi / 2), math.cos(math.pi / 2), .026],
                             [0., 0., 0., 1.]])
         self.relative['spoon'] = t_ee
 
-        bw = numpy.array([[0, 0], [-.01, .01], [0, 0], [0, 0], [0, 0], [0, 0]])
+        bw = numpy.array([[0, 0], [-.02, .02], [0, 0], [0, 0], [0, 0], [0, 0]])
         self.bw_range[self.utensils] = bw
 
     def set_tsr(self):
