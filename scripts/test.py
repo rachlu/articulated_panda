@@ -20,6 +20,7 @@ if __name__ == '__main__':
     grasp = Grasp(robot, objects)
     rrt = RRT(robot)
     place = Place(robot, objects, floor)
+
     while True:
         q = grasp.grasp('plate')[1]
         robot.arm.SetJointValues(q)
