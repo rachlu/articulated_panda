@@ -20,6 +20,13 @@ if __name__ == '__main__':
     grasp = Grasp(robot, objects)
     rrt = RRT(robot)
     place = Place(robot, objects, floor)
+    while True:
+        q = grasp.grasp('plate')[1]
+        robot.arm.SetJointValues(q)
+        print(robot.arm.IsCollisionFree(q))
+        input('next?')
+
+
     '''
     while True:
         q_start = robot.arm.GetJointValues()
@@ -49,6 +56,7 @@ if __name__ == '__main__':
         p.execute()
         input('next')
     '''
+    '''
     grasp, q = grasp.grasp('knife')
     robot.arm.SetJointValues(q)
     grasp = numpy.dot(numpy.linalg.inv(objects['knife'].get_transform()), grasp)
@@ -61,7 +69,7 @@ if __name__ == '__main__':
             continue
         robot.arm.SetJointValues(new_q)
         input('next?')
-
+    '''
     IPython.embed()
     pb_robot.utils.wait_for_user()
     pb_robot.utils.disconnect()

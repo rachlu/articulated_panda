@@ -33,8 +33,8 @@ class Grasp:
                            [-math.sin(math.pi / 8), 0, math.cos(math.pi / 8), 0],
                            [0., 0., 0., 1.]])
 
-        rotation = numpy.dot(t_1, t_2)
-        # rotation = t_1
+        #rotation = numpy.dot(t_1, t_2)
+        rotation = t_1
         translation = numpy.array([[1, 0, 0, 0],
                                    [0, 1, 0, -.07],
                                    [0, 0, 1, -.16],
