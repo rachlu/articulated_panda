@@ -20,10 +20,7 @@ class TrajPath:
         return 't{}'.format(id(self) % 1000)
 
     def execute(self):
-        for q in self.path:
-            #print(q)
-            time.sleep(0.3)
-            self.robot.arm.SetJointValues(q)
+        self.robot.arm.ExecutePositionPath(self.path, timestep=0.2)
 
 
 class Pose:

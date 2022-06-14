@@ -20,10 +20,14 @@ class TAMP_Functions:
 
     def calculate_path(self, q1, q2):
         print(q1, q2)
-        if not self.robot.arm.IsCollisionFree(q2.conf):
+        if not self.robot.arm.IsCollisionFree(q2.conf, obstacles=[self.floor]):
             return (None, )
         rrt = RRT(self.robot, nonmovable = [self.floor])
         path = rrt.motion(q1.conf, q2.conf)
+        for _ in range(3):
+            path = rrt.motion(q1.conf, q2.conf)
+            if path is not None:
+                break
         if path is None:
             print(q2.conf)
             return (None, )
@@ -93,7 +97,7 @@ class TAMP_Functions:
         """
         grasp_in_world = numpy.dot(obj_pose.pose, grasp.pose)
         q_g = self.robot.arm.ComputeIK(grasp_in_world)
-        if q_g is None:
+        if q_g is None or not self.robot.arm.IsCollisionFree(q_g, obstacles=[self.floor]):
             return (None, )
         up = numpy.array([[1, 0, 0, 0],
                           [0, 1, 0, 0],

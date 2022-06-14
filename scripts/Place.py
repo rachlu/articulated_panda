@@ -23,9 +23,9 @@ class Place:
 
     def set_info(self):
         # Relative offset to valid position. Object in table frame
-        t_ee = numpy.array([[1, 0, 0, -.4],
+        t_ee = numpy.array([[1, 0, 0, .6],
                             [0, 1, 0, .1],
-                            [0, 0, 1, 0],
+                            [0, 0, 1, .005],
                             [0., 0., 0., 1.]])
         self.relative['plate'] = t_ee
         # Allowable range for placement
@@ -33,21 +33,31 @@ class Place:
 
         self.bw_range['plate'] = bw
 
-        t_ee = numpy.array([[1, 0, 0, -.4],
-                            [0, math.cos(math.pi / 2), -math.sin(math.pi / 2), .3],
-                            [0, math.sin(math.pi / 2), math.cos(math.pi / 2), .027],
+        t_ee = numpy.array([[1, 0, 0, 0],
+                            [0, math.cos(math.pi/2), -math.sin(math.pi/2), 0],
+                            [0, math.sin(math.pi/2), math.cos(math.pi/2), 0],
                             [0., 0., 0., 1.]])
-        self.relative['fork'] = t_ee
+        t_e = numpy.array([[math.cos(math.pi), 0, math.sin(math.pi), 0],
+                           [0, 1, 0, .3],
+                           [-math.sin(math.pi), 0, math.cos(math.pi), 0],
+                           [0., 0., 0., 1.]])
+        # x, z, y
+        translation = numpy.array([[1, 0, 0, -0.6],
+                            [0, 1, 0, -0.28],
+                            [0, 0, 1, -0.2],
+                            [0., 0., 0., 1.]])
+        rotation = numpy.dot(t_ee, t_e)
+        self.relative['fork'] = numpy.dot(rotation, translation)
 
-        t_ee = numpy.array([[1, 0, 0, -.4],
+        t_ee = numpy.array([[1, 0, 0, .6],
                             [0, math.cos(math.pi / 2), -math.sin(math.pi / 2), -.1],
-                            [0, math.sin(math.pi / 2), math.cos(math.pi / 2), .022],
+                            [0, math.sin(math.pi / 2), math.cos(math.pi / 2), .02055],
                             [0., 0., 0., 1.]])
         self.relative['knife'] = t_ee
 
-        t_ee = numpy.array([[1, 0, 0, -.4],
+        t_ee = numpy.array([[1, 0, 0, .6],
                             [0, math.cos(math.pi / 2), -math.sin(math.pi / 2), -.3],
-                            [0, math.sin(math.pi / 2), math.cos(math.pi / 2), .026],
+                            [0, math.sin(math.pi / 2), math.cos(math.pi / 2), .0206],
                             [0., 0., 0., 1.]])
         self.relative['spoon'] = t_ee
 

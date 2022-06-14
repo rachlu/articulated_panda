@@ -10,14 +10,14 @@ import IPython
 from pddl_setup import *
 import vobj
 
-def execute_path_panda(path):
+def convert(path):
     final_path = []
     for num in range(len(path)):
         q = path[num]
         print(q)
         print(num+1, '/', len(path), '...')
         final_path.append(arm.convertToDict(q))
-    arm.execute_position_path(final_path)
+    return final_path
 
 if __name__ == '__main__':
     rospy.init_node('testing_node')
@@ -54,7 +54,9 @@ if __name__ == '__main__':
 
                 if ans.upper() == 'N':
                     break
-                execute_path_panda(start.path)
+                
+                start_path = convert(start.path)
+                arm.execute_position_path(start_path)
 
                 robot.arm.Grab(objects[obj], grasp.pose)
                 robot.arm.hand.Close()
@@ -70,7 +72,9 @@ if __name__ == '__main__':
 
                 if ans.upper() == 'N':
                     break
-                execute_path_panda(end.path)
+
+                end_path = convert(end.path)
+                arm.execute_position_path(end_path)
                 continue
             if action.name == 'place':
                 obj, obj_pose, grasp, conf, traj = action.args
@@ -82,7 +86,10 @@ if __name__ == '__main__':
 
                 if ans.upper() == 'N':
                     break
-                execute_path_panda(start.path)
+
+                start_path = convert(start.path)
+                arm.move_to_touch(start_path[1])
+                
 
                 robot.arm.Release(objects[obj])
                 robot.arm.hand.Open()
@@ -97,7 +104,8 @@ if __name__ == '__main__':
                 ans = input('Execute Robot? (Y/N)')
                 if ans.upper() == 'N':
                     break
-                execute_path_panda(end.path)
+                end_path = convert(end.path)
+                arm.execute_position_path(end_path)
                 continue
 
             action.args[-1].execute()
@@ -109,7 +117,8 @@ if __name__ == '__main__':
                 ans = input('Execute Robot? (Y/N/R)')
             if ans.upper() == 'N':
                 break
-            execute_path_panda(path)
+            path = convert(path)
+            arm.execute_position_path(path)
 
     IPython.embed()
     pb_robot.utils.wait_for_user()
