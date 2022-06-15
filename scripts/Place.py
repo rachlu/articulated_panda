@@ -23,13 +23,13 @@ class Place:
 
     def set_info(self):
         # Relative offset to valid position. Object in table frame
-        t_ee = numpy.array([[1, 0, 0, .6],
-                            [0, 1, 0, .1],
+        t_ee = numpy.array([[1, 0, 0, .4],
+                            [0, 1, 0, 0],
                             [0, 0, 1, .005],
                             [0., 0., 0., 1.]])
         self.relative['plate'] = t_ee
         # Allowable range for placement
-        bw = numpy.array([[0, 0], [-.04, .04], [0, 0], [0, 0], [0, 0], [-math.pi, math.pi]])
+        bw = numpy.array([[0, 0], [-.01, .01], [0, 0], [0, 0], [0, 0], [-math.pi, math.pi]])
 
         self.bw_range['plate'] = bw
 
@@ -42,26 +42,27 @@ class Place:
                            [-math.sin(math.pi), 0, math.cos(math.pi), 0],
                            [0., 0., 0., 1.]])
         # x, z, y
-        translation = numpy.array([[1, 0, 0, -0.6],
-                            [0, 1, 0, -0.28],
-                            [0, 0, 1, -0.2],
+        translation = numpy.array([[1, 0, 0, -0.4],
+                            [0, 1, 0, -0.2794],
+                            [0, 0, 1, -0.15],
                             [0., 0., 0., 1.]])
         rotation = numpy.dot(t_ee, t_e)
         self.relative['fork'] = numpy.dot(rotation, translation)
 
-        t_ee = numpy.array([[1, 0, 0, .6],
-                            [0, math.cos(math.pi / 2), -math.sin(math.pi / 2), -.1],
-                            [0, math.sin(math.pi / 2), math.cos(math.pi / 2), .02055],
+        translation = numpy.array([[1, 0, 0, -0.4],
+                            [0, 1, 0, -.2794],
+                            [0, 0, 1, .15],
                             [0., 0., 0., 1.]])
-        self.relative['knife'] = t_ee
+        self.relative['knife'] = numpy.dot(rotation, translation)
 
-        t_ee = numpy.array([[1, 0, 0, .6],
-                            [0, math.cos(math.pi / 2), -math.sin(math.pi / 2), -.3],
-                            [0, math.sin(math.pi / 2), math.cos(math.pi / 2), .0206],
+        translation = numpy.array([[1, 0, 0, -0.4],
+                            [0, 1, 0, -.2794],
+                            [0, 0, 1, .25],
                             [0., 0., 0., 1.]])
-        self.relative['spoon'] = t_ee
 
-        bw = numpy.array([[0, 0], [-.02, .02], [0, 0], [0, 0], [0, 0], [0, 0]])
+        self.relative['spoon'] = numpy.dot(rotation, translation)
+
+        bw = numpy.array([[0, 0], [-0.02, 0.02], [0, 0], [0, 0], [0, 0], [0, 0]])
         self.bw_range[self.utensils] = bw
 
     def set_tsr(self):

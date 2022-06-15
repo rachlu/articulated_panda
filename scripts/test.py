@@ -22,9 +22,9 @@ if __name__ == '__main__':
     place = Place(robot, objects, floor)
     '''
     while True:
-        q = grasp.grasp('plate')[1]
+        q = grasp.grasp('fork')[1]
         robot.arm.SetJointValues(q)
-        robot.arm.hand.Close()
+        #robot.arm.hand.Close()
         print(robot.arm.IsCollisionFree(q))
         ans = input('next?')
         if ans.upper() == 'N':
@@ -59,29 +59,31 @@ if __name__ == '__main__':
         p.execute()
         input('next')
     '''
-    '''
-    obj = 'plate'    
+    
+    obj = 'fork'    
     grasp, q = grasp.grasp(obj)
     robot.arm.SetJointValues(q)
     grasp = numpy.dot(numpy.linalg.inv(objects[obj].get_transform()), grasp)
     robot.arm.Grab(objects[obj], grasp)
     robot.arm.hand.Close()
-    old_pos = objects['plate'].get_transform()
+    #old_pos = objects['plate'].get_transform()
     while True:
         obj_pose = place.samplePlacePose(obj)
         world_grasp = numpy.dot(obj_pose, grasp)
         new_q = robot.arm.ComputeIK(world_grasp)
         if new_q is None:
             continue
-        rrt = RRT(robot, nonmovable=[floor])
-        q_start = robot.arm.GetJointValues()
-        path = vobj.TrajPath(robot, rrt.motion(q_start, new_q))
-        print(path.path)
+        #rrt = RRT(robot, nonmovable=[floor])
+        #q_start = robot.arm.GetJointValues()
+        #path = vobj.TrajPath(robot, rrt.motion(q_start, new_q))
+        #print(path.path)
+        '''
         for num in range(len(path.path)):
             print((num+1), '/', len(path.path))
             print(robot.arm.IsCollisionFree(path.path[num]))
         path.execute()
-        #robot.arm.SetJointValues(new_q)
+        '''
+        robot.arm.SetJointValues(new_q)
         print(robot.arm.IsCollisionFree(new_q))
         ans = input('next? (R?)')
         while ans.upper() == 'R':
@@ -89,10 +91,12 @@ if __name__ == '__main__':
             ans = input('next? (R?)')
         if ans.upper() == 'N':
             break
+    
     '''
-    obj_pose = place.samplePlacePose('fork')
-    objects['fork'].set_transform(obj_pose)
-
+    for obj in objects:
+        obj_pose = place.samplePlacePose(obj)
+        objects[obj].set_transform(obj_pose)
+    '''
     IPython.embed()
     pb_robot.utils.wait_for_user()
     pb_robot.utils.disconnect()

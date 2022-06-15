@@ -26,12 +26,15 @@ def execute():
     objects_path = pb_robot.helper.getDirectory("YCB_Robot")
     floor_file = os.path.join(objects_path, 'short_floor.urdf')
     floor = pb_robot.body.createBody(floor_file)
+    floor_pose = floor.get_transform()
+    floor_pose[0][3] += 0.16764
+    floor.set_transform(floor_pose)
 
     # Add fork object
     fork_file = os.path.join(objects_path, 'fork.urdf')
     fork = pb_robot.body.createBody(fork_file)
-    fork_pose = numpy.array([[1, 0, 0, 0.3],
-                             [0, 0, -1, 0.2],
+    fork_pose = numpy.array([[1, 0, 0, 0.4],
+                             [0, 0, -1, -0.45],
                              [0, 1, 0, 0.02],
                              [0., 0., 0., 1.]])
     fork.set_transform(fork_pose)
@@ -39,8 +42,8 @@ def execute():
     # Add knife object
     knife_file = os.path.join(objects_path, 'knife.urdf')
     knife = pb_robot.body.createBody(knife_file)
-    knife_pose = numpy.array([[1., 0., 0., -0.4],
-                              [0., 0., -1., 0.4],
+    knife_pose = numpy.array([[1., 0., 0., -0.2],
+                              [0., 0., -1., 0.3],
                               [0., 1., 0., 0.02],
                               [0., 0., 0., 1.]])
     knife.set_transform(knife_pose)
