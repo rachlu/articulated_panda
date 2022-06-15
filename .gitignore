@@ -1,3 +1,6 @@
 *.Identifier
 *.pyc
 *.iml
+statistics/
+temp/
+*.swp

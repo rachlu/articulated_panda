@@ -24,56 +24,67 @@ class Grasp:
 
     def set_info(self):
         # plate
-        t_o = self.objects.get('plate').get_transform()
-
-        t_ee = numpy.array([[math.cos(math.pi / 2), -math.sin(math.pi / 2), 0, .70],
-                            [math.sin(math.pi / 2), math.cos(math.pi / 2), 0, 0],
-                            [0, 0, 1, .18],
-                            [0., 0., 0., 1.]])
-        t_e = numpy.array([[1, 0, 0, 0],
+        t_1 = numpy.array([[1, 0, 0, 0],
                            [0, math.cos(math.pi), -math.sin(math.pi), 0],
                            [0, math.sin(math.pi), math.cos(math.pi), 0],
                            [0., 0., 0., 1.]])
-        rel = get_relative(numpy.dot(t_ee, t_e), t_o)
+        t_2 = numpy.array([[1, 0, 0, 0],
+                           [0, math.cos(-math.pi / 8), -math.sin(-math.pi / 8), 0],
+                           [0, math.sin(-math.pi / 8), math.cos(-math.pi / 8), 0],
+                           [0., 0., 0., 1.]])
+        rotation = numpy.dot(t_1, t_2)
+        translation = numpy.array([[1, 0, 0, 0],
+                                   [0, 1, 0, -.047],
+                                   [0, 0, 1, -.163],
+                                   [0., 0., 0., 1.]])
+        rel = numpy.dot(rotation, translation)
         self.relative[('plate')] = [rel]
 
-        t_ee = numpy.array([[math.cos(3 * math.pi / 2), -math.sin(3 * math.pi / 2), 0, .70],
-                            [math.sin(3 * math.pi / 2), math.cos(3 * math.pi / 2), 0, 0],
-                            [0, 0, 1, .18],
-                            [0., 0., 0., 1.]])
-        t_e = numpy.array([[1, 0, 0, 0],
-                           [0, math.cos(math.pi), -math.sin(math.pi), 0],
-                           [0, math.sin(math.pi), math.cos(math.pi), 0],
+        t_3 = numpy.array([[math.cos(math.pi), -math.sin(math.pi), 0, 0],
+                           [math.sin(math.pi), math.cos(math.pi), 0, 0],
+                           [0, 0, 1, 0],
                            [0., 0., 0., 1.]])
-
-        rel = get_relative(numpy.dot(t_ee, t_e), t_o)
+        rotation = numpy.linalg.multi_dot([t_1, t_2, t_3])
+        translation = numpy.array([[1, 0, 0, 0],
+                                   [0, 1, 0, .047],
+                                   [0, 0, 1, -.163],
+                                   [0., 0., 0., 1.]])
+        rel = numpy.dot(rotation, translation)
         self.relative[('plate')].append(rel)
 
         bw = numpy.array([[0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [-math.pi, math.pi]])
         self.bw_range[('plate')] = bw
-        #
-        t_ee = numpy.array([[math.cos(math.pi), -math.sin(math.pi), 0, -.4],
-                            [math.sin(math.pi), math.cos(math.pi), 0, .4],
-                            [0, 0, 1, .15],
-                            [0., 0., 0., 1.]])
-        t_e = numpy.array([[math.cos(math.pi), 0, math.sin(math.pi), 0],
+
+        t_1 = numpy.array([[math.cos(math.pi), 0, math.sin(math.pi), 0],
                            [0, 1, 0, 0],
                            [-math.sin(math.pi), 0, math.cos(math.pi), 0],
                            [0., 0., 0., 1.]])
-        t_o = self.objects.get('knife').get_transform()
-        rel = get_relative(numpy.dot(t_ee, t_e), t_o)
+        t_2 = numpy.array([[1, 0, 0, 0],
+                           [0, math.cos(math.pi / 2), -math.sin(math.pi / 2), 0],
+                           [0, math.sin(math.pi / 2), math.cos(math.pi / 2), 0],
+                           [0., 0., 0., 1.]])
+        rotation = numpy.dot(t_1, t_2)
+        translation = numpy.array([[1, 0, 0, 0.05],
+                                   [0, 1, 0, 0],
+                                   [0, 0, 1, -.107],
+                                   [0., 0., 0., 1.]])
+        rel = numpy.dot(rotation, translation)
         self.relative[self.utensils] = [rel]
 
-        t_o = self.objects.get('knife').get_transform()
-        t_ee = numpy.array([[math.cos(math.pi), -math.sin(math.pi), 0, -.4],
-                            [math.sin(math.pi), math.cos(math.pi), 0, .4],
-                            [0, 0, 1, .15],
-                            [0., 0., 0., 1.]])
-        rel = get_relative(numpy.dot(t_ee, t_e), t_o)
+        t_1 = numpy.array([[math.cos(2 * math.pi), 0, math.sin(2 * math.pi), 0],
+                           [0, 1, 0, 0],
+                           [-math.sin(2 * math.pi), 0, math.cos(2 * math.pi), 0],
+                           [0., 0., 0., 1.]])
+        rotation = numpy.dot(t_1, t_2)
+        translation = numpy.array([[1, 0, 0, -0.05],
+                                   [0, 1, 0, 0],
+                                   [0, 0, 1, -.107],
+                                   [0., 0., 0., 1.]])
+        rel = numpy.dot(rotation, translation)
 
         self.relative[self.utensils].append(rel)
 
-        bw = numpy.array([[-0.12, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]])
+        bw = numpy.array([[-0.035, 0.035], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]])
         self.bw_range[self.utensils] = bw
 
     def set_tsr(self):
@@ -83,7 +94,6 @@ class Grasp:
 
         self.grasp_tsr['plate'] = [TSR(self.objects['plate'].get_transform(), self.relative['plate'][0], self.bw_range['plate'])]
         self.grasp_tsr['plate'].append(TSR(self.objects['plate'].get_transform(), self.relative['plate'][1], self.bw_range['plate']))
-
 
     def grasp(self, obj):
         # r,g,b = x,y,z
