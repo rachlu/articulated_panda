@@ -101,7 +101,7 @@ class TAMP_Functions:
             return (None, )
         up = numpy.array([[1, 0, 0, 0],
                           [0, 1, 0, 0],
-                          [0, 0, 1, -.05],
+                          [0, 0, 1, -.07],
                           [0., 0., 0., 1.]])
         new_g = numpy.dot(grasp_in_world, up)
         translated_q = self.robot.arm.ComputeIK(new_g, seed_q = q_g)
