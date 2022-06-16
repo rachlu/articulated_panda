@@ -48,17 +48,9 @@ class TAMP_Functions:
         # grasp_pose is grasp in world frame
         grasp_pose, q = self.grasp.grasp(obj)
         for _ in range(40):
-            # up = numpy.array([[1, 0, 0, 0],
-            #                   [0, 1, 0, 0],
-            #                   [0, 0, 1, -.03],
-            #                   [0., 0., 0., 1.]])
-            # pre_grasp = numpy.dot(grasp_pose, up)
-            # pre_q = self.robot.arm.ComputeIK(pre_grasp)
-            if self.robot.arm.IsCollisionFree(q):
+            if self.robot.arm.IsCollisionFree(q, obstacles=[self.floor]):
                 # Grasp in object frame
                 relative_grasp = numpy.dot(numpy.linalg.inv(obj_pose.pose), grasp_pose)
-
-                # relative_pregrasp = numpy.dot(numpy.linalg.inv(obj_pose.pose), pre_grasp)
                 cmd1 = [vobj.Pose(obj, relative_grasp)]
                 return (cmd1, )
         return (None, )
@@ -152,7 +144,7 @@ class TAMP_Functions:
         obj_oldpos = self.objects[obj].get_transform()
         self.objects[obj].set_transform(pose.pose)
         for q in traj.path:
-            if not self.robot.arm.IsCollisionFree(q):
+            if not self.robot.arm.IsCollisionFree(q, obstacles=[self.floor, self.objects[obj]]):
                 self.objects[obj].set_transform(obj_oldpos)
                 return False
         self.objects[obj].set_transform(obj_oldpos)
