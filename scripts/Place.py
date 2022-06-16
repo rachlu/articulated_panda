@@ -51,13 +51,13 @@ class Place:
 
         translation = numpy.array([[1, 0, 0, -0.4],
                             [0, 1, 0, -.2794],
-                            [0, 0, 1, .17],
+                            [0, 0, 1, .175],
                             [0., 0., 0., 1.]])
         self.relative['knife'] = numpy.dot(rotation, translation)
 
         translation = numpy.array([[1, 0, 0, -0.4],
                             [0, 1, 0, -.2794],
-                            [0, 0, 1, .27],
+                            [0, 0, 1, .3],
                             [0., 0., 0., 1.]])
 
         self.relative['spoon'] = numpy.dot(rotation, translation)

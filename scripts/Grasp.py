@@ -34,8 +34,8 @@ class Grasp:
                            [0., 0., 0., 1.]])
         rotation = numpy.dot(t_1, t_2)
         translation = numpy.array([[1, 0, 0, 0],
-                                   [0, 1, 0, -.047],
-                                   [0, 0, 1, -.162],
+                                   [0, 1, 0, -.039],
+                                   [0, 0, 1, -.165],
                                    [0., 0., 0., 1.]])
         rel = numpy.dot(rotation, translation)
         self.relative[('plate')] = [rel]
@@ -46,8 +46,8 @@ class Grasp:
                            [0., 0., 0., 1.]])
         rotation = numpy.linalg.multi_dot([t_1, t_2, t_3])
         translation = numpy.array([[1, 0, 0, 0],
-                                   [0, 1, 0, .047],
-                                   [0, 0, 1, -.163],
+                                   [0, 1, 0, .039],
+                                   [0, 0, 1, -.165],
                                    [0., 0., 0., 1.]])
         rel = numpy.dot(rotation, translation)
         self.relative[('plate')].append(rel)

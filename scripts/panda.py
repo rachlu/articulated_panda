@@ -105,7 +105,7 @@ if __name__ == '__main__':
                 if ans.upper() == 'N':
                     break
                 end_path = convert(end.path)
-                arm.execute_position_path(end_path)
+                arm.move_from_touch(end_path[1])
                 continue
 
             action.args[-1].execute()
