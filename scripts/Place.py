@@ -22,12 +22,8 @@ class Place:
         self.set_tsr()
 
     def set_info(self):
-        # Relative offset to valid position. Object in table frame
-        t_ee = numpy.array([[1, 0, 0, .5],
-                            [0, 1, 0, 0],
-                            [0, 0, 1, .005],
-                            [0., 0., 0., 1.]])
-        self.relative['bowl'] = t_ee
+        import Placements.Front 
+        self.relative['bowl'] = Placements.Front.bowl_place
         # Allowable range for placement
         bw = numpy.array([[0, 0], [-.01, .01], [0, 0], [0, 0], [0, 0], [-math.pi, math.pi]])
 
