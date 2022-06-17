@@ -9,6 +9,15 @@ from Place import Place
 import pb_robot
 import random
 
+def sampleTable(obj, objPose):
+    x = random.uniform(-0.5, 0.8)
+    y = random.uniform(-0.5, 0.5)
+    pose = numpy.array(objPose.pose)
+    pose[0][3] = x
+    pose[1][3] = y
+    cmd = [vobj.Pose(obj, pose)]
+    return (cmd,)
+
 class TAMP_Functions:
     def __init__(self, robot, objects, floor):
         self.robot = robot
@@ -106,7 +115,6 @@ class TAMP_Functions:
         return (cmd, )
 
 
-
     def samplePlacePose(self, obj, region):
         # Obj pose in world frame
         place_pose = self.place.place_tsr[obj].sample()
@@ -115,16 +123,15 @@ class TAMP_Functions:
         return (cmd, )
 
 
-    def sampleTable(self, obj, objPose):
-        x = random.uniform(-0.5, 0.8)
-        y = random.uniform(-0.5, 0.5)
-        pose = numpy.array(objPose.pose)
-        pose[0][3] = x
-        pose[1][3] = y
-        cmd = [vobj.Pose(obj, pose)]
-        return (cmd, )
-
     def collisionCheck(self, obj, pos, other, other_pos):
+        """
+        Return True if collision free.
+        :param obj: object to be checked (string)
+        :param pos: position of object
+        :param other: other object (string)
+        :param other_pos: other object position
+        :return: True or False
+        """
         obj_oldpos = self.objects[obj].get_transform()
         other_oldpos = self.objects[other].get_transform()
         if other != obj:

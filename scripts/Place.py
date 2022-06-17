@@ -27,11 +27,11 @@ class Place:
                             [0, 1, 0, 0],
                             [0, 0, 1, .005],
                             [0., 0., 0., 1.]])
-        self.relative['plate'] = t_ee
+        self.relative['bowl'] = t_ee
         # Allowable range for placement
         bw = numpy.array([[0, 0], [-.01, .01], [0, 0], [0, 0], [0, 0], [-math.pi, math.pi]])
 
-        self.bw_range['plate'] = bw
+        self.bw_range['bowl'] = bw
 
         t_ee = numpy.array([[1, 0, 0, 0],
                             [0, math.cos(math.pi/2), -math.sin(math.pi/2), 0],
@@ -71,7 +71,7 @@ class Place:
         for obj in self.objects:
             self.place_tsr[obj] = TSR(t_ow, self.relative[obj], self.bw_range[self.utensils])
 
-        self.place_tsr['plate'] = TSR(numpy.dot(t_ow, self.relative['plate']), numpy.identity(4), self.bw_range['plate'])
+        self.place_tsr['bowl'] = TSR(numpy.dot(t_ow, self.relative['bowl']), numpy.identity(4), self.bw_range['bowl'])
 
     def samplePlacePose(self, obj):
         return self.place_tsr[obj].sample()

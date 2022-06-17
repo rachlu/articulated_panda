@@ -34,12 +34,12 @@ def pddlstream_from_tamp(robot, movable, tamp, panda = None):
         ('CanMove',),
         ('Region', 'spoon_region'),
         ('Region', 'fork_region'),
-        ('Region', 'plate_region'),
+        ('Region', 'bowl_region'),
         ('Region', 'knife_region')
     ]
 
     #goal = (('Holding', 'fork'))
-    #goal = (('On', 'plate', 'plate_region'))
+    #goal = (('On', 'bowl', 'bowl_region'))
     #goal = (('On', 'spoon', 'spoon_region'))
 
     #goal = ('and', ('On', 'knife', 'knife_region'), ('On', 'fork', 'fork_region'))
@@ -48,7 +48,7 @@ def pddlstream_from_tamp(robot, movable, tamp, panda = None):
 
     #goal = ('and', ('On', 'knife', 'knife_region'), ('On', 'fork', 'fork_region'), ('On', 'spoon', 'spoon_region'), ('AtConf', conf))
 
-    goal = ('and', ('On', 'knife', 'knife_region'), ('On', 'fork', 'fork_region'), ('On', 'spoon', 'spoon_region'), ('On', 'plate', 'plate_region'), ('AtConf', conf))
+    goal = ('and', ('On', 'knife', 'knife_region'), ('On', 'fork', 'fork_region'), ('On', 'spoon', 'spoon_region'), ('On', 'bowl', 'bowl_region'), ('AtConf', conf))
     # objPoses = {}
     for obj in movable:
         position = vobj.Pose(robot, movable[obj].get_transform())
@@ -65,7 +65,7 @@ def pddlstream_from_tamp(robot, movable, tamp, panda = None):
         'samplePlacePose': from_gen_fn(tamp.samplePlacePose),
         'get_trajectory_holding': from_gen_fn(tamp.calculate_path_holding),
         'collisionCheck': from_test(tamp.collisionCheck),
-        'sampleTable': from_gen_fn(tamp.sampleTable),
+        'sampleTable': from_gen_fn(sampleTable),
         'cfree': from_test(tamp.cfreeTraj_Check),
         'cfreeholding': from_test(tamp.cfreeTrajHolding_Check)
     }

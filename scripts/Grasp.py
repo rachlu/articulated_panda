@@ -23,7 +23,7 @@ class Grasp:
         self.set_tsr()
 
     def set_info(self):
-        # plate
+        # bowl
         t_1 = numpy.array([[1, 0, 0, 0],
                            [0, math.cos(math.pi), -math.sin(math.pi), 0],
                            [0, math.sin(math.pi), math.cos(math.pi), 0],
@@ -38,7 +38,7 @@ class Grasp:
                                    [0, 0, 1, -.165],
                                    [0., 0., 0., 1.]])
         rel = numpy.dot(rotation, translation)
-        self.relative[('plate')] = [rel]
+        self.relative[('bowl')] = [rel]
 
         t_3 = numpy.array([[math.cos(math.pi), -math.sin(math.pi), 0, 0],
                            [math.sin(math.pi), math.cos(math.pi), 0, 0],
@@ -50,10 +50,10 @@ class Grasp:
                                    [0, 0, 1, -.165],
                                    [0., 0., 0., 1.]])
         rel = numpy.dot(rotation, translation)
-        self.relative[('plate')].append(rel)
+        self.relative[('bowl')].append(rel)
 
         bw = numpy.array([[0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [-math.pi, math.pi]])
-        self.bw_range[('plate')] = bw
+        self.bw_range[('bowl')] = bw
 
         t_1 = numpy.array([[math.cos(math.pi), 0, math.sin(math.pi), 0],
                            [0, 1, 0, 0],
@@ -92,8 +92,8 @@ class Grasp:
             self.grasp_tsr[obj] = [TSR(self.objects[obj].get_transform(), self.relative[self.utensils][0], self.bw_range[self.utensils])]
             self.grasp_tsr[obj].append(TSR(self.objects[obj].get_transform(), self.relative[self.utensils][1], self.bw_range[self.utensils]))
 
-        self.grasp_tsr['plate'] = [TSR(self.objects['plate'].get_transform(), self.relative['plate'][0], self.bw_range['plate'])]
-        self.grasp_tsr['plate'].append(TSR(self.objects['plate'].get_transform(), self.relative['plate'][1], self.bw_range['plate']))
+        self.grasp_tsr['bowl'] = [TSR(self.objects['bowl'].get_transform(), self.relative['bowl'][0], self.bw_range['bowl'])]
+        self.grasp_tsr['bowl'].append(TSR(self.objects['bowl'].get_transform(), self.relative['bowl'][1], self.bw_range['bowl']))
 
     def grasp(self, obj):
         # r,g,b = x,y,z

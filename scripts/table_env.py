@@ -11,8 +11,17 @@ from Plan import Plan
 from Grasp import Grasp
 from RRT import RRT
 from Place import Place
+from TAMP_Functions import *
 
-def collisionFree
+def collision_free(robot, objects, obj):
+    q = robot.arm.GetJointValues()
+    if not robot.arm.IsCollisionFree(q):
+        return False
+    for obj2 in objects:
+        if pb_robot.collisions.body_collision(objects[obj2], objects[obj]):
+            return False
+    return True
+
 
 def execute():
     # Launch pybullet
@@ -35,38 +44,59 @@ def execute():
     # Add fork object
     fork_file = os.path.join(objects_path, 'fork.urdf')
     fork = pb_robot.body.createBody(fork_file)
-    fork_pose = numpy.array([[1, 0, 0, 0.4],
-                             [0, 0, -1, -0.45],
+    # fork_pose = numpy.array([[1, 0, 0, 0.4],
+    #                          [0, 0, -1, -0.45],
+    #                          [0, 1, 0, 0.024],
+    #                          [0., 0., 0., 1.]])
+    initial = numpy.array([[1, 0, 0, 0],
+                             [0, 0, -1, 0],
                              [0, 1, 0, 0.024],
                              [0., 0., 0., 1.]])
-    fork.set_transform(fork_pose)
+    fork.set_transform(initial)
+    while not collision_free(robot, [], 'fork'):
+        random_pos = sampleTable('fork', initial)[0][0].pose
+        fork.set_transform(random_pos)
 
     # Add knife object
     knife_file = os.path.join(objects_path, 'knife.urdf')
     knife = pb_robot.body.createBody(knife_file)
-    knife_pose = numpy.array([[1., 0., 0., -0.2],
-                              [0., 0., -1., 0.3],
-                              [0., 1., 0., 0.024],
-                              [0., 0., 0., 1.]])
-    knife.set_transform(knife_pose)
+    # knife_pose = numpy.array([[1., 0., 0., -0.2],
+    #                           [0., 0., -1., 0.3],
+    #                           [0., 1., 0., 0.024],
+    #                           [0., 0., 0., 1.]])
+    knife.set_transform(initial)
+    while not collision_free(robot, ['fork'], 'knife'):
+        random_pos = sampleTable('knife', initial)[0][0].pose
+        knife.set_transform(random_pos)
 
     # Add spoon object
     spoon_file = os.path.join(objects_path, 'spoon.urdf')
     spoon = pb_robot.body.createBody(spoon_file)
-    spoon_pose = numpy.array([[1, 0, 0, 0.35],
-                              [0, 0, -1, 0.4],
-                              [0, 1, 0, 0.024],
-                              [0., 0., 0., 1.]])
-    spoon.set_transform(spoon_pose)
+    # spoon_pose = numpy.array([[1, 0, 0, 0.35],
+    #                           [0, 0, -1, 0.4],
+    #                           [0, 1, 0, 0.024],
+    #                           [0., 0., 0., 1.]])
+    spoon.set_transform(initial)
+    while not collision_free(robot, ['fork', 'knife'], 'spoon'):
+        random_pos = sampleTable('spoon', initial)[0][0].pose
+        spoon.set_transform(random_pos)
 
-    # Add plate object
-    plate_file = os.path.join(objects_path, 'plate.urdf')
-    plate = pb_robot.body.createBody(plate_file)
-    plate_pose = numpy.array([[0., 0., 1., 0.2],
-                              [0., 1., 0., -0.3],
-                              [1., 0., 0., pb_robot.placements.stable_z(plate, floor)],
+    # Add bowl object
+    bowl_file = os.path.join(objects_path, 'bowl.urdf')
+    bowl = pb_robot.body.createBody(bowl_file)
+    # bowl_pose = numpy.array([[0., 0., 1., 0.2],
+    #                           [0., 1., 0., -0.3],
+    #                           [1., 0., 0., pb_robot.placements.stable_z(bowl, floor)],
+    #                           [0., 0., 0., 1.]])
+    bowl_pose = numpy.array([[0., 0., 1., 0],
+                              [0., 1., 0., 0],
+                              [1., 0., 0., pb_robot.placements.stable_z(bowl, floor)],
                               [0., 0., 0., 1.]])
-    plate.set_transform(plate_pose)
-    objects = {'fork': fork, 'spoon': spoon, 'knife': knife, 'plate': plate}
+    bowl.set_transform(bowl_pose)
+    while not collision_free(robot, ['knife', 'spoon', 'fork'], 'bowl'):
+        random_pos = sampleTable('bowl', bowl_pose)[0][0].pose
+        bowl.set_transform(random_pos)
+
+    objects = {'fork': fork, 'spoon': spoon, 'knife': knife, 'bowl': bowl}
 
     return objects, floor, robot

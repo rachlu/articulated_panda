@@ -22,7 +22,7 @@ if __name__ == '__main__':
     place = Place(robot, objects, floor)
     '''
     while True:
-        q = grasp.grasp('plate')[1]
+        q = grasp.grasp('bowl')[1]
         robot.arm.SetJointValues(q)
         #robot.arm.hand.Close()
         print(robot.arm.IsCollisionFree(q))
@@ -60,14 +60,14 @@ if __name__ == '__main__':
         input('next')
     '''
     
-    obj = 'plate'    
+    obj = 'bowl'
     grasp, q = grasp.grasp(obj)
     robot.arm.SetJointValues(q)
     grasp = numpy.dot(numpy.linalg.inv(objects[obj].get_transform()), grasp)
     robot.arm.Grab(objects[obj], grasp)
     robot.arm.hand.Close()
     tamp = TAMP_Functions(robot, objects, floor)
-    #old_pos = objects['plate'].get_transform()
+    #old_pos = objects['bowl'].get_transform()
     while True:
         old_pos = vobj.Pose(obj, objects[obj].get_transform())
         obj_pose = tamp.sampleTable(obj, old_pos)[0][0].pose
