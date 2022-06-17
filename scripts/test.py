@@ -20,7 +20,7 @@ if __name__ == '__main__':
     grasp = Grasp(robot, objects)
     rrt = RRT(robot)
     place = Place(robot, objects, floor)
-    
+    '''
     while True:
         q = grasp.grasp('plate')[1]
         robot.arm.SetJointValues(q)
@@ -29,7 +29,7 @@ if __name__ == '__main__':
         ans = input('next?')
         if ans.upper() == 'N':
             break
-    
+    '''
     '''
     while True:
         q_start = robot.arm.GetJointValues()

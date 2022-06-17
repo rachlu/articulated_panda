@@ -116,8 +116,8 @@ class TAMP_Functions:
 
 
     def sampleTable(self, obj, objPose):
-        x = random.uniform(-0.5, 0.5)
-        y = random.uniform(-0.6, 0.6)
+        x = random.uniform(-0.5, 0.8)
+        y = random.uniform(-0.5, 0.5)
         pose = numpy.array(objPose.pose)
         pose[0][3] = x
         pose[1][3] = y

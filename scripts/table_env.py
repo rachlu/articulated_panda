@@ -12,6 +12,8 @@ from Grasp import Grasp
 from RRT import RRT
 from Place import Place
 
+def collisionFree
+
 def execute():
     # Launch pybullet
     pb_robot.utils.connect(use_gui=True)
