@@ -10,8 +10,10 @@ import pb_robot
 import random
 
 def sampleTable(obj, objPose):
-    x = random.uniform(-0.5, 0.8)
-    y = random.uniform(-0.5, 0.5)
+    r = random.choice([(-0.4, -0.2), (0.2, 0.8)])
+    x = random.uniform(*r)
+    r = random.choice([(-0.4, -0.2), (0.2, 0.5)])
+    y = random.uniform(*r)
     pose = numpy.array(objPose.pose)
     pose[0][3] = x
     pose[1][3] = y

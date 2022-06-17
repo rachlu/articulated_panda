@@ -17,6 +17,7 @@ class Grasp:
         self.relative = {}
         self.bw_range = {}
         self.utensils = ('fork', 'knife', 'spoon')
+        #self.utensils = tuple(utensils.intersection(set(objects.keys())))
 
         self.grasp_tsr = {}
         self.set_info()

@@ -21,7 +21,7 @@ def filter(arraylist):
 
 class RRT:
     # Test step size
-    def __init__(self, robot, nonmovable=None, max_step=0.3, max_time=10, max_shortcut=2):
+    def __init__(self, robot, nonmovable=None, max_step=0.5, max_time=10, max_shortcut=2):
         self.robot = robot
         self.max_time = max_time
         self.max_step = max_step

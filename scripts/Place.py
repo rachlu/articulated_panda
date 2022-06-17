@@ -23,7 +23,7 @@ class Place:
 
     def set_info(self):
         # Relative offset to valid position. Object in table frame
-        t_ee = numpy.array([[1, 0, 0, .45],
+        t_ee = numpy.array([[1, 0, 0, .5],
                             [0, 1, 0, 0],
                             [0, 0, 1, .005],
                             [0., 0., 0., 1.]])
@@ -42,22 +42,22 @@ class Place:
                            [-math.sin(math.pi), 0, math.cos(math.pi), 0],
                            [0., 0., 0., 1.]])
         # x, z, y
-        translation = numpy.array([[1, 0, 0, -0.4],
+        translation = numpy.array([[1, 0, 0, -0.45],
                             [0, 1, 0, -0.2794],
                             [0, 0, 1, -0.2],
                             [0., 0., 0., 1.]])
         rotation = numpy.dot(t_ee, t_e)
         self.relative['fork'] = numpy.dot(rotation, translation)
 
-        translation = numpy.array([[1, 0, 0, -0.4],
+        translation = numpy.array([[1, 0, 0, -0.45],
                             [0, 1, 0, -.2794],
-                            [0, 0, 1, .175],
+                            [0, 0, 1, .2],
                             [0., 0., 0., 1.]])
         self.relative['knife'] = numpy.dot(rotation, translation)
 
-        translation = numpy.array([[1, 0, 0, -0.4],
+        translation = numpy.array([[1, 0, 0, -0.45],
                             [0, 1, 0, -.2794],
-                            [0, 0, 1, .3],
+                            [0, 0, 1, .33],
                             [0., 0., 0., 1.]])
 
         self.relative['spoon'] = numpy.dot(rotation, translation)

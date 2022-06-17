@@ -17,6 +17,11 @@ def collision_free(objects, obj):
     for obj2 in objects:
         if pb_robot.collisions.body_collision(obj2, obj):
             return False
+        else:
+            y = obj.get_transform()[1][-1]
+            y2 = obj2.get_transform()[1][-1]
+            if abs(y-y2) < 0.1:
+                return False
     return True
 
 
@@ -51,7 +56,7 @@ def execute():
                              [0., 0., 0., 1.]])
     initial = vobj.Pose('_', initial)
     fork.set_transform(initial.pose)
-    while not collision_free([robot.body], 'fork'):
+    while not collision_free([robot], fork):
         random_pos = sampleTable('fork', initial)[0][0].pose
         fork.set_transform(random_pos)
 
@@ -63,7 +68,7 @@ def execute():
     #                           [0., 1., 0., 0.024],
     #                           [0., 0., 0., 1.]])
     knife.set_transform(initial.pose)
-    while not collision_free([fork, robot.body], knife):
+    while not collision_free([fork, robot], knife):
         random_pos = sampleTable('knife', initial)[0][0].pose
         knife.set_transform(random_pos)
 
@@ -75,7 +80,7 @@ def execute():
     #                           [0, 1, 0, 0.024],
     #                           [0., 0., 0., 1.]])
     spoon.set_transform(initial.pose)
-    while not collision_free([fork, knife, robot.body], spoon):
+    while not collision_free([fork, knife, robot], spoon):
         random_pos = sampleTable('spoon', initial)[0][0].pose
         spoon.set_transform(random_pos)
 

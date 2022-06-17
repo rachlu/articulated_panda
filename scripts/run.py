@@ -28,6 +28,9 @@ if __name__ == '__main__':
     if plan is None:
         print('No plan found')
     else:
+        for obj in objects:
+            pose = objects[obj].get_transform()
+            print(obj, (pose[0][-1], pose[1][-1]))
         input('Execute?')
         tamp.execute_path(plan)
 

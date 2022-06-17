@@ -29,7 +29,7 @@ if __name__ == '__main__':
         ans = input('next?')
         if ans.upper() == 'N':
             break
-
+    
     while True:
         q_start = robot.arm.GetJointValues()
         print('start', q_start)
@@ -56,8 +56,8 @@ if __name__ == '__main__':
         p = vobj.TrajPath(robot, path)
         p.execute()
         input('next')
-
-    obj = 'bowl'
+    '''    
+    obj = 'knife'
     grasp, q = grasp.grasp(obj)
     robot.arm.SetJointValues(q)
     grasp = numpy.dot(numpy.linalg.inv(objects[obj].get_transform()), grasp)
@@ -67,31 +67,34 @@ if __name__ == '__main__':
     #old_pos = objects['bowl'].get_transform()
     while True:
         old_pos = vobj.Pose(obj, objects[obj].get_transform())
-        obj_pose = sampleTable(obj, old_pos)[0][0].pose
-        #obj_pose = place.samplePlacePose(obj)
+        #obj_pose = sampleTable(obj, old_pos)[0][0].pose
+        obj_pose = place.samplePlacePose(obj)
         world_grasp = numpy.dot(obj_pose, grasp)
         new_q = robot.arm.ComputeIK(world_grasp)
         if new_q is None:
+            print('none')
             continue
         #rrt = RRT(robot, nonmovable=[floor])
         #q_start = robot.arm.GetJointValues()
         #path = vobj.TrajPath(robot, rrt.motion(q_start, new_q))
         #print(path.path)
-
+        '''
         for num in range(len(path.path)):
             print((num+1), '/', len(path.path))
             print(robot.arm.IsCollisionFree(path.path[num]))
         path.execute()
-
+        '''
         robot.arm.SetJointValues(new_q)
         print(robot.arm.IsCollisionFree(new_q))
+        '''
         ans = input('next? (R?)')
         while ans.upper() == 'R':
             path.execute()
             ans = input('next? (R?)')
         if ans.upper() == 'N':
             break
-    
+        '''
+    '''    
     for obj in objects:
         obj_pose = place.samplePlacePose(obj)
         objects[obj].set_transform(obj_pose) 
