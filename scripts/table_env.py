@@ -13,12 +13,9 @@ from RRT import RRT
 from Place import Place
 from TAMP_Functions import *
 
-def collision_free(robot, objects, obj):
-    q = robot.arm.GetJointValues()
-    if not robot.arm.IsCollisionFree(q):
-        return False
+def collision_free(objects, obj):
     for obj2 in objects:
-        if pb_robot.collisions.body_collision(objects[obj2], objects[obj]):
+        if pb_robot.collisions.body_collision(obj2, obj):
             return False
     return True
 
@@ -52,8 +49,9 @@ def execute():
                              [0, 0, -1, 0],
                              [0, 1, 0, 0.024],
                              [0., 0., 0., 1.]])
-    fork.set_transform(initial)
-    while not collision_free(robot, [], 'fork'):
+    initial = vobj.Pose('_', initial)
+    fork.set_transform(initial.pose)
+    while not collision_free([robot.body], 'fork'):
         random_pos = sampleTable('fork', initial)[0][0].pose
         fork.set_transform(random_pos)
 
@@ -64,8 +62,8 @@ def execute():
     #                           [0., 0., -1., 0.3],
     #                           [0., 1., 0., 0.024],
     #                           [0., 0., 0., 1.]])
-    knife.set_transform(initial)
-    while not collision_free(robot, ['fork'], 'knife'):
+    knife.set_transform(initial.pose)
+    while not collision_free([fork, robot.body], knife):
         random_pos = sampleTable('knife', initial)[0][0].pose
         knife.set_transform(random_pos)
 
@@ -76,8 +74,8 @@ def execute():
     #                           [0, 0, -1, 0.4],
     #                           [0, 1, 0, 0.024],
     #                           [0., 0., 0., 1.]])
-    spoon.set_transform(initial)
-    while not collision_free(robot, ['fork', 'knife'], 'spoon'):
+    spoon.set_transform(initial.pose)
+    while not collision_free([fork, knife, robot.body], spoon):
         random_pos = sampleTable('spoon', initial)[0][0].pose
         spoon.set_transform(random_pos)
 
@@ -92,8 +90,9 @@ def execute():
                               [0., 1., 0., 0],
                               [1., 0., 0., pb_robot.placements.stable_z(bowl, floor)],
                               [0., 0., 0., 1.]])
-    bowl.set_transform(bowl_pose)
-    while not collision_free(robot, ['knife', 'spoon', 'fork'], 'bowl'):
+    bowl_pose = vobj.Pose('_', bowl_pose)
+    bowl.set_transform(bowl_pose.pose)
+    while not collision_free([knife, spoon, fork, robot], bowl):
         random_pos = sampleTable('bowl', bowl_pose)[0][0].pose
         bowl.set_transform(random_pos)
 
