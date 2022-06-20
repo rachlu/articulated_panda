@@ -56,8 +56,8 @@ if __name__ == '__main__':
         p = vobj.TrajPath(robot, path)
         p.execute()
         input('next')
-       
-    obj = 'knife'
+    '''
+    obj = 'bowl'
     grasp, q = grasp.grasp(obj)
     robot.arm.SetJointValues(q)
     grasp = numpy.dot(numpy.linalg.inv(objects[obj].get_transform()), grasp)
@@ -78,28 +78,29 @@ if __name__ == '__main__':
         #q_start = robot.arm.GetJointValues()
         #path = vobj.TrajPath(robot, rrt.motion(q_start, new_q))
         #print(path.path)
-        
+        '''
         for num in range(len(path.path)):
             print((num+1), '/', len(path.path))
             print(robot.arm.IsCollisionFree(path.path[num]))
         path.execute()
-        
+        '''
         robot.arm.SetJointValues(new_q)
         print(robot.arm.IsCollisionFree(new_q))
-        
+        input('next')
+        '''
         ans = input('next? (R?)')
         while ans.upper() == 'R':
             path.execute()
             ans = input('next? (R?)')
         if ans.upper() == 'N':
             break
-        
+        '''
     '''    
     for obj in objects:
         print(obj)
         obj_pose = place.samplePlacePose(obj)
         objects[obj].set_transform(obj_pose) 
-    
+    '''
     IPython.embed()
     pb_robot.utils.wait_for_user()
     pb_robot.utils.disconnect()

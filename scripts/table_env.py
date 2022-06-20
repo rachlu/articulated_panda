@@ -6,6 +6,7 @@ import os
 import IPython
 import pb_robot
 import numpy
+import math
 
 from Plan import Plan
 from Grasp import Grasp
@@ -18,9 +19,11 @@ def collision_free(objects, obj):
         if pb_robot.collisions.body_collision(obj2, obj):
             return False
         else:
+            x = obj.get_transform()[0][-1]
             y = obj.get_transform()[1][-1]
+            x2 = obj2.get_transform()[0][-1]
             y2 = obj2.get_transform()[1][-1]
-            if abs(y-y2) < 0.1:
+            if math.sqrt((x-x2)**2+(y-y2)**2) < 0.15:
                 return False
     return True
 

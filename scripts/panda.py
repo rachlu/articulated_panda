@@ -19,6 +19,22 @@ def convert(path):
         final_path.append(arm.convertToDict(q))
     return final_path
 
+def grasp_poses(plan):
+    for action in plan:
+        if 'move' in action.name:
+            action.args[-1].execute()
+            path = action.args[-1].path
+
+            ans = input('Execute Robot? (Y/N/R)')
+            while ans.upper() == 'R':
+                action.args[-1].execute()
+                ans = input('Execute Robot? (Y/N/R)')
+            if ans.upper() == 'N':
+                break
+            path = convert(path)
+            arm.execute_position_path(path)
+        input('next')
+
 if __name__ == '__main__':
     rospy.init_node('testing_node')
     arm = ArmInterface()
@@ -44,6 +60,10 @@ if __name__ == '__main__':
         for obj in objects:
             pose = objects[obj].get_transform()
             print(obj, (pose[0][-1], pose[1][-1]))
+        ans = input('Execute Placing?')
+        if ans.upper() == 'Y':
+            grasp_poses(plan)
+
         input('Execute?')
         for action in plan:
             time.sleep(1)
@@ -89,10 +109,11 @@ if __name__ == '__main__':
 
                 if ans.upper() == 'N':
                     break
-
-                start_path = convert(start.path)
-                arm.move_to_touch(start_path[1])
-                
+                obj_pose.pose[2][-1] -= 0.03
+                grasp_in_world = numpy.dot(obj_pose.pose, grasp.pose)
+                q = robot.arm.ComputeIK(grasp_in_world, seed_q = traj.path[1])
+                q = arm.convertToDict(q)
+                arm.move_to_touch(q)
 
                 robot.arm.Release(objects[obj])
                 robot.arm.hand.Open()

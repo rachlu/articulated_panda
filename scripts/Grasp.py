@@ -36,7 +36,7 @@ class Grasp:
         rotation = numpy.dot(t_1, t_2)
         translation = numpy.array([[1, 0, 0, 0],
                                    [0, 1, 0, -.039],
-                                   [0, 0, 1, -.165],
+                                   [0, 0, 1, -.167],
                                    [0., 0., 0., 1.]])
         rel = numpy.dot(rotation, translation)
         self.relative[('bowl')] = [rel]
@@ -99,11 +99,13 @@ class Grasp:
     def grasp(self, obj):
         # r,g,b = x,y,z
         computed_q = None
-        while computed_q is None:
+        for _ in range(50):
+            if computed_q is not None:
+                return pose, computed_q
             grasp_idx = random.randint(0, 1)
             pose = self.grasp_tsr[obj][grasp_idx].sample()
             computed_q = self.robot.arm.ComputeIK(pose)
-        return pose, computed_q
+        return None, None
         
     
         
