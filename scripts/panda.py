@@ -109,7 +109,7 @@ if __name__ == '__main__':
 
                 if ans.upper() == 'N':
                     break
-                obj_pose.pose[2][-1] -= 0.03
+                obj_pose.pose[2][-1] -= 0.015
                 grasp_in_world = numpy.dot(obj_pose.pose, grasp.pose)
                 q = robot.arm.ComputeIK(grasp_in_world, seed_q = traj.path[1])
                 q = arm.convertToDict(q)

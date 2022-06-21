@@ -14,7 +14,7 @@ def sampleTable(obj, objPose):
     x = random.uniform(*r)
     r = random.choice([(-0.4, -0.15), (0.15, 0.5)])
     y = random.uniform(*r)
-    print(x, y)
+
     pose = numpy.array(objPose.pose)
     pose[0][-1] = x
     pose[1][-1] = y
