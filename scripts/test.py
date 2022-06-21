@@ -20,6 +20,13 @@ if __name__ == '__main__':
     grasp = Grasp(robot, objects)
     rrt = RRT(robot)
     place = Place(robot, objects, floor)
+    rotate = numpy.array([[math.cos(math.pi / 6), 0, math.sin(math.pi / 6), 0],
+                 [0, 1, 0, .3],
+                 [-math.sin(math.pi / 6), 0, math.cos(math.pi / 6), 0],
+                 [0., 0., 0., 1.]])
+    pose = objects['fork'].get_transform()
+    #objects['fork'].set_transform(numpy.dot(pose, rotate))
+
     '''
     while True:
         q = grasp.grasp('bowl')[1]
@@ -57,6 +64,7 @@ if __name__ == '__main__':
         p.execute()
         input('next')
     '''
+    '''
     obj = 'bowl'
     grasp, q = grasp.grasp(obj)
     robot.arm.SetJointValues(q)
@@ -78,24 +86,24 @@ if __name__ == '__main__':
         #q_start = robot.arm.GetJointValues()
         #path = vobj.TrajPath(robot, rrt.motion(q_start, new_q))
         #print(path.path)
-        '''
+        
         for num in range(len(path.path)):
             print((num+1), '/', len(path.path))
             print(robot.arm.IsCollisionFree(path.path[num]))
         path.execute()
-        '''
+        
         robot.arm.SetJointValues(new_q)
         print(robot.arm.IsCollisionFree(new_q))
         input('next')
-        '''
+        
         ans = input('next? (R?)')
         while ans.upper() == 'R':
             path.execute()
             ans = input('next? (R?)')
         if ans.upper() == 'N':
             break
-        '''
-    '''    
+        
+       
     for obj in objects:
         print(obj)
         obj_pose = place.samplePlacePose(obj)
