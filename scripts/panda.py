@@ -10,6 +10,7 @@ import IPython
 from pddl_setup import *
 import vobj
 
+
 def convert(path):
     final_path = []
     for num in range(len(path)):
@@ -19,21 +20,90 @@ def convert(path):
         final_path.append(arm.convertToDict(q))
     return final_path
 
-def grasp_poses(plan):
-    for action in plan:
-        if 'move' in action.name:
-            action.args[-1].execute()
-            path = action.args[-1].path
 
-            ans = input('Execute Robot? (Y/N/R)')
-            while ans.upper() == 'R':
-                action.args[-1].execute()
-                ans = input('Execute Robot? (Y/N/R)')
+def execute_plan(plan, grasp=False):
+    for action in plan:
+        time.sleep(1)
+        if action.name == 'grab':
+            obj, obj_pose, grasp, conf, traj = action.args
+            start = vobj.TrajPath(robot, traj.path[:2])
+            end = vobj.TrajPath(robot, traj.path[1:])
+            start.execute()
+
+            ans = input('Execute Robot? (Y/N)')
+
             if ans.upper() == 'N':
                 break
-            path = convert(path)
-            arm.execute_position_path(path)
-        input('next')
+
+            start_path = convert(start.path)
+            arm.execute_position_path(start_path)
+
+            robot.arm.Grab(objects[obj], grasp.pose)
+            robot.arm.hand.Close()
+
+            ans = input('Execute Robot? (Y/N)')
+            if ans.upper() == 'N':
+                break
+            arm.hand.grasp(0.02, 40, epsilon_inner=0.1, epsilon_outer=0.1)
+
+            if grasp:
+                arm.hand.open()
+                robot.arm.hand.Open()
+            end.execute()
+
+            ans = input('Execute Robot? (Y/N)')
+
+            if ans.upper() == 'N':
+                break
+
+            end_path = convert(end.path)
+            arm.execute_position_path(end_path)
+            continue
+        if action.name == 'place':
+            obj, obj_pose, grasp, conf, traj = action.args
+            start = vobj.TrajPath(robot, traj.path[:2])
+            end = vobj.TrajPath(robot, traj.path[1:])
+            start.execute()
+
+            ans = input('Execute Robot? (Y/N)')
+
+            if ans.upper() == 'N':
+                break
+            # obj_pose.pose[2][-1] -= 0.015
+            # grasp_in_world = numpy.dot(obj_pose.pose, grasp.pose)
+            # q = robot.arm.ComputeIK(grasp_in_world, seed_q = traj.path[1])
+            # q = arm.convertToDict(q)
+            # arm.move_to_touch(q)
+            arm.move_to_touch(start.path[1])
+            robot.arm.Release(objects[obj])
+            robot.arm.hand.Open()
+
+            ans = input('Execute Robot? (Y/N)')
+            if ans.upper() == 'N':
+                break
+            arm.hand.open()
+
+            end.execute()
+
+            ans = input('Execute Robot? (Y/N)')
+            if ans.upper() == 'N':
+                break
+            end_path = convert(end.path)
+            arm.move_from_touch(end_path[1])
+            continue
+
+        action.args[-1].execute()
+        path = action.args[-1].path
+
+        ans = input('Execute Robot? (Y/N/R)')
+        while ans.upper() == 'R':
+            action.args[-1].execute()
+            ans = input('Execute Robot? (Y/N/R)')
+        if ans.upper() == 'N':
+            break
+        path = convert(path)
+        arm.execute_position_path(path)
+
 
 if __name__ == '__main__':
     rospy.init_node('testing_node')
@@ -60,89 +130,6 @@ if __name__ == '__main__':
         for obj in objects:
             pose = objects[obj].get_transform()
             print(obj, (pose[0][-1], pose[1][-1]))
-        ans = input('Execute Placing?')
-        if ans.upper() == 'Y':
-            grasp_poses(plan)
-
-        input('Execute?')
-        for action in plan:
-            time.sleep(1)
-            if action.name == 'grab':
-                obj, obj_pose, grasp, conf, traj = action.args
-                start = vobj.TrajPath(robot, traj.path[:2])
-                end = vobj.TrajPath(robot, traj.path[1:])
-                start.execute()
-
-                ans = input('Execute Robot? (Y/N)')
-
-                if ans.upper() == 'N':
-                    break
-                
-                start_path = convert(start.path)
-                arm.execute_position_path(start_path)
-
-                robot.arm.Grab(objects[obj], grasp.pose)
-                robot.arm.hand.Close()
-
-                ans = input('Execute Robot? (Y/N)')
-                if ans.upper() == 'N':
-                    break
-                arm.hand.grasp(0.02, 40, epsilon_inner=0.1, epsilon_outer=0.1)
-
-                end.execute()
-
-                ans = input('Execute Robot? (Y/N)')
-
-                if ans.upper() == 'N':
-                    break
-
-                end_path = convert(end.path)
-                arm.execute_position_path(end_path)
-                continue
-            if action.name == 'place':
-                obj, obj_pose, grasp, conf, traj = action.args
-                start = vobj.TrajPath(robot, traj.path[:2])
-                end = vobj.TrajPath(robot, traj.path[1:])
-                start.execute()
-
-                ans = input('Execute Robot? (Y/N)')
-
-                if ans.upper() == 'N':
-                    break
-                # obj_pose.pose[2][-1] -= 0.015
-                # grasp_in_world = numpy.dot(obj_pose.pose, grasp.pose)
-                # q = robot.arm.ComputeIK(grasp_in_world, seed_q = traj.path[1])
-                # q = arm.convertToDict(q)
-                # arm.move_to_touch(q)
-                arm.move_to_touch(start.path[1])
-                robot.arm.Release(objects[obj])
-                robot.arm.hand.Open()
-
-                ans = input('Execute Robot? (Y/N)')
-                if ans.upper() == 'N':
-                    break
-                arm.hand.open()
-
-                end.execute()
-
-                ans = input('Execute Robot? (Y/N)')
-                if ans.upper() == 'N':
-                    break
-                end_path = convert(end.path)
-                arm.move_from_touch(end_path[1])
-                continue
-
-            action.args[-1].execute()
-            path = action.args[-1].path
-
-            ans = input('Execute Robot? (Y/N/R)')
-            while ans.upper() == 'R':
-                action.args[-1].execute()
-                ans = input('Execute Robot? (Y/N/R)')
-            if ans.upper() == 'N':
-                break
-            path = convert(path)
-            arm.execute_position_path(path)
 
     IPython.embed()
     pb_robot.utils.wait_for_user()
