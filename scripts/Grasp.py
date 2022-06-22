@@ -36,7 +36,7 @@ class Grasp:
         rotation = numpy.dot(t_1, t_2)
         translation = numpy.array([[1, 0, 0, 0],
                                    [0, 1, 0, -.039],
-                                   [0, 0, 1, -.167],
+                                   [0, 0, 1, -.17],
                                    [0., 0., 0., 1.]])
         rel = numpy.dot(rotation, translation)
         self.relative[('bowl')] = [rel]
@@ -48,7 +48,7 @@ class Grasp:
         rotation = numpy.linalg.multi_dot([t_1, t_2, t_3])
         translation = numpy.array([[1, 0, 0, 0],
                                    [0, 1, 0, .039],
-                                   [0, 0, 1, -.165],
+                                   [0, 0, 1, -.17],
                                    [0., 0., 0., 1.]])
         rel = numpy.dot(rotation, translation)
         self.relative[('bowl')].append(rel)
@@ -62,7 +62,7 @@ class Grasp:
                            [0., 0., 0., 1.]])
         translation = numpy.array([[1, 0, 0, 0],
                                    [0, 1, 0, 0],
-                                   [0, 0, 1, -.12],
+                                   [0, 0, 1, -.125],
                                    [0., 0., 0., 1.]])
         rel = numpy.dot(rotation, translation)
         self.relative[self.utensils] = [rel]
@@ -74,13 +74,13 @@ class Grasp:
         rotation = numpy.dot(z, rotation)
         translation = numpy.array([[1, 0, 0, 0],
                                    [0, 1, 0, 0],
-                                   [0, 0, 1, -.12],
+                                   [0, 0, 1, -.125],
                                    [0., 0., 0., 1.]])
         rel = numpy.dot(rotation, translation)
 
         self.relative[self.utensils].append(rel)
 
-        bw = numpy.array([[0, 0.06], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]])
+        bw = numpy.array([[0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]])
         self.bw_range[self.utensils] = bw
 
     def set_tsr(self):

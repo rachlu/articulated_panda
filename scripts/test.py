@@ -23,9 +23,9 @@ if __name__ == '__main__':
 
 
     while True:
-        q = grasp.grasp('knife')[1]
+        q = grasp.grasp('spoon')[1]
         robot.arm.SetJointValues(q)
-        #robot.arm.hand.Close()
+        robot.arm.hand.Close()
         print(robot.arm.IsCollisionFree(q))
         ans = input('next?')
         if ans.upper() == 'N':

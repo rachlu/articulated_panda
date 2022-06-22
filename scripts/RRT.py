@@ -22,7 +22,7 @@ def filter(arraylist):
 
 class RRT:
     # Test step size
-    def __init__(self, robot, nonmovable=None, max_step=0.4, max_time=10, max_shortcut=2):
+    def __init__(self, robot, nonmovable=None, max_step=0.5, max_time=10, max_shortcut=2):
         self.robot = robot
         self.max_time = max_time
         self.max_step = max_step
@@ -53,7 +53,7 @@ class RRT:
         num = 1
         while num < sample:
             q_new = q1 + (q2 - q1) / sample * num
-            if util.collision_Test(q1, q_new, 50):
+            if util.collision_Test(self.robot, self.nonmovable, q1, q_new, 50):
                 q_list.append(q_new)
             else:
                 return q_list

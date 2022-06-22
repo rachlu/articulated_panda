@@ -21,7 +21,7 @@ def convert(path):
     return final_path
 
 
-def execute_plan(plan, grasp=False):
+def execute_plan(plan, g=False):
     for action in plan:
         time.sleep(1)
         if action.name == 'grab':
@@ -46,9 +46,10 @@ def execute_plan(plan, grasp=False):
                 break
             arm.hand.grasp(0.02, 40, epsilon_inner=0.1, epsilon_outer=0.1)
 
-            if grasp:
+            if g:
                 arm.hand.open()
                 robot.arm.hand.Open()
+            
             end.execute()
 
             ans = input('Execute Robot? (Y/N)')
@@ -69,12 +70,13 @@ def execute_plan(plan, grasp=False):
 
             if ans.upper() == 'N':
                 break
-            # obj_pose.pose[2][-1] -= 0.015
-            # grasp_in_world = numpy.dot(obj_pose.pose, grasp.pose)
-            # q = robot.arm.ComputeIK(grasp_in_world, seed_q = traj.path[1])
-            # q = arm.convertToDict(q)
-            # arm.move_to_touch(q)
-            arm.move_to_touch(start.path[1])
+            obj_pose.pose[2][-1] -= 0.015
+            grasp_in_world = numpy.dot(obj_pose.pose, grasp.pose)
+            q = robot.arm.ComputeIK(grasp_in_world, seed_q = traj.path[1])
+            q = arm.convertToDict(q)
+            arm.move_to_touch(q)
+            #start_path = convert(start.path)
+            #arm.move_to_touch(start_path[1])
             robot.arm.Release(objects[obj])
             robot.arm.hand.Open()
 
