@@ -1,25 +1,16 @@
 import time
+import vobj
+import numpy
+import pb_robot
+import random
+import util
 
 from Plan import Plan
 from RRT import RRT
 from Grasp import Grasp
-import vobj
-import numpy
 from Place import Place
-import pb_robot
-import random
 
-def sampleTable(obj, objPose):
-    r = random.choice([(-0.4, -0.15), (0.15, 0.8)])
-    x = random.uniform(*r)
-    r = random.choice([(-0.4, -0.15), (0.15, 0.5)])
-    y = random.uniform(*r)
 
-    pose = numpy.array(objPose.pose)
-    pose[0][-1] = x
-    pose[1][-1] = y
-    cmd = [vobj.Pose(obj, pose)]
-    return (cmd,)
 
 class TAMP_Functions:
     def __init__(self, robot, objects, floor):
@@ -155,8 +146,8 @@ class TAMP_Functions:
     def cfreeTraj_Check(self, traj, obj, pose):
         obj_oldpos = self.objects[obj].get_transform()
         self.objects[obj].set_transform(pose.pose)
-        for q in traj.path:
-            if not self.robot.arm.IsCollisionFree(q, obstacles=[self.floor, self.objects[obj]]):
+        for num in range(len(traj)-1):
+            if not util.collision_Test(self.robot, [self.floor], traj[num], traj[num+1], 50):
                 self.objects[obj].set_transform(obj_oldpos)
                 return False
         self.objects[obj].set_transform(obj_oldpos)

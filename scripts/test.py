@@ -20,23 +20,17 @@ if __name__ == '__main__':
     grasp = Grasp(robot, objects)
     rrt = RRT(robot)
     place = Place(robot, objects, floor)
-    rotate = numpy.array([[math.cos(math.pi / 6), 0, math.sin(math.pi / 6), 0],
-                 [0, 1, 0, .3],
-                 [-math.sin(math.pi / 6), 0, math.cos(math.pi / 6), 0],
-                 [0., 0., 0., 1.]])
-    pose = objects['fork'].get_transform()
-    #objects['fork'].set_transform(numpy.dot(pose, rotate))
 
-    '''
+
     while True:
-        q = grasp.grasp('bowl')[1]
+        q = grasp.grasp('knife')[1]
         robot.arm.SetJointValues(q)
         #robot.arm.hand.Close()
         print(robot.arm.IsCollisionFree(q))
         ans = input('next?')
         if ans.upper() == 'N':
             break
-    
+    '''
     while True:
         q_start = robot.arm.GetJointValues()
         print('start', q_start)
@@ -64,50 +58,51 @@ if __name__ == '__main__':
         p.execute()
         input('next')
     '''
+
+    # obj = 'knife'
+    # grasp, q = grasp.grasp(obj)
+    # robot.arm.SetJointValues(q)
+    # grasp = numpy.dot(numpy.linalg.inv(objects[obj].get_transform()), grasp)
+    # robot.arm.Grab(objects[obj], grasp)
+    # robot.arm.hand.Close()
+    # tamp = TAMP_Functions(robot, objects, floor)
+    # #old_pos = objects['bowl'].get_transform()
+    # while True:
+    #     old_pos = vobj.Pose(obj, objects[obj].get_transform())
+    #     #obj_pose = sampleTable(obj, old_pos)[0][0].pose
+    #     obj_pose = place.samplePlacePose(obj)
+    #     world_grasp = numpy.dot(obj_pose, grasp)
+    #     new_q = robot.arm.ComputeIK(world_grasp)
+    #     if new_q is None:
+    #         print('none')
+    #         continue
+    #     #rrt = RRT(robot, nonmovable=[floor])
+    #     #q_start = robot.arm.GetJointValues()
+    #     #path = vobj.TrajPath(robot, rrt.motion(q_start, new_q))
+    #     #print(path.path)
+    #     '''
+    #     for num in range(len(path.path)):
+    #         print((num+1), '/', len(path.path))
+    #         print(robot.arm.IsCollisionFree(path.path[num]))
+    #     path.execute()
+    #     '''
+    #     robot.arm.SetJointValues(new_q)
+    #     print(robot.arm.IsCollisionFree(new_q))
+    #     input('next')
+    #     '''
+    #     ans = input('next? (R?)')
+    #     while ans.upper() == 'R':
+    #         path.execute()
+    #         ans = input('next? (R?)')
+    #
+    #     if ans.upper() == 'N':
+    #         break
+    #     '''
     '''
-    obj = 'bowl'
-    grasp, q = grasp.grasp(obj)
-    robot.arm.SetJointValues(q)
-    grasp = numpy.dot(numpy.linalg.inv(objects[obj].get_transform()), grasp)
-    robot.arm.Grab(objects[obj], grasp)
-    robot.arm.hand.Close()
-    tamp = TAMP_Functions(robot, objects, floor)
-    #old_pos = objects['bowl'].get_transform()
-    while True:
-        old_pos = vobj.Pose(obj, objects[obj].get_transform())
-        #obj_pose = sampleTable(obj, old_pos)[0][0].pose
-        obj_pose = place.samplePlacePose(obj)
-        world_grasp = numpy.dot(obj_pose, grasp)
-        new_q = robot.arm.ComputeIK(world_grasp)
-        if new_q is None:
-            print('none')
-            continue
-        #rrt = RRT(robot, nonmovable=[floor])
-        #q_start = robot.arm.GetJointValues()
-        #path = vobj.TrajPath(robot, rrt.motion(q_start, new_q))
-        #print(path.path)
-        
-        for num in range(len(path.path)):
-            print((num+1), '/', len(path.path))
-            print(robot.arm.IsCollisionFree(path.path[num]))
-        path.execute()
-        
-        robot.arm.SetJointValues(new_q)
-        print(robot.arm.IsCollisionFree(new_q))
-        input('next')
-        
-        ans = input('next? (R?)')
-        while ans.upper() == 'R':
-            path.execute()
-            ans = input('next? (R?)')
-        if ans.upper() == 'N':
-            break
-        
-       
     for obj in objects:
         print(obj)
         obj_pose = place.samplePlacePose(obj)
-        objects[obj].set_transform(obj_pose) 
+        objects[obj].set_transform(obj_pose)
     '''
     IPython.embed()
     pb_robot.utils.wait_for_user()

@@ -56,36 +56,31 @@ class Grasp:
         bw = numpy.array([[0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [-math.pi, math.pi]])
         self.bw_range[('bowl')] = bw
 
-        t_1 = numpy.array([[math.cos(math.pi), 0, math.sin(math.pi), 0],
+        rotation = numpy.array([[math.cos(math.pi), 0, math.sin(math.pi), 0],
                            [0, 1, 0, 0],
                            [-math.sin(math.pi), 0, math.cos(math.pi), 0],
                            [0., 0., 0., 1.]])
-        t_2 = numpy.array([[1, 0, 0, 0],
-                           [0, math.cos(math.pi / 2), -math.sin(math.pi / 2), 0],
-                           [0, math.sin(math.pi / 2), math.cos(math.pi / 2), 0],
-                           [0., 0., 0., 1.]])
-        rotation = numpy.dot(t_1, t_2)
-        translation = numpy.array([[1, 0, 0, 0.05],
+        translation = numpy.array([[1, 0, 0, 0],
                                    [0, 1, 0, 0],
-                                   [0, 0, 1, -.107],
+                                   [0, 0, 1, -.12],
                                    [0., 0., 0., 1.]])
         rel = numpy.dot(rotation, translation)
         self.relative[self.utensils] = [rel]
 
-        t_1 = numpy.array([[math.cos(2 * math.pi), 0, math.sin(2 * math.pi), 0],
-                           [0, 1, 0, 0],
-                           [-math.sin(2 * math.pi), 0, math.cos(2 * math.pi), 0],
-                           [0., 0., 0., 1.]])
-        rotation = numpy.dot(t_1, t_2)
-        translation = numpy.array([[1, 0, 0, -0.05],
+        z = numpy.array([[math.cos(math.pi), -math.sin(math.pi), 0, 0],
+                      [math.sin(math.pi), math.cos(math.pi), 0, 0],
+                      [0, 0, 1, 0],
+                      [0., 0., 0., 1.]])
+        rotation = numpy.dot(z, rotation)
+        translation = numpy.array([[1, 0, 0, 0],
                                    [0, 1, 0, 0],
-                                   [0, 0, 1, -.107],
+                                   [0, 0, 1, -.12],
                                    [0., 0., 0., 1.]])
         rel = numpy.dot(rotation, translation)
 
         self.relative[self.utensils].append(rel)
 
-        bw = numpy.array([[-0.035, 0.035], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]])
+        bw = numpy.array([[0, 0.06], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]])
         self.bw_range[self.utensils] = bw
 
     def set_tsr(self):

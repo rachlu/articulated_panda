@@ -35,10 +35,10 @@
     )
 
     (:stream sampleTable
-        :inputs (?o ?p)
-        :domain (and (Graspable ?o) (ObjPose ?o ?p))
-        :outputs (?p2)
-        :certified (ObjPose ?o ?p2)
+        :inputs (?o)
+        :domain (Graspable ?o)
+        :outputs (?p)
+        :certified (ObjPose ?o ?p)
     )
 
     (:stream collisionCheck

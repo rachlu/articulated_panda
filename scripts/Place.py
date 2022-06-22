@@ -1,7 +1,8 @@
+import math
 import numpy
 import random
-import math
 from tsr.tsr import TSR
+
 from RRT import RRT
 
 
@@ -23,6 +24,7 @@ class Place:
 
     def set_info(self):
         import Placements.Front, Placements.Left, Placements.Right
+
         choice = random.choice([Placements.Left, Placements.Right, Placements.Front])
 
         self.relative['bowl'] = choice.bowl_place

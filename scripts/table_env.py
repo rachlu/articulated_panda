@@ -7,12 +7,13 @@ import IPython
 import pb_robot
 import numpy
 import math
+import util
+import vobj
 
 from Plan import Plan
 from Grasp import Grasp
 from RRT import RRT
 from Place import Place
-from TAMP_Functions import *
 
 def collision_free(objects, obj):
     for obj2 in objects:
@@ -53,14 +54,9 @@ def execute():
     #                          [0, 0, -1, -0.45],
     #                          [0, 1, 0, 0.024],
     #                          [0., 0., 0., 1.]])
-    initial = numpy.array([[1, 0, 0, 0],
-                             [0, 0, -1, 0],
-                             [0, 1, 0, 0.024],
-                             [0., 0., 0., 1.]])
-    initial = vobj.Pose('_', initial)
-    fork.set_transform(initial.pose)
     while not collision_free([robot], fork):
-        random_pos = sampleTable('fork', initial)[0][0].pose
+        random_pos = util.sampleTable('fork')[0][0].pose
+        print(random_pos)
         fork.set_transform(random_pos)
 
     # Add knife object
@@ -70,9 +66,8 @@ def execute():
     #                           [0., 0., -1., 0.3],
     #                           [0., 1., 0., 0.024],
     #                           [0., 0., 0., 1.]])
-    knife.set_transform(initial.pose)
     while not collision_free([fork, robot], knife):
-        random_pos = sampleTable('knife', initial)[0][0].pose
+        random_pos = util.sampleTable('knife')[0][0].pose
         knife.set_transform(random_pos)
 
     # Add spoon object
@@ -82,9 +77,8 @@ def execute():
     #                           [0, 0, -1, 0.4],
     #                           [0, 1, 0, 0.024],
     #                           [0., 0., 0., 1.]])
-    spoon.set_transform(initial.pose)
     while not collision_free([fork, knife, robot], spoon):
-        random_pos = sampleTable('spoon', initial)[0][0].pose
+        random_pos = util.sampleTable('spoon')[0][0].pose
         spoon.set_transform(random_pos)
 
     # Add bowl object
@@ -94,14 +88,14 @@ def execute():
     #                           [0., 1., 0., -0.3],
     #                           [1., 0., 0., pb_robot.placements.stable_z(bowl, floor)],
     #                           [0., 0., 0., 1.]])
-    bowl_pose = numpy.array([[0., 0., 1., 0],
-                              [0., 1., 0., 0],
-                              [1., 0., 0., pb_robot.placements.stable_z(bowl, floor)],
-                              [0., 0., 0., 1.]])
-    bowl_pose = vobj.Pose('_', bowl_pose)
-    bowl.set_transform(bowl_pose.pose)
+    # bowl_pose = numpy.array([[1., 0., 0, 0],
+    #                           [0., 0, -1, 0],
+    #                           [0, 1, 0, pb_robot.placements.stable_z(bowl, floor)],
+    #                           [0., 0., 0., 1.]])
+    # bowl_pose = vobj.Pose('_', bowl_pose)
+    # bowl.set_transform(bowl_pose.pose)
     while not collision_free([knife, spoon, fork, robot], bowl):
-        random_pos = sampleTable('bowl', bowl_pose)[0][0].pose
+        random_pos = util.sampleTable('bowl')[0][0].pose
         bowl.set_transform(random_pos)
 
     objects = {'fork': fork, 'spoon': spoon, 'knife': knife, 'bowl': bowl}

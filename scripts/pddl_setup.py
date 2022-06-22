@@ -5,6 +5,7 @@ import numpy
 import IPython
 import pb_robot
 import os
+import util
 
 from TAMP_Functions import *
 
@@ -65,7 +66,7 @@ def pddlstream_from_tamp(robot, movable, tamp, panda = None):
         'samplePlacePose': from_gen_fn(tamp.samplePlacePose),
         'get_trajectory_holding': from_gen_fn(tamp.calculate_path_holding),
         'collisionCheck': from_test(tamp.collisionCheck),
-        'sampleTable': from_gen_fn(sampleTable),
+        'sampleTable': from_gen_fn(util.sampleTable),
         'cfree': from_test(tamp.cfreeTraj_Check),
         'cfreeholding': from_test(tamp.cfreeTrajHolding_Check)
     }

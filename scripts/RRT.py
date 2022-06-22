@@ -4,6 +4,7 @@ import numpy as np
 import random
 import networkx as nx
 import time
+import util
 
 
 def getDistance(q1, q2):
@@ -52,7 +53,7 @@ class RRT:
         num = 1
         while num < sample:
             q_new = q1 + (q2 - q1) / sample * num
-            if self.collision_Test(q1, q_new, 50):
+            if util.collision_Test(q1, q_new, 50):
                 q_list.append(q_new)
             else:
                 return q_list
@@ -61,12 +62,6 @@ class RRT:
         if self.robot.arm.IsCollisionFree(q2, obstacles=self.nonmovable):
             q_list.append(q2)
         return q_list
-
-    def collision_Test(self, q1, q2, sample):
-        for num in range(1, sample + 1):
-            if not self.robot.arm.IsCollisionFree(q1 + (q2 - q1) / sample * num, obstacles=self.nonmovable):
-                return False
-        return True
 
     def sample_config(self):
         q_rand = self.robot.arm.randomConfiguration()
