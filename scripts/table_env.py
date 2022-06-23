@@ -54,7 +54,7 @@ def execute():
     while not collision_free([robot], fork):
         random_pos = util.sampleTable('fork')[0][0].pose
         fork.set_transform(random_pos)
-
+    
     # Add knife object
     knife_file = os.path.join(objects_path, 'knife.urdf')
     knife = pb_robot.body.createBody(knife_file)

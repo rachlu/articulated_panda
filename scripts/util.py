@@ -27,7 +27,7 @@ def collision_Test(robot, nonmovable, q1, q2, sample):
     """
     Returns True if q1 to q2 is collision free.
     """
-    for num in range(1, sample + 1):
+    for num in range(sample + 1):
         if not robot.arm.IsCollisionFree(q1 + (q2 - q1) / sample * num, obstacles=nonmovable):
             return False
     return True

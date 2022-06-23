@@ -61,6 +61,8 @@ def execute_plan(plan, g=False):
             arm.execute_position_path(end_path)
             continue
         if action.name == 'place':
+            if g:
+                continue
             obj, obj_pose, grasp, conf, traj = action.args
             start = vobj.TrajPath(robot, traj.path[:2])
             end = vobj.TrajPath(robot, traj.path[1:])
@@ -107,12 +109,26 @@ def execute_plan(plan, g=False):
         arm.execute_position_path(path)
 
 
+def reset():
+    for obj in objects:
+        objects[obj].set_transform(init_conditions[obj])
+    for obj in robot.arm.grabbedObjects:
+        robot.arm.Release(robot.arm.grabbedObjects[obj])
+    robot.arm.SetJointValues(init_conditions['initial_q'])
+
+
 if __name__ == '__main__':
     rospy.init_node('testing_node')
     arm = ArmInterface()
     objects, floor, robot = table_env.execute()
     arm.hand.open()
     robot.arm.hand.Open()
+    
+    global init_conditions
+    init_conditions = {'initial_q': robot.arm.GetJointValues()}
+    
+    for obj in objects:
+        init_conditions[obj] = objects[obj].get_transform()
 
     tamp = TAMP_Functions(robot, objects, floor)
 

@@ -104,6 +104,8 @@ class TAMP_Functions:
         translated_q = self.robot.arm.ComputeIK(new_g, seed_q = q_g)
         if translated_q is None:
             return (None, )
+        translated_q = numpy.array(translated_q)
+        q_g = numpy.array(q_g)
         q = vobj.BodyConf(self.robot, translated_q)
         traj = vobj.TrajPath(self.robot, [translated_q, q_g, translated_q])
         cmd = [q, traj]
@@ -147,7 +149,7 @@ class TAMP_Functions:
         obj_oldpos = self.objects[obj].get_transform()
         self.objects[obj].set_transform(pose.pose)
         for num in range(len(traj.path)-1):
-            if not util.collision_Test(self.robot, [self.floor], traj.path[num], traj.path[num+1], 50):
+            if not util.collision_Test(self.robot, [self.floor, self.objects[obj]], traj.path[num], traj.path[num+1], 50):
                 self.objects[obj].set_transform(obj_oldpos)
                 return False
         self.objects[obj].set_transform(obj_oldpos)

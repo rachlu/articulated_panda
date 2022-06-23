@@ -17,21 +17,21 @@ rotation = numpy.array([[math.cos(math.pi/2), -math.sin(math.pi/2), 0, 0],
 
 # x, y, z
 translation = numpy.array([[1, 0, 0, 0.2],
-                            [0, 1, 0, 0.38],
-                            [0, 0, 1, 0],
+                            [0, 1, 0, 0.4],
+                            [0, 0, 1, 0.005],
                             [0., 0., 0., 1.]])
 
 fork_place = numpy.dot(translation, rotation)
 
 translation = numpy.array([[1, 0, 0, -0.2],
                             [0, 1, 0, 0.4],
-                            [0, 0, 1, 0],
+                            [0, 0, 1, 0.005],
                             [0., 0., 0., 1.]])
 knife_place = numpy.dot(translation, rotation)
 
 translation = numpy.array([[1, 0, 0, -0.33],
                             [0, 1, 0, 0.4],
-                            [0, 0, 1, 0],
+                            [0, 0, 1, 0.005],
                             [0., 0., 0., 1.]])
 spoon_place = numpy.dot(translation, rotation)
 
