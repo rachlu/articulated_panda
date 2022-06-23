@@ -20,8 +20,19 @@ if __name__ == '__main__':
     grasp = Grasp(robot, objects)
     rrt = RRT(robot)
     place = Place(robot, objects, floor)
-
-
+    while True:
+        t = numpy.array([[1, 0, 0, -0.5],
+                         [0, 1, 0, 0],
+                         [0, 0, 1, 0.005],
+                         [0., 0., 0., 1.]])
+        angle = random.uniform(0, 2 * math.pi)
+        rotate = numpy.array([[math.cos(angle), -math.sin(angle), 0, 0],
+                              [math.sin(angle), math.cos(angle), 0, 0],
+                              [0, 0, 1, 0],
+                              [0., 0., 0., 1.]])
+        objects['knife'].set_transform(numpy.dot(t, rotate))
+        input('next')
+    '''
     while True:
         q = grasp.grasp('spoon')[1]
         robot.arm.SetJointValues(q)
@@ -30,6 +41,7 @@ if __name__ == '__main__':
         ans = input('next?')
         if ans.upper() == 'N':
             break
+    '''
     '''
     while True:
         q_start = robot.arm.GetJointValues()
