@@ -18,6 +18,7 @@ if __name__ == '__main__':
     objects, floor, robot = table_env.execute()
     robot.arm.hand.Open()
     grasp = Grasp(robot, objects)
+    #rrt = RRT(robot, constraint=rotation_constraint)
     rrt = RRT(robot)
     place = Place(robot, objects, floor)
     # q1 = robot.arm.GetJointValues()
@@ -29,10 +30,6 @@ if __name__ == '__main__':
     #     robot.arm.SetJointValues(q_new)
     #     input('next')
     #     num += 1
-    tamp = TAMP_Functions(robot, objects, floor)
-    pose = vobj.Pose('fork', objects['fork'].get_transform())
-    grasp = tamp.sampleGrabPose('fork', pose)[0][0]
-    traj = tamp.computeIK('fork', pose, grasp)[0][1].path
     # q1 = traj[0]
     # q2 = traj[1]
     # for num in range(10):
@@ -53,12 +50,15 @@ if __name__ == '__main__':
         objects['knife'].set_transform(numpy.dot(t, rotate))
         input('next')
     '''
-    '''    
+    '''
     while True:
-        q = grasp.grasp('fork')[1]
+        q = grasp.grasp('bowl')[1]
         robot.arm.SetJointValues(q)
         robot.arm.hand.Close()
-        print(robot.arm.IsCollisionFree(q))
+        t = robot.arm.GetEETransform()
+        angles = get_euler_angles(t)
+        print(angles)
+        print(rotation_constraint(angles))
         ans = input('next?')
         if ans.upper() == 'N':
             break
@@ -90,15 +90,28 @@ if __name__ == '__main__':
         p = vobj.TrajPath(robot, path)
         p.execute()
         input('next')
-
+    '''
     obj = 'bowl'
     grasp, q = grasp.grasp(obj)
     robot.arm.SetJointValues(q)
     grasp = numpy.dot(numpy.linalg.inv(objects[obj].get_transform()), grasp)
     robot.arm.Grab(objects[obj], grasp)
-    #robot.arm.hand.Close()
+    robot.arm.hand.Close()
     # tamp = TAMP_Functions(robot, objects, floor)
     # #old_pos = objects['bowl'].get_transform()
+    '''
+    while True:
+        print()
+        q = robot.arm.randomConfiguration()
+        robot.arm.SetJointValues(q)
+        t = robot.arm.GetEETransform()
+        angles = get_euler_angles(t)
+        print(angles)
+        print(rotation_constraint(angles))
+        if input('next').upper() == 'N':
+            break
+    '''     
+        
     while True:
     #     old_pos = vobj.Pose(obj, objects[obj].get_transform())
     #     #obj_pose = sampleTable(obj, old_pos)[0][0].pose
@@ -108,24 +121,32 @@ if __name__ == '__main__':
          if new_q is None:
              print('none')
              continue
-    #     #rrt = RRT(robot, nonmovable=[floor])
-    #     #q_start = robot.arm.GetJointValues()
-    #     #path = vobj.TrajPath(robot, rrt.motion(q_start, new_q))
-    #     #print(path.path)
+         #robot.arm.SetJointValues(new_q)
+         #print(rotation_constraint(robot, new_q))
+         q_start = robot.arm.GetJointValues()
+         #input('goal')
+         #robot.arm.SetJointValues(new_q)
+         #input('plan?')
+         path = vobj.TrajPath(robot, rrt.motion(q_start, new_q))
+         print(path.path)
+         if path.path is None:
+             continue
     #     for num in range(len(path.path)):
     #         print((num+1), '/', len(path.path))
     #         print(robot.arm.IsCollisionFree(path.path[num]))
-    #     path.execute()
-         robot.arm.SetJointValues(new_q)
-         print(robot.arm.IsCollisionFree(new_q))
-         input('next')
-    #     ans = input('next? (R?)')
-    #     while ans.upper() == 'R':
-    #         path.execute()
-    #         ans = input('next? (R?)')
+         path.execute()
+         #robot.arm.SetJointValues(new_q)
+         #print(robot.arm.IsCollisionFree(new_q))
+         #input('next')
+         
+         ans = input('next? (R?)')
+         while ans.upper() == 'R':
+             path.execute()
+             ans = input('next? (R?)')
     #
-    #     if ans.upper() == 'N':
-    #         break
+         if ans.upper() == 'N':
+             break
+         #input('next')
     #     '''
     '''
     for obj in objects:

@@ -57,15 +57,33 @@ def get_euler_angles(matrix):
             x_angle = math.atan2(-matrix[0][1], -matrix[0][2]) - z_angle
     return (x_angle, y_angle1, z_angle)
 
+
+def rotation_constraint(robot, q):
+    old_q = robot.arm.GetJointValues()
+    t = robot.arm.GetEETransform()
+    angles = get_euler_angles(t)
+    if 3*math.pi/4 <= angles[0] <= 5*math.pi/4:
+        if -math.pi/8 <= angles[1] <= math.pi/8:
+            robot.arm.SetJointValues(old_q)
+            return True
+    elif -5*math.pi/4 <= angles[0] <= -3*math.pi/4:
+        if -math.pi/8 <= angles[1] <= math.pi/8:
+            robot.arm.SetJointValues(old_q)
+            return True
+    robot.arm.SetJointValues(old_q)
+    return False
+            
+
 class RRT:
     # Test step size
-    def __init__(self, robot, nonmovable=None, max_step=0.5, max_time=10, max_shortcut=3):
+    def __init__(self, robot, nonmovable=None, max_step=0.5, max_time=10, max_shortcut=3, constraint=None):
         self.robot = robot
         self.max_time = max_time
         self.max_step = max_step
         self.G = nx.DiGraph()
         self.nonmovable = nonmovable
         self.max_shortcut = max_shortcut
+        self.constraint = constraint
 
     # Test Completed
     def closest_node(self, q):
@@ -96,15 +114,29 @@ class RRT:
                 return q_list
             q1 = q_new
             num += 1
+            #print('collision_free', sample)
         if self.robot.arm.IsCollisionFree(q2, obstacles=self.nonmovable):
             q_list.append(q2)
         return q_list
 
     def sample_config(self):
         q_rand = self.robot.arm.randomConfiguration()
+        
+        while True:
+            #print('stuck sampling config')
+            if self.robot.arm.IsCollisionFree(q_rand, obstacles=self.nonmovable):
+                if self.constraint is not None:
+                    if self.constraint(self.robot, q_rand):
+                        break
+                else:
+                    break
+            q_rand = self.robot.arm.randomConfiguration()
+        
+        '''
         while not self.robot.arm.IsCollisionFree(q_rand, obstacles=self.nonmovable):
             q_rand = self.robot.arm.randomConfiguration()
-
+        '''
+        #print(q_rand)
         return q_rand
 
     # Working?
