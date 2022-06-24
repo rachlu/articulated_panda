@@ -33,12 +33,12 @@ if __name__ == '__main__':
     pose = vobj.Pose('fork', objects['fork'].get_transform())
     grasp = tamp.sampleGrabPose('fork', pose)[0][0]
     traj = tamp.computeIK('fork', pose, grasp)[0][1].path
-    q1 = traj[0]
-    q2 = traj[1]
-    for num in range(10):
-        q_new = q1 + (q2 - q1) / 9 * num
-        robot.arm.SetJointValues(q_new)
-        input('next')
+    # q1 = traj[0]
+    # q2 = traj[1]
+    # for num in range(10):
+    #     q_new = q1 + (q2 - q1) / 9 * num
+    #     robot.arm.SetJointValues(q_new)
+    #     input('next')
     '''
     while True:
         t = numpy.array([[1, 0, 0, -0.5],

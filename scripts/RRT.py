@@ -5,6 +5,7 @@ import random
 import networkx as nx
 import time
 import util
+import math
 
 
 def getDistance(q1, q2):
@@ -20,31 +21,41 @@ def filter(arraylist):
     return list(temp.values())
 
 
-def get_rotation_matrix(matrix):
-    end = np.array([0, 0, 0, 1])
-
-    x = matrix[:, 0]
-    y = matrix[:, 1]
-    z = matrix[:, 2]
-
-    array = [x, y, z]
-
-    s_x = np.linalg.norm(x)
-    s_y = np.linalg.norm(y)
-    s_z = np.linalg.norm(z)
-
-    scale = [s_x, s_y, s_z]
-
-    for i in range(3):
-        for index in range(len(array[i])):
-            array[i][index] /= scale[i]
-    return np.column_stack([x, y, z, end])
+# def get_rotation_matrix(matrix):
+#     end = np.array([0, 0, 0, 1])
+#
+#     x = matrix[:, 0]
+#     y = matrix[:, 1]
+#     z = matrix[:, 2]
+#
+#     array = [x, y, z]
+#
+#     s_x = np.linalg.norm(x)
+#     s_y = np.linalg.norm(y)
+#     s_z = np.linalg.norm(z)
+#
+#     scale = [s_x, s_y, s_z]
+#
+#     for i in range(3):
+#         for index in range(len(array[i])):
+#             array[i][index] /= scale[i]
+#     return np.column_stack([x, y, z, end])
 
 
 def get_euler_angles(matrix):
-    y_angle1 = -math.arcsin(matrix[2][0])
-    y_angle2 = math.pi - y_angle1
-    x_angle = math.arctan(matrix[2][1]/matrix[2][2])
+    y_angle1 = -math.asin(matrix[2][0])
+    # y_angle2 = math.pi - y_angle1
+    if math.cos(y_angle1) != 0:
+        x_angle = math.atan2(matrix[2][1]/math.cos(y_angle1), matrix[2][2]/math.cos(y_angle1))
+        z_angle = math.atan2(matrix[1][0]/math.cos(y_angle1), matrix[0][0]/math.cos(y_angle1))
+    else:
+        if y_angle1 == math.pi/2:
+            z_angle = 0
+            x_angle = z_angle + math.atan2(matrix[0][1], matrix[0][2])
+        elif y_angle1 == -math.pi/2:
+            z_angle = 0
+            x_angle = math.atan2(-matrix[0][1], -matrix[0][2]) - z_angle
+    return (x_angle, y_angle1, z_angle)
 
 class RRT:
     # Test step size
