@@ -20,6 +20,32 @@ def filter(arraylist):
     return list(temp.values())
 
 
+def get_rotation_matrix(matrix):
+    end = np.array([0, 0, 0, 1])
+
+    x = matrix[:, 0]
+    y = matrix[:, 1]
+    z = matrix[:, 2]
+
+    array = [x, y, z]
+
+    s_x = np.linalg.norm(x)
+    s_y = np.linalg.norm(y)
+    s_z = np.linalg.norm(z)
+
+    scale = [s_x, s_y, s_z]
+
+    for i in range(3):
+        for index in range(len(array[i])):
+            array[i][index] /= scale[i]
+    return np.column_stack([x, y, z, end])
+
+
+def get_euler_angles(matrix):
+    y_angle1 = -math.arcsin(matrix[2][0])
+    y_angle2 = math.pi - y_angle1
+    x_angle = math.arctan(matrix[2][1]/matrix[2][2])
+
 class RRT:
     # Test step size
     def __init__(self, robot, nonmovable=None, max_step=0.5, max_time=10, max_shortcut=3):
