@@ -50,19 +50,15 @@ if __name__ == '__main__':
         objects['knife'].set_transform(numpy.dot(t, rotate))
         input('next')
     '''
-    '''
+    
     while True:
         q = grasp.grasp('bowl')[1]
         robot.arm.SetJointValues(q)
         robot.arm.hand.Close()
-        t = robot.arm.GetEETransform()
-        angles = get_euler_angles(t)
-        print(angles)
-        print(rotation_constraint(angles))
-        ans = input('next?')
-        if ans.upper() == 'N':
-            break
-    '''
+        #ans = input('next?')
+        #if ans.upper() == 'N':
+        #    break
+    
     '''
     while True:
         q_start = robot.arm.GetJointValues()
@@ -105,9 +101,9 @@ if __name__ == '__main__':
         q = robot.arm.randomConfiguration()
         robot.arm.SetJointValues(q)
         t = robot.arm.GetEETransform()
-        angles = get_euler_angles(t)
-        print(angles)
-        print(rotation_constraint(angles))
+        print(t)
+        pb_robot.viz.draw_tform(t, length=0.2, width=3)
+        print(rotation_constraint(robot, q))
         if input('next').upper() == 'N':
             break
     '''     
@@ -121,15 +117,16 @@ if __name__ == '__main__':
          if new_q is None:
              print('none')
              continue
-         #robot.arm.SetJointValues(new_q)
-         #print(rotation_constraint(robot, new_q))
+         robot.arm.SetJointValues(q)
+         print(rotation_constraint(robot, new_q))
          q_start = robot.arm.GetJointValues()
-         #input('goal')
-         #robot.arm.SetJointValues(new_q)
-         #input('plan?')
+         input('goal')
+         robot.arm.SetJointValues(new_q)
+         input('plan?')
          path = vobj.TrajPath(robot, rrt.motion(q_start, new_q))
          print(path.path)
          if path.path is None:
+             print('no path')
              continue
     #     for num in range(len(path.path)):
     #         print((num+1), '/', len(path.path))
@@ -137,12 +134,12 @@ if __name__ == '__main__':
          path.execute()
          #robot.arm.SetJointValues(new_q)
          #print(robot.arm.IsCollisionFree(new_q))
-         #input('next')
+         input('next')
          
          ans = input('next? (R?)')
          while ans.upper() == 'R':
-             path.execute()
-             ans = input('next? (R?)')
+            path.execute()
+            ans = input('next? (R?)')
     #
          if ans.upper() == 'N':
              break

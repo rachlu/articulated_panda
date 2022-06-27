@@ -6,7 +6,7 @@ import random
 import util
 
 from Plan import Plan
-from RRT import RRT
+from RRT import *
 from Grasp import Grasp
 from Place import Place
 
@@ -21,11 +21,11 @@ class TAMP_Functions:
         self.grasp = Grasp(robot, objects)
 
 
-    def calculate_path(self, q1, q2):
+    def calculate_path(self, q1, q2, constraint=None):
         print(q1, q2)
         if not self.robot.arm.IsCollisionFree(q2.conf, obstacles=[self.floor]):
             return (None, )
-        rrt = RRT(self.robot, nonmovable = [self.floor])
+        rrt = RRT(self.robot, nonmovable = [self.floor], constraint=constraint)
         path = rrt.motion(q1.conf, q2.conf)
         for _ in range(3):
             path = rrt.motion(q1.conf, q2.conf)
@@ -41,7 +41,11 @@ class TAMP_Functions:
         original_position = self.objects[obj].get_transform()
         self.robot.arm.Grab(self.objects[obj], grasp.pose)
         self.robot.arm.hand.Close()
-        path = self.calculate_path(q1, q2)
+        if obj == 'bowl':
+            print('constraint')
+            path = self.calculate_path(q1, q2, rotation_constraint)
+        else:
+            path = self.calculate_path(q1, q2)
         self.robot.arm.Release(self.objects[obj])
         self.robot.arm.hand.Open()
         self.objects[obj].set_transform(original_position)

@@ -6,6 +6,7 @@ import networkx as nx
 import time
 import util
 import math
+from scipy.spatial.transform import Rotation as R
 
 
 def getDistance(q1, q2):
@@ -61,22 +62,33 @@ def get_euler_angles(matrix):
 def rotation_constraint(robot, q):
     old_q = robot.arm.GetJointValues()
     t = robot.arm.GetEETransform()
-    angles = get_euler_angles(t)
-    if 3*math.pi/4 <= angles[0] <= 5*math.pi/4:
-        if -math.pi/8 <= angles[1] <= math.pi/8:
+    rotation_matrix = [t[0][:3], t[1][:3], t[2][:3]]
+    r = R.from_matrix(rotation_matrix)
+    angles = r.as_euler('xyz', degrees=True)
+    #print('angles', angles)
+    if 150 <= angles[0] <= 210:
+        if -20 <= angles[1] <= 20:
             robot.arm.SetJointValues(old_q)
             return True
-    elif -5*math.pi/4 <= angles[0] <= -3*math.pi/4:
-        if -math.pi/8 <= angles[1] <= math.pi/8:
+    elif -210 <= angles[0] <= -150:
+        if -20 <= angles[1] <= 20:
             robot.arm.SetJointValues(old_q)
             return True
     robot.arm.SetJointValues(old_q)
     return False
+
+
+def rotation_constraint2(robot, q):
+    old_q = robot.arm.GetJointValues()
+    t = robot.arm.GetEETransform()
+    rotation_matrix = [t[0][:3], t[1][:3], t[2][:3]]
+    r = R.from_matrix(rotation_matrix)
+    return r.as_rotvec()
             
 
 class RRT:
     # Test step size
-    def __init__(self, robot, nonmovable=None, max_step=0.5, max_time=10, max_shortcut=3, constraint=None):
+    def __init__(self, robot, nonmovable=None, max_step=0.5, max_time=5, max_shortcut=3, constraint=None):
         self.robot = robot
         self.max_time = max_time
         self.max_step = max_step
@@ -183,6 +195,7 @@ class RRT:
                 path = filter(path)
                 start = time.time()
                 while time.time() - start < self.max_shortcut:
+                    #print('shortcutting', len(path))
                     if len(path) < 3:
                         break
                     n1 = random.randint(0, len(path) - 2)
