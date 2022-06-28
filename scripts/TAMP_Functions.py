@@ -42,8 +42,8 @@ class TAMP_Functions:
         self.robot.arm.Grab(self.objects[obj], grasp.pose)
         self.robot.arm.hand.Close()
         if obj == 'bowl':
-            print('constraint')
-            path = self.calculate_path(q1, q2, rotation_constraint)
+            #print('constraint')
+            path = self.calculate_path(q1, q2, rotation_constraint2)
         else:
             path = self.calculate_path(q1, q2)
         self.robot.arm.Release(self.objects[obj])

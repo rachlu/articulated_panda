@@ -55,7 +55,8 @@ if __name__ == '__main__':
         q = grasp.grasp('bowl')[1]
         robot.arm.SetJointValues(q)
         robot.arm.hand.Close()
-        print(rotation_constraint(robot, q))
+        print(rotation_constraint2(robot, objects['bowl'].get_transform()))
+        pb_robot.viz.draw_tform(objects['bowl'].get_transform(), length=0.3, width=3)
         ans = input('next?')
         if ans.upper() == 'N':
             break
@@ -96,18 +97,18 @@ if __name__ == '__main__':
     robot.arm.hand.Close()
     # tamp = TAMP_Functions(robot, objects, floor)
     # #old_pos = objects['bowl'].get_transform()
-    '''
+    
     while True:
         print()
         q = robot.arm.randomConfiguration()
-        #robot.arm.SetJointValues(q)
-        t = robot.arm.GetEETransform()
-        print(t)
-        pb_robot.viz.draw_tform(t, length=0.2, width=3)
-        print(rotation_constraint(robot, q))
+        robot.arm.SetJointValues(q)
+        #t = robot.arm.GetEETransform()
+        #print(t)
+        p = objects['bowl'].get_transform()
+        pb_robot.viz.draw_tform(p, length=0.2, width=3)
+        print(rotation_constraint2(robot, p))
         if input('next').upper() == 'N':
-            break
-    '''     
+            break     
     '''    
     while True:
     #     old_pos = vobj.Pose(obj, objects[obj].get_transform())

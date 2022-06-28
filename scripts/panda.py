@@ -112,9 +112,12 @@ def execute_plan(plan, g=False):
 def reset():
     for obj in objects:
         objects[obj].set_transform(init_conditions[obj])
-    for obj in robot.arm.grabbedObjects:
+    for obj in list(robot.arm.grabbedObjects):
         robot.arm.Release(robot.arm.grabbedObjects[obj])
     robot.arm.SetJointValues(init_conditions['initial_q'])
+    path = [arm.joint_angles(), init_conditions['initial_q']]
+    path = convert(path)
+    arm.execute_position_path(path)
 
 
 if __name__ == '__main__':

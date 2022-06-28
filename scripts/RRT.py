@@ -8,7 +8,6 @@ import util
 import math
 from scipy.spatial.transform import Rotation as R
 
-
 def getDistance(q1, q2):
     """
     Returns the total radian distance from configuration q1 to configuration q2.
@@ -61,25 +60,31 @@ def get_euler_angles(matrix):
 
 def rotation_constraint(robot, q):
     old_q = robot.arm.GetJointValues()
+    robot.arm.SetJointValues(q)
     t = robot.arm.GetEETransform()
     rotation_matrix = [t[0][:3], t[1][:3], t[2][:3]]
     r = R.from_matrix(rotation_matrix)
     angles = r.as_euler('xyz', degrees=True)
-    print('angles', angles)
+    #print('angles', angles)
     robot.arm.SetJointValues(old_q)
-    if 150 <= angles[0] <= 190 and -15 <= angles[1] <= 15:
-            return True
-    elif -190 <= angles[0] <= -150 and -15 <= angles[1] <= 15:
-            return True
+    if (135 <= angles[0] <= 170 or -170 <= angles[0] <= -135) and \
+            -15 <= angles[1] <= 15:
+        return True
+    #if 135 <= angles[0] <= 175 and -15 <= angles[1] <= 15:
+    #        return True
+    #elif -175 <= angles[0] <= -135 and -15 <= angles[1] <= 15:
+    #        return True
     return False
 
 
-def rotation_constraint2(robot, q):
-    old_q = robot.arm.GetJointValues()
-    t = robot.arm.GetEETransform()
-    rotation_matrix = [t[0][:3], t[1][:3], t[2][:3]]
+def rotation_constraint2(robot, obj_pose):
+    rotation_matrix = [obj_pose[0][:3], obj_pose[1][:3], obj_pose[2][:3]]
     r = R.from_matrix(rotation_matrix)
-    return r.as_rotvec()
+    angles = r.as_euler('xyz', degrees=True)
+    print(angles)
+    if -15 <= angles[0] <= 15 and -15 <= angles[1] <= 15:
+        return True
+    return False
             
 
 class RRT:
@@ -131,7 +136,7 @@ class RRT:
         q_rand = self.robot.arm.randomConfiguration()
         
         while True:
-            print('stuck sampling config')
+            #print('stuck sampling config')
             if self.robot.arm.IsCollisionFree(q_rand, obstacles=self.nonmovable):
                 if self.constraint is not None:
                     if self.constraint(self.robot, q_rand):
