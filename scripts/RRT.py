@@ -65,16 +65,12 @@ def rotation_constraint(robot, q):
     rotation_matrix = [t[0][:3], t[1][:3], t[2][:3]]
     r = R.from_matrix(rotation_matrix)
     angles = r.as_euler('xyz', degrees=True)
-    #print('angles', angles)
-    if 150 <= angles[0] <= 210:
-        if -20 <= angles[1] <= 20:
-            robot.arm.SetJointValues(old_q)
-            return True
-    elif -210 <= angles[0] <= -150:
-        if -20 <= angles[1] <= 20:
-            robot.arm.SetJointValues(old_q)
-            return True
+    print('angles', angles)
     robot.arm.SetJointValues(old_q)
+    if 150 <= angles[0] <= 190 and -15 <= angles[1] <= 15:
+            return True
+    elif -190 <= angles[0] <= -150 and -15 <= angles[1] <= 15:
+            return True
     return False
 
 
@@ -120,7 +116,7 @@ class RRT:
         num = 1
         while num < sample:
             q_new = q1 + (q2 - q1) / sample * num
-            if util.collision_Test(self.robot, self.nonmovable, q1, q_new, 50):
+            if util.collision_Test(self.robot, self.nonmovable, q1, q_new, 50, self.constraint):
                 q_list.append(q_new)
             else:
                 return q_list
@@ -135,7 +131,7 @@ class RRT:
         q_rand = self.robot.arm.randomConfiguration()
         
         while True:
-            #print('stuck sampling config')
+            print('stuck sampling config')
             if self.robot.arm.IsCollisionFree(q_rand, obstacles=self.nonmovable):
                 if self.constraint is not None:
                     if self.constraint(self.robot, q_rand):

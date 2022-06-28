@@ -23,11 +23,14 @@ def sampleTable(obj):
     cmd = [vobj.Pose(obj, pose)]
     return (cmd,)
 
-def collision_Test(robot, nonmovable, q1, q2, sample):
+def collision_Test(robot, nonmovable, q1, q2, sample, constraint=None):
     """
     Returns True if q1 to q2 is collision free.
     """
     for num in range(sample + 1):
+        if constraint is not None:
+            if not constraint(robot, q1 + (q2 - q1) / sample * num):
+                return False
         if not robot.arm.IsCollisionFree(q1 + (q2 - q1) / sample * num, obstacles=nonmovable):
             return False
     return True
