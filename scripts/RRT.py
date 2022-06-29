@@ -70,26 +70,27 @@ def rotation_constraint(robot, q):
     if (135 <= angles[0] <= 170 or -170 <= angles[0] <= -135) and \
             -15 <= angles[1] <= 15:
         return True
-    #if 135 <= angles[0] <= 175 and -15 <= angles[1] <= 15:
-    #        return True
-    #elif -175 <= angles[0] <= -135 and -15 <= angles[1] <= 15:
-    #        return True
     return False
 
 
-def rotation_constraint2(robot, obj_pose):
+def rotation_constraint2(robot, q, obj):
+    old_q = robot.arm.GetJointValues()
+    robot.arm.SetJointValues(q)
+    obj_pose = obj.get_transform()
     rotation_matrix = [obj_pose[0][:3], obj_pose[1][:3], obj_pose[2][:3]]
     r = R.from_matrix(rotation_matrix)
     angles = r.as_euler('xyz', degrees=True)
     print(angles)
     if -15 <= angles[0] <= 15 and -15 <= angles[1] <= 15:
+        robot.arm.SetJointValues(old_q)
         return True
+    robot.arm.SetJointValues(old_q)
     return False
             
 
 class RRT:
     # Test step size
-    def __init__(self, robot, nonmovable=None, max_step=0.5, max_time=5, max_shortcut=3, constraint=None):
+    def __init__(self, robot, objects, nonmovable=None, max_step=0.5, max_time=5, max_shortcut=3, constraint=None):
         self.robot = robot
         self.max_time = max_time
         self.max_step = max_step
@@ -97,6 +98,7 @@ class RRT:
         self.nonmovable = nonmovable
         self.max_shortcut = max_shortcut
         self.constraint = constraint
+        self.objects = objects
 
     # Test Completed
     def closest_node(self, q):
@@ -139,7 +141,8 @@ class RRT:
             #print('stuck sampling config')
             if self.robot.arm.IsCollisionFree(q_rand, obstacles=self.nonmovable):
                 if self.constraint is not None:
-                    if self.constraint(self.robot, q_rand):
+                    constraint_function, obj = self.constraint
+                    if constraint_function(self.robot, q_rand, self.objects[obj]):
                         break
                 else:
                     break

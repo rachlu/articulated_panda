@@ -11,7 +11,6 @@ from Grasp import Grasp
 from Place import Place
 
 
-
 class TAMP_Functions:
     def __init__(self, robot, objects, floor):
         self.robot = robot
@@ -20,12 +19,11 @@ class TAMP_Functions:
         self.place = Place(robot, objects, floor)
         self.grasp = Grasp(robot, objects)
 
-
     def calculate_path(self, q1, q2, constraint=None):
         print(q1, q2)
         if not self.robot.arm.IsCollisionFree(q2.conf, obstacles=[self.floor]):
-            return (None, )
-        rrt = RRT(self.robot, nonmovable = [self.floor], constraint=constraint)
+            return (None,)
+        rrt = RRT(self.robot, nonmovable=[self.floor], constraint=constraint)
         path = rrt.motion(q1.conf, q2.conf)
         for _ in range(3):
             path = rrt.motion(q1.conf, q2.conf)
@@ -33,19 +31,27 @@ class TAMP_Functions:
                 break
         if path is None:
             print(q2.conf)
-            return (None, )
+            return (None,)
         cmd = [vobj.TrajPath(self.robot, path)]
-        return (cmd, )
+        return (cmd,)
 
     def calculate_path_holding(self, q1, q2, obj, grasp):
         original_position = self.objects[obj].get_transform()
         self.robot.arm.Grab(self.objects[obj], grasp.pose)
         self.robot.arm.hand.Close()
-        if obj == 'bowl':
-            #print('constraint')
-            path = self.calculate_path(q1, q2, rotation_constraint2)
-        else:
-            path = self.calculate_path(q1, q2)
+
+        path = self.calculate_path(q1, q2)
+        self.robot.arm.Release(self.objects[obj])
+        self.robot.arm.hand.Open()
+        self.objects[obj].set_transform(original_position)
+        return path
+
+    def calculate_path_holding_upright(self, q1, q2, obj, grasp):
+        original_position = self.objects[obj].get_transform()
+        self.robot.arm.Grab(self.objects[obj], grasp.pose)
+        self.robot.arm.hand.Close()
+
+        path = self.calculate_path(q1, q2, (rotation_constraint2, obj))
         self.robot.arm.Release(self.objects[obj])
         self.robot.arm.hand.Open()
         self.objects[obj].set_transform(original_position)
@@ -55,15 +61,15 @@ class TAMP_Functions:
         # grasp_pose is grasp in world frame
         grasp_pose, q = self.grasp.grasp(obj)
         if q is None:
-            return (None, )
+            return (None,)
         for _ in range(40):
             if self.robot.arm.IsCollisionFree(q, obstacles=[self.floor]):
                 # Grasp in object frame
                 relative_grasp = numpy.dot(numpy.linalg.inv(obj_pose.pose), grasp_pose)
                 cmd1 = [vobj.Pose(obj, relative_grasp)]
-                return (cmd1, )
-        return (None, )
-        
+                return (cmd1,)
+        return (None,)
+
     def execute_path(self, path):
         print(path)
         for action in path:
@@ -99,31 +105,29 @@ class TAMP_Functions:
         grasp_in_world = numpy.dot(obj_pose.pose, grasp.pose)
         q_g = self.robot.arm.ComputeIK(grasp_in_world)
         if q_g is None or not self.robot.arm.IsCollisionFree(q_g, obstacles=[self.floor]):
-            return (None, )
+            return (None,)
         up = numpy.array([[1, 0, 0, 0],
                           [0, 1, 0, 0],
                           [0, 0, 1, -.08],
                           [0., 0., 0., 1.]])
         new_g = numpy.dot(grasp_in_world, up)
-        translated_q = self.robot.arm.ComputeIK(new_g, seed_q = q_g)
+        translated_q = self.robot.arm.ComputeIK(new_g, seed_q=q_g)
         if translated_q is None:
-            return (None, )
+            return (None,)
         translated_q = numpy.array(translated_q)
         q_g = numpy.array(q_g)
         q = vobj.BodyConf(self.robot, translated_q)
         traj = vobj.TrajPath(self.robot, [translated_q, q_g, translated_q])
         cmd = [q, traj]
         # return ([q], [traj], )
-        return (cmd, )
-
+        return (cmd,)
 
     def samplePlacePose(self, obj, region):
         # Obj pose in world frame
         place_pose = self.place.place_tsr[obj].sample()
         # Maybe doesnt have to be a list
         cmd = [vobj.Pose(obj, place_pose)]
-        return (cmd, )
-
+        return (cmd,)
 
     def collisionCheck(self, obj, pos, other, other_pos):
         """
@@ -152,8 +156,9 @@ class TAMP_Functions:
     def cfreeTraj_Check(self, traj, obj, pose):
         obj_oldpos = self.objects[obj].get_transform()
         self.objects[obj].set_transform(pose.pose)
-        for num in range(len(traj.path)-1):
-            if not util.collision_Test(self.robot, [self.floor, self.objects[obj]], traj.path[num], traj.path[num+1], 50):
+        for num in range(len(traj.path) - 1):
+            if not util.collision_Test(self.robot, [self.floor, self.objects[obj]], traj.path[num], traj.path[num + 1],
+                                       50):
                 self.objects[obj].set_transform(obj_oldpos)
                 return False
         self.objects[obj].set_transform(obj_oldpos)
@@ -166,5 +171,3 @@ class TAMP_Functions:
         self.robot.arm.Release(self.objects[obj])
         self.objects[obj].set_transform(old_pos)
         return result
-
-

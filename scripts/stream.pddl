@@ -13,6 +13,13 @@
         :certified (and (Trajectory_Holding ?o ?g ?q1 ?q2 ?t) (Traj_Holding ?t ?o ?g))
     )
 
+    (:stream get_trajectory_holding_upright
+        :inputs (?q1 ?q2 ?o ?g)
+        :domain (and (Conf ?q1) (Conf ?q2) (Graspable ?o) (Grasp ?o ?g))
+        :outputs (?t)
+        :certified (and (Trajectory_Holding_Upright ?o ?g ?q1 ?q2 ?t) (Traj_Holding ?t ?o ?g))
+    )
+
     (:stream sampleGraspPose
         :inputs (?o ?p)
         :domain (and (Graspable ?o) (ObjPose ?o ?p))

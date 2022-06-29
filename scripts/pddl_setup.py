@@ -36,7 +36,8 @@ def pddlstream_from_tamp(robot, movable, tamp, panda = None):
         ('Region', 'spoon_region'),
         ('Region', 'fork_region'),
         ('Region', 'bowl_region'),
-        ('Region', 'knife_region')
+        ('Region', 'knife_region'),
+        ('UprightObj', 'bowl')
     ]
 
     #goal = (('Holding', 'fork'))
