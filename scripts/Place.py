@@ -25,8 +25,8 @@ class Place:
     def set_info(self):
         import Placements.Front, Placements.Left, Placements.Right
 
-        choice = random.choice([Placements.Left, Placements.Right, Placements.Front])
-
+        #choice = random.choice([Placements.Left, Placements.Right, Placements.Front])
+        choice = Placements.Front
         self.relative['bowl'] = choice.bowl_place
     
         self.bw_range['bowl'] = choice.bowl_bw

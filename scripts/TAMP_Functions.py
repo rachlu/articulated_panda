@@ -23,7 +23,7 @@ class TAMP_Functions:
         print(q1, q2)
         if not self.robot.arm.IsCollisionFree(q2.conf, obstacles=[self.floor]):
             return (None,)
-        rrt = RRT(self.robot, nonmovable=[self.floor], constraint=constraint)
+        rrt = RRT(self.robot, self.objects, nonmovable=[self.floor], constraint=constraint)
         path = rrt.motion(q1.conf, q2.conf)
         for _ in range(3):
             path = rrt.motion(q1.conf, q2.conf)
@@ -157,8 +157,7 @@ class TAMP_Functions:
         obj_oldpos = self.objects[obj].get_transform()
         self.objects[obj].set_transform(pose.pose)
         for num in range(len(traj.path) - 1):
-            if not util.collision_Test(self.robot, [self.floor, self.objects[obj]], traj.path[num], traj.path[num + 1],
-                                       50):
+            if not util.collision_Test(self.robot, self.objects, [self.floor, self.objects[obj]], traj.path[num], traj.path[num + 1], 50):
                 self.objects[obj].set_transform(obj_oldpos)
                 return False
         self.objects[obj].set_transform(obj_oldpos)

@@ -80,7 +80,7 @@ def rotation_constraint2(robot, q, obj):
     rotation_matrix = [obj_pose[0][:3], obj_pose[1][:3], obj_pose[2][:3]]
     r = R.from_matrix(rotation_matrix)
     angles = r.as_euler('xyz', degrees=True)
-    print(angles)
+    #print(angles)
     if -15 <= angles[0] <= 15 and -15 <= angles[1] <= 15:
         robot.arm.SetJointValues(old_q)
         return True
@@ -123,7 +123,7 @@ class RRT:
         num = 1
         while num < sample:
             q_new = q1 + (q2 - q1) / sample * num
-            if util.collision_Test(self.robot, self.nonmovable, q1, q_new, 50, self.constraint):
+            if util.collision_Test(self.robot, self.objects, self.nonmovable, q1, q_new, 50, self.constraint):
                 q_list.append(q_new)
             else:
                 return q_list

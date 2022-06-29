@@ -150,7 +150,7 @@ if __name__ == '__main__':
     else:
         for obj in objects:
             pose = objects[obj].get_transform()
-            print(obj, (pose[0][-1], pose[1][-1]))
+            print(obj, pose)
 
     IPython.embed()
     pb_robot.utils.wait_for_user()
