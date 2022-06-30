@@ -49,6 +49,7 @@ def execute_plan(plan, g=False):
             if g:
                 arm.hand.open()
                 robot.arm.hand.Open()
+                robot.arm.Release(objects[obj])
             
             end.execute()
 
@@ -61,9 +62,9 @@ def execute_plan(plan, g=False):
             arm.execute_position_path(end_path)
             continue
         if action.name == 'place':
+            obj, obj_pose, grasp, conf, traj = action.args
             if g:
                 continue
-            obj, obj_pose, grasp, conf, traj = action.args
             start = vobj.TrajPath(robot, traj.path[:2])
             end = vobj.TrajPath(robot, traj.path[1:])
             start.execute()
