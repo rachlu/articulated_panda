@@ -12,6 +12,10 @@ import vobj
 
 
 def convert(path):
+    """
+    :param path: list of robot configurations
+    :return: list of dictionaries of robot configurations
+    """
     final_path = []
     for num in range(len(path)):
         q = path[num]
@@ -22,6 +26,11 @@ def convert(path):
 
 
 def execute_plan(plan, g=False):
+    """
+    Execute a plan. If g is True, sets the start poses of the objects.
+    :param plan: Sequence of actions
+    :param g: Dictate whether to pick and place or just set the start poses.
+    """
     for action in plan:
         time.sleep(1)
         if action.name == 'grab':
@@ -111,6 +120,9 @@ def execute_plan(plan, g=False):
 
 
 def reset():
+    """
+    Reset all objects to their initial conditions.
+    """
     for obj in objects:
         objects[obj].set_transform(init_conditions[obj])
     for obj in list(robot.arm.grabbedObjects):

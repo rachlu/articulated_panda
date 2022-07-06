@@ -16,6 +16,12 @@ from RRT import RRT
 from Place import Place
 
 def collision_free(objects, obj):
+    """
+    :param objects: List of objects in the scene
+    :param obj: New object to be added
+    :return: True if the obj is not in collision with any of the objects in objects and
+    the new object is a set distance away from the other objects.
+    """
     for obj2 in objects:
         if pb_robot.collisions.body_collision(obj2, obj):
             return False
@@ -54,12 +60,6 @@ def execute():
     while not collision_free([robot], fork):
         random_pos = util.sampleTable('fork')[0][0].pose
         fork.set_transform(random_pos)
-    #fork.set_transform([[ 0.35800727,  0.9337188,   0.,         -0.48509734],
-    #                    [-0.9337188,   0.35800727, -0.,          0.30019573],
-    #                    [-0.,          0.,          1.,          0.        ],
-    #                    [ 0.,          0.,          0.,          1.        ]])
-
-
     
     # Add knife object
     knife_file = os.path.join(objects_path, 'knife.urdf')
@@ -67,10 +67,6 @@ def execute():
     while not collision_free([fork, robot], knife):
         random_pos = util.sampleTable('knife')[0][0].pose
         knife.set_transform(random_pos)
-    #knife.set_transform([[ 0.05352872,  0.99856631,  0.,          0.27479426],
-    #                    [-0.99856631,  0.05352872, -0.,         -0.30335207],
-    #                    [-0.,          0.,          1.,          0.        ],
-    #                    [ 0.,          0.,          0.,          1.        ]])
 
     # Add spoon object
     spoon_file = os.path.join(objects_path, 'spoon.urdf')
@@ -78,11 +74,6 @@ def execute():
     while not collision_free([fork, knife, robot], spoon):
         random_pos = util.sampleTable('spoon')[0][0].pose
         spoon.set_transform(random_pos)
-    #spoon.set_transform([[ 0.62888441,  0.77749881,  0.,          0.64620689],
-    #                    [-0.77749881,  0.62888441, -0.,          0.41487665],
-    #                    [-0.,          0.,          1.,          0.        ],
-    #                    [ 0.,          0.,          0.,          1.        ]])
-
 
     # Add bowl object
     bowl_file = os.path.join(objects_path, 'bowl.urdf')
@@ -90,11 +81,6 @@ def execute():
     while not collision_free([knife, spoon, fork, robot], bowl):
         random_pos = util.sampleTable('bowl')[0][0].pose
         bowl.set_transform(random_pos)
-    #bowl.set_transform([[ 0.81460261, -0.58001947,  0.,          0.42764541],
-    #                    [ 0.58001947,  0.81460261,  0.,          0.42623734],
-    #                    [ 0.,          0.,          1.,          0.        ],
-    #                    [ 0.,          0.,          0.,          1.        ]])
-
 
     objects = {'fork': fork, 'spoon': spoon, 'knife': knife, 'bowl': bowl}
 

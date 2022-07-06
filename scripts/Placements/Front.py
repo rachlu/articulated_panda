@@ -16,7 +16,6 @@ translation = numpy.array([[1, 0, 0, 0.5],
                             [0, 0, 1, 0.005],
                             [0., 0., 0., 1.]])
 
-# fork_place = numpy.dot(translation, rotation)
 fork_place = translation
 translation = numpy.array([[1, 0, 0, 0.5],
                             [0, 1, 0, 0.2],

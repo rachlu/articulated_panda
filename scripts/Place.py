@@ -6,10 +6,6 @@ from tsr.tsr import TSR
 from RRT import RRT
 
 
-def get_relative(world, pose):
-    return numpy.dot(numpy.linalg.inv(pose), world)
-
-
 class Place:
     def __init__(self, robot, objects, table):
         self.objects = objects
@@ -26,7 +22,7 @@ class Place:
         import Placements.Front, Placements.Left, Placements.Right
 
         choice = random.choice([Placements.Left, Placements.Right, Placements.Front])
-        #choice = Placements.Right
+
         self.relative['bowl'] = choice.bowl_place
     
         self.bw_range['bowl'] = choice.bowl_bw
@@ -48,4 +44,5 @@ class Place:
         self.place_tsr['bowl'] = TSR(numpy.dot(t_ow, self.relative['bowl']), numpy.identity(4), self.bw_range['bowl'])
 
     def samplePlacePose(self, obj):
+        # Object pose in world frame
         return self.place_tsr[obj].sample()

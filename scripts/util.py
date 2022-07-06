@@ -8,6 +8,8 @@ def sampleTable(obj):
     x = random.uniform(*r)
     r = random.choice([(-0.45, -0.25), (0.25, 0.45)])
     y = random.uniform(*r)
+
+    # Random rotation
     angle = random.uniform(0, 2*math.pi)
     rotate = numpy.array([[math.cos(angle), -math.sin(angle), 0, 0],
                  [math.sin(angle), math.cos(angle), 0, 0],

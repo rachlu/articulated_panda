@@ -51,7 +51,7 @@ class TAMP_Functions:
         self.robot.arm.Grab(self.objects[obj], grasp.pose)
         self.robot.arm.hand.Close()
 
-        path = self.calculate_path(q1, q2, (rotation_constraint2, obj))
+        path = self.calculate_path(q1, q2, (rotation_constraint, obj))
         self.robot.arm.Release(self.objects[obj])
         self.robot.arm.hand.Open()
         self.objects[obj].set_transform(original_position)
@@ -119,13 +119,11 @@ class TAMP_Functions:
         q = vobj.BodyConf(self.robot, translated_q)
         traj = vobj.TrajPath(self.robot, [translated_q, q_g, translated_q])
         cmd = [q, traj]
-        # return ([q], [traj], )
         return (cmd,)
 
     def samplePlacePose(self, obj, region):
         # Obj pose in world frame
         place_pose = self.place.place_tsr[obj].sample()
-        # Maybe doesnt have to be a list
         cmd = [vobj.Pose(obj, place_pose)]
         return (cmd,)
 
@@ -154,6 +152,12 @@ class TAMP_Functions:
         return True
 
     def cfreeTraj_Check(self, traj, obj, pose):
+        """
+        :param traj: List of configurations
+        :param obj: Object to collision check against
+        :param pose: Pose of the object
+        :return: True if traj is collision free
+        """
         obj_oldpos = self.objects[obj].get_transform()
         self.objects[obj].set_transform(pose.pose)
         for num in range(len(traj.path) - 1):
