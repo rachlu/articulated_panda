@@ -4,7 +4,9 @@ import numpy as np
 import random
 import networkx as nx
 import time
-
+import util
+import math
+from scipy.spatial.transform import Rotation as R
 
 def getDistance(q1, q2):
     """
@@ -19,15 +21,84 @@ def filter(arraylist):
     return list(temp.values())
 
 
+# def get_rotation_matrix(matrix):
+#     end = np.array([0, 0, 0, 1])
+#
+#     x = matrix[:, 0]
+#     y = matrix[:, 1]
+#     z = matrix[:, 2]
+#
+#     array = [x, y, z]
+#
+#     s_x = np.linalg.norm(x)
+#     s_y = np.linalg.norm(y)
+#     s_z = np.linalg.norm(z)
+#
+#     scale = [s_x, s_y, s_z]
+#
+#     for i in range(3):
+#         for index in range(len(array[i])):
+#             array[i][index] /= scale[i]
+#     return np.column_stack([x, y, z, end])
+
+
+def get_euler_angles(matrix):
+    y_angle1 = -math.asin(matrix[2][0])
+    # y_angle2 = math.pi - y_angle1
+    if math.cos(y_angle1) != 0:
+        x_angle = math.atan2(matrix[2][1]/math.cos(y_angle1), matrix[2][2]/math.cos(y_angle1))
+        z_angle = math.atan2(matrix[1][0]/math.cos(y_angle1), matrix[0][0]/math.cos(y_angle1))
+    else:
+        if y_angle1 == math.pi/2:
+            z_angle = 0
+            x_angle = z_angle + math.atan2(matrix[0][1], matrix[0][2])
+        elif y_angle1 == -math.pi/2:
+            z_angle = 0
+            x_angle = math.atan2(-matrix[0][1], -matrix[0][2]) - z_angle
+    return (x_angle, y_angle1, z_angle)
+
+
+def rotation_constraint(robot, q):
+    old_q = robot.arm.GetJointValues()
+    robot.arm.SetJointValues(q)
+    t = robot.arm.GetEETransform()
+    rotation_matrix = [t[0][:3], t[1][:3], t[2][:3]]
+    r = R.from_matrix(rotation_matrix)
+    angles = r.as_euler('xyz', degrees=True)
+    #print('angles', angles)
+    robot.arm.SetJointValues(old_q)
+    if (135 <= angles[0] <= 170 or -170 <= angles[0] <= -135) and \
+            -15 <= angles[1] <= 15:
+        return True
+    return False
+
+
+def rotation_constraint2(robot, q, obj):
+    old_q = robot.arm.GetJointValues()
+    robot.arm.SetJointValues(q)
+    obj_pose = obj.get_transform()
+    rotation_matrix = [obj_pose[0][:3], obj_pose[1][:3], obj_pose[2][:3]]
+    r = R.from_matrix(rotation_matrix)
+    angles = r.as_euler('xyz', degrees=True)
+    #print(angles)
+    if -15 <= angles[0] <= 15 and -15 <= angles[1] <= 15:
+        robot.arm.SetJointValues(old_q)
+        return True
+    robot.arm.SetJointValues(old_q)
+    return False
+            
+
 class RRT:
     # Test step size
-    def __init__(self, robot, nonmovable=None, max_step=0.5, max_time=10, max_shortcut=2):
+    def __init__(self, robot, objects, nonmovable=None, max_step=0.5, max_time=5, max_shortcut=3, constraint=None):
         self.robot = robot
         self.max_time = max_time
         self.max_step = max_step
         self.G = nx.DiGraph()
         self.nonmovable = nonmovable
         self.max_shortcut = max_shortcut
+        self.constraint = constraint
+        self.objects = objects
 
     # Test Completed
     def closest_node(self, q):
@@ -52,27 +123,36 @@ class RRT:
         num = 1
         while num < sample:
             q_new = q1 + (q2 - q1) / sample * num
-            if self.collision_Test(q1, q_new, 20):
+            if util.collision_Test(self.robot, self.objects, self.nonmovable, q1, q_new, 50, self.constraint):
                 q_list.append(q_new)
             else:
                 return q_list
             q1 = q_new
             num += 1
+            #print('collision_free', sample)
         if self.robot.arm.IsCollisionFree(q2, obstacles=self.nonmovable):
             q_list.append(q2)
         return q_list
 
-    def collision_Test(self, q1, q2, sample):
-        for num in range(1, sample + 1):
-            if not self.robot.arm.IsCollisionFree(q1 + (q2 - q1) / sample * num, obstacles=self.nonmovable):
-                return False
-        return True
-
     def sample_config(self):
         q_rand = self.robot.arm.randomConfiguration()
+        
+        while True:
+            #print('stuck sampling config')
+            if self.robot.arm.IsCollisionFree(q_rand, obstacles=self.nonmovable):
+                if self.constraint is not None:
+                    constraint_function, obj = self.constraint
+                    if constraint_function(self.robot, q_rand, self.objects[obj]):
+                        break
+                else:
+                    break
+            q_rand = self.robot.arm.randomConfiguration()
+        
+        '''
         while not self.robot.arm.IsCollisionFree(q_rand, obstacles=self.nonmovable):
             q_rand = self.robot.arm.randomConfiguration()
-
+        '''
+        #print(q_rand)
         return q_rand
 
     # Working?
@@ -119,6 +199,7 @@ class RRT:
                 path = filter(path)
                 start = time.time()
                 while time.time() - start < self.max_shortcut:
+                    #print('shortcutting', len(path))
                     if len(path) < 3:
                         break
                     n1 = random.randint(0, len(path) - 2)

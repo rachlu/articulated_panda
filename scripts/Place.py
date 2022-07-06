@@ -1,7 +1,8 @@
+import math
 import numpy
 import random
-import math
 from tsr.tsr import TSR
+
 from RRT import RRT
 
 
@@ -22,48 +23,21 @@ class Place:
         self.set_tsr()
 
     def set_info(self):
-        # Relative offset to valid position. Object in table frame
-        t_ee = numpy.array([[1, 0, 0, .4],
-                            [0, 1, 0, 0],
-                            [0, 0, 1, .005],
-                            [0., 0., 0., 1.]])
-        self.relative['plate'] = t_ee
-        # Allowable range for placement
-        bw = numpy.array([[0, 0], [-.01, .01], [0, 0], [0, 0], [0, 0], [-math.pi, math.pi]])
+        import Placements.Front, Placements.Left, Placements.Right
 
-        self.bw_range['plate'] = bw
+        choice = random.choice([Placements.Left, Placements.Right, Placements.Front])
+        #choice = Placements.Right
+        self.relative['bowl'] = choice.bowl_place
+    
+        self.bw_range['bowl'] = choice.bowl_bw
+        
+        self.relative['fork'] = choice.fork_place
 
-        t_ee = numpy.array([[1, 0, 0, 0],
-                            [0, math.cos(math.pi/2), -math.sin(math.pi/2), 0],
-                            [0, math.sin(math.pi/2), math.cos(math.pi/2), 0],
-                            [0., 0., 0., 1.]])
-        t_e = numpy.array([[math.cos(math.pi), 0, math.sin(math.pi), 0],
-                           [0, 1, 0, .3],
-                           [-math.sin(math.pi), 0, math.cos(math.pi), 0],
-                           [0., 0., 0., 1.]])
-        # x, z, y
-        translation = numpy.array([[1, 0, 0, -0.4],
-                            [0, 1, 0, -0.2794],
-                            [0, 0, 1, -0.15],
-                            [0., 0., 0., 1.]])
-        rotation = numpy.dot(t_ee, t_e)
-        self.relative['fork'] = numpy.dot(rotation, translation)
+        self.relative['knife'] = choice.knife_place
 
-        translation = numpy.array([[1, 0, 0, -0.4],
-                            [0, 1, 0, -.2794],
-                            [0, 0, 1, .15],
-                            [0., 0., 0., 1.]])
-        self.relative['knife'] = numpy.dot(rotation, translation)
+        self.relative['spoon'] = choice.spoon_place
 
-        translation = numpy.array([[1, 0, 0, -0.4],
-                            [0, 1, 0, -.2794],
-                            [0, 0, 1, .25],
-                            [0., 0., 0., 1.]])
-
-        self.relative['spoon'] = numpy.dot(rotation, translation)
-
-        bw = numpy.array([[0, 0], [-0.02, 0.02], [0, 0], [0, 0], [0, 0], [0, 0]])
-        self.bw_range[self.utensils] = bw
+        self.bw_range[self.utensils] = choice.utensils_bw
 
     def set_tsr(self):
         # Object in world frame
@@ -71,7 +45,7 @@ class Place:
         for obj in self.objects:
             self.place_tsr[obj] = TSR(t_ow, self.relative[obj], self.bw_range[self.utensils])
 
-        self.place_tsr['plate'] = TSR(numpy.dot(t_ow, self.relative['plate']), numpy.identity(4), self.bw_range['plate'])
+        self.place_tsr['bowl'] = TSR(numpy.dot(t_ow, self.relative['bowl']), numpy.identity(4), self.bw_range['bowl'])
 
     def samplePlacePose(self, obj):
         return self.place_tsr[obj].sample()
