@@ -16,7 +16,8 @@ class TAMP_Functions:
         self.robot = robot
         self.objects = objects
         self.floor = floor
-        self.place = Place(robot, objects, floor)
+        placable = {key: objects[key] for key in (set(objects.keys()) - {'door'})}
+        self.place = Place(robot, placable, floor)
         self.grasp = Grasp(robot, objects)
 
     def calculate_path(self, q1, q2, constraint=None):

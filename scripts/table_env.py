@@ -82,6 +82,14 @@ def execute():
         random_pos = util.sampleTable('bowl')[0][0].pose
         bowl.set_transform(random_pos)
 
-    objects = {'fork': fork, 'spoon': spoon, 'knife': knife, 'bowl': bowl}
+    door_file = os.path.join(objects_path, 'block.urdf')
+    door = pb_robot.body.createBody(door_file)
+    pos = numpy.array([[1, 0, 0, .5],
+                      [0, 1, 0, 0.4],
+                      [0, 0, 1, 0.5],
+                      [0, 0, 0, 0]])
+    door.set_transform(pos)
+
+    objects = {'fork': fork, 'spoon': spoon, 'knife': knife, 'bowl': bowl, 'door': door}
 
     return objects, floor, robot

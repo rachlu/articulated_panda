@@ -82,11 +82,12 @@ class RRT:
         num = 1
         while num < sample:
             q_new = q1 + (q2 - q1) / sample * num
-            if util.collision_Test(self.robot, self.objects, self.nonmovable, q1, q_new, 50, self.constraint):
+            q_before = q1 + (q2 - q1) / sample * (num-1)
+            if util.collision_Test(self.robot, self.objects, self.nonmovable, q_before, q_new, 50, self.constraint):
                 q_list.append(q_new)
             else:
                 return q_list
-            q1 = q_new
+            # q1 = q_new
             num += 1
             #print('collision_free', sample)
         if self.robot.arm.IsCollisionFree(q2, obstacles=self.nonmovable):

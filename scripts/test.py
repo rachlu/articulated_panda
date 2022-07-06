@@ -9,6 +9,7 @@ import math
 import vobj
 from TAMP_Functions import *
 from Place import Place
+from Open import Open
 
 if __name__ == '__main__':
     # pb_robot.utils.connect(use_gui=True)
@@ -19,8 +20,29 @@ if __name__ == '__main__':
     robot.arm.hand.Open()
     grasp = Grasp(robot, objects)
     #rrt = RRT(robot, constraint=rotation_constraint)
-    rrt = RRT(robot)
-    place = Place(robot, objects, floor)
+    rrt = RRT(robot, objects)
+    placable = {key: objects[key] for key in (set(objects.keys()) - {'door'})}
+    place = Place(robot, placable, floor)
+    open = Open(robot, objects, floor)
+    q_initial = robot.arm.GetJointValues()
+    while True:
+        robot.arm.SetJointValues(q_initial)
+        initial_grasp, q = grasp.grasp('door')
+        robot.arm.hand.Close()
+        relative_grasp = numpy.dot(numpy.linalg.inv(objects['door'].get_transform()), initial_grasp)
+        robot.arm.Grab(objects['door'], relative_grasp)
+        back = numpy.array([[1, 0, 0, 0],
+                            [0, 1, 0, 0],
+                            [0, 0, 1, -.2],
+                            [0., 0., 0., 1.]])
+        end_grasp = numpy.dot(initial_grasp, back)
+        path = open.check_traj(q, end_grasp)
+        path = vobj.TrajPath(robot, path)
+        print(path.path)
+        input('execute?')
+        path.execute()
+        input('next?')
+        robot.arm.Release(objects['door'])
     # q1 = robot.arm.GetJointValues()
     # q2 = robot.arm.randomConfiguration()
     # sample = int(np.sqrt((q1 - q2).dot(q1 - q2)) / 0.5)
@@ -50,17 +72,21 @@ if __name__ == '__main__':
         objects['knife'].set_transform(numpy.dot(t, rotate))
         input('next')
     '''
-    ''' 
-    while True:
-        q = grasp.grasp('bowl')[1]
-        robot.arm.SetJointValues(q)
-        robot.arm.hand.Close()
-        print(rotation_constraint2(robot, objects['bowl'].get_transform()))
-        pb_robot.viz.draw_tform(objects['bowl'].get_transform(), length=0.3, width=3)
-        ans = input('next?')
-        if ans.upper() == 'N':
-            break
-    '''
+    # while True:
+    #     grasp, q = grasp.grasp('door')
+    #     robot.arm.SetJointValues(q)
+    #     while True:
+    #         # robot.arm.hand.Close()
+    #         # print(rotation_constraint2(robot, objects['bowl'].get_transform()))
+    #         # pb_robot.viz.draw_tform(objects['bowl'].get_transform(), length=0.3, width=3)
+    #         back = numpy.array([[1, 0, 0, 0],
+    #                       [0, 1, 0, 0],
+    #                       [0, 0, 1, -.05],
+    #                       [0., 0., 0., 1.]])
+    #         grasp = numpy.dot(grasp, back)
+    #         q = robot.arm.ComputeIK(grasp, seed_q=q)
+    #         robot.arm.SetJointValues(q)
+    #         ans = input('next?')
     '''
     while True:
         q_start = robot.arm.GetJointValues()
@@ -97,7 +123,7 @@ if __name__ == '__main__':
     robot.arm.hand.Close()
     # tamp = TAMP_Functions(robot, objects, floor)
     # #old_pos = objects['bowl'].get_transform()
-    
+    '''
     while True:
         print()
         q = robot.arm.randomConfiguration()
@@ -109,6 +135,7 @@ if __name__ == '__main__':
         print(rotation_constraint2(robot, p))
         if input('next').upper() == 'N':
             break     
+    '''
     '''    
     while True:
     #     old_pos = vobj.Pose(obj, objects[obj].get_transform())
