@@ -36,7 +36,8 @@ if __name__ == '__main__':
                             [0, 0, 1, -.2],
                             [0., 0., 0., 1.]])
         end_grasp = numpy.dot(initial_grasp, back)
-        path = open.check_traj(q, end_grasp)
+        #path = open.check_traj(q, end_grasp)
+        path = open.get_trajectory(q, initial_grasp)
         path = vobj.TrajPath(robot, path)
         print(path.path)
         input('execute?')

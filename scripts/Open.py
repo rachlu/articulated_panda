@@ -30,7 +30,7 @@ class Open:
         path = [start_q]
         num = 1
         q1 = numpy.array(start_q)
-        q2 = self.robot.arm.ComputeIK(end_grasp, seed_q=q1)
+        q2 = self.robot.arm.ComputeIK(end_grasp, seed_q=q1, max_distance=0.5)
         sample = 5
         while num < sample:
             q_new = q1 + (q2 - q1) / sample * num

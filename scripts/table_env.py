@@ -92,4 +92,6 @@ def execute():
 
     objects = {'fork': fork, 'spoon': spoon, 'knife': knife, 'bowl': bowl, 'door': door}
 
+    #objects = {'fork': fork, 'spoon': spoon, 'knife': knife, 'bowl': bowl}
+
     return objects, floor, robot
