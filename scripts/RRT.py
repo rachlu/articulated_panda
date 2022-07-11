@@ -8,13 +8,6 @@ import util
 import math
 from scipy.spatial.transform import Rotation as R
 
-def getDistance(q1, q2):
-    """
-    Returns the total radian distance from configuration q1 to configuration q2.
-    """
-    x = q1 - q2
-    return np.sqrt(x.dot(x))
-
 
 def filter(arraylist):
     """
@@ -67,7 +60,7 @@ class RRT:
         node = None
         shortest_distance = 999999999999
         for n in self.G.nodes:
-            new_distance = getDistance(q, self.G.nodes[n]['config'])
+            new_distance = util.getDistance(q, self.G.nodes[n]['config'])
             if shortest_distance > new_distance:
                 node = n
                 shortest_distance = new_distance
@@ -166,8 +159,8 @@ class RRT:
 
                     prior_distance = 0
                     for n in range(len(path[n1 + 1: n2 + 1])):
-                        prior_distance += getDistance(path[n - 1], path[n])
-                    if getDistance(path[n1], path[n2]) < prior_distance:
+                        prior_distance += util.getDistance(path[n - 1], path[n])
+                    if util.getDistance(path[n1], path[n2]) < prior_distance:
                         result = self.collisionFree(path[n1], path[n2])
                         if result and (result[-1] == path[n2]).all():
                             new_path = path[:n1 + 1]

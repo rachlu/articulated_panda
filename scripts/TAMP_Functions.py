@@ -9,6 +9,7 @@ from Plan import Plan
 from RRT import *
 from Grasp import Grasp
 from Place import Place
+from Open import Open
 
 
 class TAMP_Functions:
@@ -19,6 +20,7 @@ class TAMP_Functions:
         placable = {key: objects[key] for key in (set(objects.keys()) - {'door'})}
         self.place = Place(robot, placable, floor)
         self.grasp = Grasp(robot, objects)
+        self.open = Open(robot, objects, floor)
 
     def calculate_path(self, q1, q2, constraint=None):
         print(q1, q2)
@@ -175,3 +177,10 @@ class TAMP_Functions:
         self.robot.arm.Release(self.objects[obj])
         self.objects[obj].set_transform(old_pos)
         return result
+
+    def open_cabinet(self, start_q, start_grasp):
+        traj = self.open.get_trajectory(start_q, start_grasp)
+        if traj is None:
+            return (None, )
+        path = vobj.TrajPath(self.robot, traj)
+        return (path, )

@@ -37,3 +37,9 @@ def collision_Test(robot, objects, nonmovable, q1, q2, sample, constraint=None):
             return False
     return True
 
+def getDistance(q1, q2):
+    """
+    Returns the total radian distance from configuration q1 to configuration q2.
+    """
+    x = q1 - q2
+    return numpy.sqrt(x.dot(x))
