@@ -1,6 +1,7 @@
 import numpy
 import util
 import math
+import vobj
 
 class Open:
     def __init__(self, robot, objects, floor, door_type='cabinet'):
@@ -41,7 +42,16 @@ class Open:
                 print(util.getDistance(path[-2], path[-1]))
             else:
                 return None
-        return path
+        back = numpy.array([[1, 0, 0, 0],
+                            [0, 1, 0, 0],
+                            [0, 0, 1, -.15],
+                            [0., 0., 0., 1.]])
+        back_grasp = numpy.dot(new_grasp, back)
+        q = self.robot.arm.ComputeIKQ(back_grasp, path[-1])
+        if q is None:
+            return None
+        cmd = [vobj.TrajPath(self.robot, path), vobj.HandCmd(self.robot, self.objects['door']), vobj.TrajPath(self.robot, [path[-1], q])]
+        return cmd
 
 
 

@@ -37,26 +37,28 @@ def pddlstream_from_tamp(robot, movable, tamp, panda = None):
         ('Region', 'fork_region'),
         ('Region', 'bowl_region'),
         ('Region', 'knife_region'),
-        ('UprightObj', 'bowl')
+        ('UprightObj', 'bowl'),
+        ('Openable', 'door')
     ]
 
     #goal = (('Holding', 'fork'))
     #goal = (('On', 'bowl', 'bowl_region'))
-    #goal = (('On', 'spoon', 'spoon_region'))
+    # goal = (('On', 'spoon', 'spoon_region'))
 
     #goal = ('and', ('On', 'knife', 'knife_region'), ('On', 'fork', 'fork_region'))
 
     #goal = ('and', ('On', 'knife', 'knife_region'), ('On', 'fork', 'fork_region'), ('On', 'spoon', 'spoon_region'))
 
     #goal = ('and', ('On', 'knife', 'knife_region'), ('On', 'fork', 'fork_region'), ('On', 'spoon', 'spoon_region'), ('AtConf', conf))
-
-    goal = ('and', ('On', 'knife', 'knife_region'), ('On', 'fork', 'fork_region'), ('On', 'spoon', 'spoon_region'), ('On', 'bowl', 'bowl_region'), ('AtConf', conf))
+    goal = (('Open', 'door'))
+    # goal = ('and', ('On', 'knife', 'knife_region'), ('On', 'fork', 'fork_region'), ('On', 'spoon', 'spoon_region'), ('On', 'bowl', 'bowl_region'), ('AtConf', conf),
+    #         ('Open', 'door'))
     # objPoses = {}
     for obj in movable:
         position = vobj.Pose(robot, movable[obj].get_transform())
         # objPoses[obj] = position
         init.extend([('Graspable', obj),
-                 ('AtPose', obj, position),
+                  ('AtPose', obj, position),
                   ('ObjPose', obj, position)
         ])
     # init += ('ObjPoses', objPoses)
@@ -70,7 +72,8 @@ def pddlstream_from_tamp(robot, movable, tamp, panda = None):
         'collisionCheck': from_test(tamp.collisionCheck),
         'sampleTable': from_gen_fn(util.sampleTable),
         'cfree': from_test(tamp.cfreeTraj_Check),
-        'cfreeholding': from_test(tamp.cfreeTrajHolding_Check)
+        'cfreeholding': from_test(tamp.cfreeTrajHolding_Check),
+        'open_traj': from_gen_fn(tamp.get_open_traj)
     }
 
     return domain_pddl, constant_map, stream_pddl, stream_map, init, goal

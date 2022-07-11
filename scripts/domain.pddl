@@ -27,6 +27,9 @@
         (InCollision ?o ?p)
         (Safe ?o ?p ?o2 ?p2)
 	    (CanMove)
+	    (Openable ?o)
+	    (Open ?o)
+	    (Open_Traj ?o ?g ?q1 ?q2 ?t)
     )
 
     (:action move_free
@@ -72,6 +75,20 @@
         :effect (and (AtConf ?q2) (not (AtConf ?q1)) (not (CanMove)))
     )
 
+    (:action open_door
+       :parameters (?o ?p ?g ?q1 ?q2 ?t)
+       :precondition (and (not (HandEmpty))
+                          (Holding ?o)
+                          (AtConf ?q1)
+                          (AtGrasp ?o ?g)
+                          (Openable ?o)
+                          (Open_Traj ?o ?g ?q1 ?q2 ?t)
+                          (not (InCollision ?o ?p))
+                        (not (UnSafeHolding ?t ?o ?g))
+                    )
+    :effect (and (not (Holding ?o)) (HandEmpty) (AtPose ?o ?p) (not (AtGrasp ?o ?g)) (not (AtConf ?q1)) (CanMove) (Open ?o) (AtConf ?q2))
+    )
+
     (:action grab
         :parameters (?o ?p ?g ?q ?t)
         :precondition (and (HandEmpty)
@@ -80,7 +97,7 @@
                           (AtPose ?o ?p)
                           (Grasp ?o ?g)
                           (Graspable ?o)
-			              (not (UnSafeHolding ?t ?o ?g))
+			              ;(not (UnSafeHolding ?t ?o ?g))
                           )
         :effect (and (Holding ?o) (not (HandEmpty)) (not (AtPose ?o ?p)) (AtGrasp ?o ?g) (CanMove))
     )
@@ -94,7 +111,7 @@
                           (Holding ?o)
                           (AtGrasp ?o ?g)
                           (not (InCollision ?o ?p))
-			  (not (UnSafeHolding ?t ?o ?g))
+			              ;(not (UnSafeHolding ?t ?o ?g))
                           )
         :effect (and (not (Holding ?o)) (HandEmpty) (AtPose ?o ?p) (not (AtGrasp ?o ?g)) (CanMove))
     )

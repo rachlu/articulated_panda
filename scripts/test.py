@@ -38,9 +38,9 @@ if __name__ == '__main__':
         relative_grasp = numpy.dot(numpy.linalg.inv(objects['door'].get_transform()), initial_grasp)
         path = open.get_circular(q, initial_grasp)
         print('calucating')
-    path = vobj.TrajPath(robot, path)
-    input('execute')
-    path.execute()
+    input('do it')
+    for i in path:
+        i.execute()
     # while True:
     #     robot.arm.SetJointValues(q_initial)
     #     initial_grasp, q = grasp.grasp('door')
