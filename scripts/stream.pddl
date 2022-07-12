@@ -23,8 +23,8 @@
     (:stream open_traj
         :inputs (?o ?q1 ?g)
         :domain (and (Conf ?q1) (Grasp ?o ?g) (Openable ?o))
-        :outputs (?t ?q2)
-        :certified (and (Open_Traj ?o ?g ?q1 ?q2 ?t) (Traj_Holding ?t ?o ?g))
+        :outputs (?t ?q2 ?p)
+        :certified (and (Open_Traj ?o ?g ?q1 ?q2 ?t) (Traj_Holding ?t ?o ?g) (ObjPose ?o ?p))
     )
 
     (:stream sampleGraspPose

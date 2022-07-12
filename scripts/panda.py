@@ -37,8 +37,10 @@ def execute_plan(plan, g=False):
             ans = input('Redo? (Y/N)')
             while ans.upper() == 'Y':
                 cmd.execute()
+                ans = input('Redo? (Y/N)')
             if isinstance(cmd, vobj.TrajPath):
-                arm.execute_position_path(cmd.path)
+                path = convert(cmd.path)
+                arm.execute_position_path(path)
             else:
                 if action.name == 'grab':
                     arm.hand.grasp(0.02, 40, epsilon_inner=0.1, epsilon_outer=0.1)

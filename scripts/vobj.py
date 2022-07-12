@@ -41,8 +41,6 @@ class HandCmd:
         return 't{}'.format(id(self) % 1000)
 
 
-
-
 class Pose:
     def __init__(self, obj, pose):
         self.obj = obj

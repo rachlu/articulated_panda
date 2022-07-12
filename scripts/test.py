@@ -29,17 +29,17 @@ if __name__ == '__main__':
     robot.arm.SetJointValues(q)
     robot.arm.hand.Close()
     relative_grasp = numpy.dot(numpy.linalg.inv(objects['door'].get_transform()), initial_grasp)
-    robot.arm.Grab(objects['door'], relative_grasp)
     path = open.get_circular(q, initial_grasp)
     while path is None:
         initial_grasp, q = grasp.grasp('door')
         robot.arm.SetJointValues(q)
         robot.arm.hand.Close()
         relative_grasp = numpy.dot(numpy.linalg.inv(objects['door'].get_transform()), initial_grasp)
-        path = open.get_circular(q, initial_grasp)
+        path = open.get_circular(q, relative_grasp)        
         print('calucating')
     input('do it')
-    for i in path:
+    robot.arm.Grab(objects['door'], relative_grasp)
+    for i in path[0]:
         i.execute()
     # while True:
     #     robot.arm.SetJointValues(q_initial)

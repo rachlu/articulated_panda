@@ -60,12 +60,12 @@ class TAMP_Functions:
         self.objects[obj].set_transform(original_position)
         return path
 
-    def get_open_traj(self, obj, start_q, start_grasp):
-        path = self.open.get_circular(start_q, start_grasp)
-        if path is None:
-            return (None, )
-        cmd = [[vobj.TrajPath(self.robot, path)]]
-        return (cmd, )
+    def get_open_traj(self, obj, start_q, relative_grasp):
+        cmds = self.open.get_circular(start_q.conf, relative_grasp.pose)
+        for _ in range(4):
+            if cmds is not None:
+                return (cmds, )
+        return (None, )
 
     def sampleGrabPose(self, obj, obj_pose):
         # grasp_pose is grasp in world frame
@@ -83,29 +83,9 @@ class TAMP_Functions:
     def execute_path(self, path):
         print(path)
         for action in path:
-            # if action.name == 'grab':
-            #     obj, obj_pose, grasp, conf, traj = action.args
-            #     start = vobj.TrajPath(self.robot, traj.path[:2])
-            #     end = vobj.TrajPath(self.robot, traj.path[1:])
-            #     start.execute()
-            #     self.robot.arm.Grab(self.objects[obj], grasp.pose)
-            #     self.robot.arm.hand.Close()
-            #     end.execute()
-            #     continue
-            # if action.name == 'place':
-            #     obj, obj_pose, grasp, conf, traj = action.args
-            #     start = vobj.TrajPath(self.robot, traj.path[:2])
-            #     end = vobj.TrajPath(self.robot, traj.path[1:])
-            #     start.execute()
-            #     self.robot.arm.Release(self.objects[obj])
-            #     self.robot.arm.hand.Open()
-            #     end.execute()
-            #     continue
             for cmd in action.args[-1]:
                 cmd.execute()
                 time.sleep(1)
-
-            # action.args[-1].execute()
 
     def computeIK(self, obj, obj_pose, grasp):
         """
@@ -191,8 +171,3 @@ class TAMP_Functions:
         self.objects[obj].set_transform(old_pos)
         return result
 
-    def open_cabinet(self, start_q, start_grasp):
-        cmds = self.open.get_trajectory(start_q, start_grasp)
-        if cmds is None:
-            return (None, )
-        return ([cmds], )

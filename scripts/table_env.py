@@ -85,7 +85,7 @@ def execute():
     door_file = os.path.join(objects_path, 'block.urdf')
     door = pb_robot.body.createBody(door_file)
     pos = numpy.array([[1, 0, 0, .5],
-                      [0, 1, 0, 0.4],
+                      [0, 1, 0, -0.5],
                       [0, 0, 1, 0.5],
                       [0, 0, 0, 0]])
     door.set_transform(pos)
