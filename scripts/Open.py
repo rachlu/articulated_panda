@@ -48,7 +48,7 @@ class Open:
             new_grasp[1][-1] = y
             q = self.robot.arm.ComputeIKQ(new_grasp, q)
             pb_robot.viz.draw_tform(new_grasp)
-            if q is not None:
+            if q is not None and self.robot.arm.IsCollisionFree(q):
                 path.append(numpy.array(q))
             else:
                 self.robot.arm.SetJointValues(old_q)

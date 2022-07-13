@@ -23,6 +23,12 @@ if __name__ == '__main__':
     rrt = RRT(robot, objects)
     placable = {key: objects[key] for key in (set(objects.keys()) - {'door'})}
     place = Place(robot, placable, floor)
+    while True:
+        g, q = grasp.grasp('door')
+        robot.arm.SetJointValues(q)
+        print(robot.arm.IsCollisionFree(q))
+        input('next')
+
     open = Open(robot, objects, floor)
     q_initial = robot.arm.GetJointValues()
     initial_grasp, q = grasp.grasp('door')

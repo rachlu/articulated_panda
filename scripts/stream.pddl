@@ -24,7 +24,7 @@
         :inputs (?o ?q1 ?g)
         :domain (and (Conf ?q1) (Grasp ?o ?g) (Openable ?o))
         :outputs (?t ?q2 ?p)
-        :certified (and (Open_Traj ?o ?g ?q1 ?q2 ?t) (Traj_Holding ?t ?o ?g) (ObjPose ?o ?p))
+        :certified (and (Open_Traj ?o ?g ?q1 ?q2 ?t) (Traj_Holding ?t ?o ?g) (ObjPose ?o ?p) (Conf ?q2))
     )
 
     (:stream sampleGraspPose
@@ -43,14 +43,14 @@
 
     (:stream samplePlacePose
         :inputs (?o ?r)
-        :domain (and (Graspable ?o) (Region ?r))
+        :domain (and (Placeable ?o) (Region ?r))
         :outputs (?p)
         :certified (and (ObjPose ?o ?p) (Supported ?o ?p ?r))
     )
 
     (:stream sampleTable
         :inputs (?o)
-        :domain (Graspable ?o)
+        :domain (Placeable ?o)
         :outputs (?p)
         :certified (ObjPose ?o ?p)
     )
