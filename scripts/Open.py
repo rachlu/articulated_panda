@@ -14,9 +14,10 @@ class Open:
     def get_trajectory(self, start_q, start_grasp):
         q = numpy.array(start_q)
         path = [q]
+        increment = -0.05
         back = numpy.array([[1, 0, 0, 0],
                             [0, 1, 0, 0],
-                            [0, 0, 1, -.05],
+                            [0, 0, 1, increment],
                             [0., 0., 0., 1.]])
         grasp = start_grasp
         for _ in range(5):
