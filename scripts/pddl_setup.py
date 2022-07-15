@@ -16,7 +16,7 @@ from pddlstream.utils import user_input, read, INF
 from pddlstream.algorithms.meta import solve, create_parser
 
 
-def pddlstream_from_tamp(robot, movable, tamp, panda = None):
+def pddlstream_from_tamp(robot, movable, tamp, panda=None):
     domain_pddl = read('domain.pddl')
     stream_pddl = read('stream.pddl')
 
@@ -41,25 +41,25 @@ def pddlstream_from_tamp(robot, movable, tamp, panda = None):
         ('Openable', 'door')
     ]
 
-    #goal = ('and', ('Holding', 'fork'), ('Open', 'door'), ('AtConf', conf))
-    #goal = (('On', 'bowl', 'bowl_region'))
-    #goal = ('and', ('On', 'spoon', 'spoon_region'), ('Open', 'door'))
+    # goal = ('and', ('Holding', 'fork'), ('Open', 'door'), ('AtConf', conf))
+    # goal = (('On', 'bowl', 'bowl_region'))
+    # goal = ('and', ('On', 'spoon', 'spoon_region'), ('Open', 'door'))
 
-    #goal = ('and', ('On', 'knife', 'knife_region'), ('On', 'fork', 'fork_region'))
+    # goal = ('and', ('On', 'knife', 'knife_region'), ('On', 'fork', 'fork_region'))
 
-    #goal = ('and', ('On', 'knife', 'knife_region'), ('On', 'fork', 'fork_region'), ('On', 'spoon', 'spoon_region'))
+    # goal = ('and', ('On', 'knife', 'knife_region'), ('On', 'fork', 'fork_region'), ('On', 'spoon', 'spoon_region'))
 
-    #goal = ('and', ('On', 'knife', 'knife_region'), ('On', 'fork', 'fork_region'), ('On', 'spoon', 'spoon_region'), ('AtConf', conf))
-    #goal = ('and', ('Open', 'door'), ('AtConf', conf))
-    goal = ('and', ('On', 'knife', 'knife_region'), ('On', 'fork', 'fork_region'), ('On', 'spoon', 'spoon_region'), ('On', 'bowl', 'bowl_region'), ('Open', 'door'), ('AtConf', conf))
+    # goal = ('and', ('On', 'knife', 'knife_region'), ('On', 'fork', 'fork_region'), ('On', 'spoon', 'spoon_region'), ('AtConf', conf))
+    # goal = ('and', ('Open', 'door'), ('AtConf', conf))
+    goal = ('and', ('On', 'knife', 'knife_region'), ('On', 'fork', 'fork_region'), ('On', 'spoon', 'spoon_region'),
+            ('On', 'bowl', 'bowl_region'), ('Open', 'door'), ('AtConf', conf))
     # objPoses = {}
     for obj in movable:
         position = vobj.Pose(robot, movable[obj].get_transform())
         # objPoses[obj] = position
-        init.extend([('Graspable', obj),
-                  ('AtPose', obj, position),
-                  ('ObjPose', obj, position)
-        ])
+        init.extend([('AtPose', obj, position),
+                     ('ObjPose', obj, position)
+                     ])
         if obj != 'door':
             init.extend([('Placeable', obj)])
     # init += ('ObjPoses', objPoses)

@@ -36,15 +36,16 @@ class Open:
 
         old_pos = self.objects['door'].get_transform()
         self.robot.arm.Grab(self.objects['door'], relative_grasp)
-        radius = 0.25
-        x_0 = start_grasp[0][-1] - radius
+        a = 0.25
+        b = 0.25
+        x_0 = start_grasp[0][-1] - a
         y_0 = start_grasp[1][-1]
         q = numpy.array(start_q)
         path = [q]
         for t in numpy.linspace(0, -math.pi / 2, 5):
             new_grasp = start_grasp
-            x = radius * math.cos(t) + x_0
-            y = radius * math.sin(t) + y_0
+            x = a * math.cos(t) + x_0
+            y = b * math.sin(t) + y_0
             new_grasp[0][-1] = x
             new_grasp[1][-1] = y
             q = self.robot.arm.ComputeIKQ(new_grasp, q)
