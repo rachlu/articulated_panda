@@ -19,34 +19,43 @@ if __name__ == '__main__':
     objects, floor, robot = table_env.execute()
     robot.arm.hand.Open()
     grasp = Grasp(robot, objects)
+    tamp = TAMP_Functions(robot, objects, floor)
+    q = vobj.BodyConf(robot, robot.arm.GetJointValues())
+    pose = vobj.Pose('door', objects['door'].get_transform())
+    result = tamp.get_open_traj('door', q, pose)[0]
+    input('execute?')
+    for cmd in result[0]:
+        cmd.execute()
+    for cmd in result[1]:
+        cmd.execute()
     #rrt = RRT(robot, constraint=rotation_constraint)
-    rrt = RRT(robot, objects)
-    placable = {key: objects[key] for key in (set(objects.keys()) - {'door'})}
-    place = Place(robot, placable, floor)
-    while True:
-        g, q = grasp.grasp('door')
-        robot.arm.SetJointValues(q)
-        print(robot.arm.IsCollisionFree(q))
-        input('next')
-
-    open = Open(robot, objects, floor)
-    q_initial = robot.arm.GetJointValues()
-    initial_grasp, q = grasp.grasp('door')
-    robot.arm.SetJointValues(q)
-    robot.arm.hand.Close()
-    relative_grasp = numpy.dot(numpy.linalg.inv(objects['door'].get_transform()), initial_grasp)
-    path = open.get_circular(q, initial_grasp)
-    while path is None:
-        initial_grasp, q = grasp.grasp('door')
-        robot.arm.SetJointValues(q)
-        robot.arm.hand.Close()
-        relative_grasp = numpy.dot(numpy.linalg.inv(objects['door'].get_transform()), initial_grasp)
-        path = open.get_circular(q, relative_grasp)        
-        print('calucating')
-    input('do it')
-    robot.arm.Grab(objects['door'], relative_grasp)
-    for i in path[0]:
-        i.execute()
+    # rrt = RRT(robot, objects)
+    # placable = {key: objects[key] for key in (set(objects.keys()) - {'door'})}
+    # place = Place(robot, placable, floor)
+    # while True:
+    #     g, q = grasp.grasp('door')
+    #     robot.arm.SetJointValues(q)
+    #     print(robot.arm.IsCollisionFree(q))
+    #     input('next')
+    #
+    # open = Open(robot, objects, floor)
+    # q_initial = robot.arm.GetJointValues()
+    # initial_grasp, q = grasp.grasp('door')
+    # robot.arm.SetJointValues(q)
+    # robot.arm.hand.Close()
+    # relative_grasp = numpy.dot(numpy.linalg.inv(objects['door'].get_transform()), initial_grasp)
+    # path = open.get_circular(q, initial_grasp)
+    # while path is None:
+    #     initial_grasp, q = grasp.grasp('door')
+    #     robot.arm.SetJointValues(q)
+    #     robot.arm.hand.Close()
+    #     relative_grasp = numpy.dot(numpy.linalg.inv(objects['door'].get_transform()), initial_grasp)
+    #     path = open.get_circular(q, relative_grasp)
+    #     print('calucating')
+    # input('do it')
+    # robot.arm.Grab(objects['door'], relative_grasp)
+    # for i in path[0]:
+    #     i.execute()
     # while True:
     #     robot.arm.SetJointValues(q_initial)
     #     initial_grasp, q = grasp.grasp('door')

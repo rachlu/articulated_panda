@@ -27,16 +27,13 @@ class TAMP_Functions:
         if not self.robot.arm.IsCollisionFree(q2.conf, obstacles=[self.floor]):
             return (None,)
         rrt = RRT(self.robot, self.objects, nonmovable=[self.floor], constraint=constraint)
-        path = rrt.motion(q1.conf, q2.conf)
         for _ in range(3):
             path = rrt.motion(q1.conf, q2.conf)
             if path is not None:
-                break
-        if path is None:
-            print(q2.conf)
-            return (None,)
-        cmd = [[vobj.TrajPath(self.robot, path)]]
-        return (cmd,)
+                cmd = [[vobj.TrajPath(self.robot, path)]]
+                return (cmd,)
+        return (None, )
+
 
     def calculate_path_holding(self, q1, q2, obj, grasp):
         original_position = self.objects[obj].get_transform()
@@ -60,20 +57,30 @@ class TAMP_Functions:
         self.objects[obj].set_transform(original_position)
         return path
 
-    def get_open_traj(self, obj, start_q, relative_grasp):
-        cmds = self.open.get_circular(start_q.conf, relative_grasp.pose)
+    def get_open_traj2(self, obj, start_q, relative_grasp):
         for _ in range(4):
+            cmds = self.open.get_circular(start_q.conf, relative_grasp.pose)
             if cmds is not None:
+                return (cmds, )
+        return (None, )
+
+    def get_open_traj(self, obj, start_q, obj_pose):
+        for _ in range(4):
+            relative_grasp = self.sampleGrabPose(obj, obj_pose)[0][0]
+            end_q, hand_traj = self.computeIK(obj, obj_pose, relative_grasp)[0]
+            t1 = self.calculate_path(start_q, end_q)[0][0]
+            t2 = self.open.get_circular(end_q.conf, relative_grasp.pose)
+            if t1 is not None and t2 is not None:
+                t1.extend(hand_traj)
+                cmds = [t1, t2[0], t2[1], t2[2], relative_grasp]
                 return (cmds, )
         return (None, )
 
     def sampleGrabPose(self, obj, obj_pose):
         # grasp_pose is grasp in world frame
-        grasp_pose, q = self.grasp.grasp(obj)
-        if q is None:
-            return (None,)
-        for _ in range(40):
-            if self.robot.arm.IsCollisionFree(q, obstacles=[self.floor]):
+        for _ in range(20):
+            grasp_pose, q = self.grasp.grasp(obj)
+            if q is not None and self.robot.arm.IsCollisionFree(q, obstacles=[self.floor]):
                 # Grasp in object frame
                 relative_grasp = numpy.dot(numpy.linalg.inv(obj_pose.pose), grasp_pose)
                 cmd1 = [vobj.Pose(obj, relative_grasp)]

@@ -53,6 +53,7 @@ class Open:
             if q is not None and self.robot.arm.IsCollisionFree(q):
                 path.append(numpy.array(q))
             else:
+                print(q, 'None')
                 self.robot.arm.SetJointValues(old_q)
                 self.objects['door'].set_transform(old_pos)
                 self.robot.arm.Release(self.objects['door'])
@@ -64,6 +65,7 @@ class Open:
         back_grasp = numpy.dot(new_grasp, back)
         q = self.robot.arm.ComputeIKQ(back_grasp, path[-1])
         if q is None:
+            print('back None')
             self.robot.arm.SetJointValues(old_q)
             self.objects['door'].set_transform(old_pos)
             self.robot.arm.Release(self.objects['door'])
