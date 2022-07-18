@@ -4,6 +4,7 @@ import IPython
 import pb_robot
 import table_env
 import util
+import numpy
 
 
 class Spring:
@@ -35,7 +36,15 @@ class Spring:
         # new_q = self.arm.convertToDict(new_q)
         self.arm.set_joint_impedance_config(new_q)
     
-    def move_to_position_force(self, q):
+    def move_to_position_force(self, q, error=0.001):
+        q = numpy.array(q)
+        diff = 999999
+        force = 1
+        while diff > error:
+            self.apply_force(force)
+            current = numpy.array(self.robot.arm.GetEETransform())
+            diff = util.getDistance(q, current)
+            force += 0.3
 
     def set_k(self, k):
         self.K = k

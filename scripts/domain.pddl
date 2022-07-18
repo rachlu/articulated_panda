@@ -29,8 +29,8 @@
 	    (Openable ?o)
 	    (Open ?o)
 	    (Open_Traj ?o ?g ?q1 ?q2 ?t1 ?t2)
-	(OpenDoor)
-	(Placeable ?o)
+	    (OpenDoor)
+	    (Placeable ?o)
     )
 
     (:action move_free

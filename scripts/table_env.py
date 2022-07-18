@@ -82,7 +82,8 @@ def execute():
         random_pos = util.sampleTable('bowl')[0][0].pose
         bowl.set_transform(random_pos)
 
-    door_file = os.path.join(objects_path, 'block.urdf')
+    door_file = os.path.join(objects_path, 'door.urdf')
+
     door = pb_robot.body.createBody(door_file)
     pos = numpy.array([[1, 0, 0, .5],
                       [0, 1, 0, -0.5],

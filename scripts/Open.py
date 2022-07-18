@@ -58,18 +58,18 @@ class Open:
                 self.objects['door'].set_transform(old_pos)
                 self.robot.arm.Release(self.objects['door'])
                 return None
-        back = numpy.array([[1, 0, 0, 0],
-                            [0, 1, 0, 0],
-                            [0, 0, 1, -.15],
-                            [0., 0., 0., 1.]])
-        back_grasp = numpy.dot(new_grasp, back)
-        q = self.robot.arm.ComputeIKQ(back_grasp, path[-1])
-        if q is None:
-            print('back None')
-            self.robot.arm.SetJointValues(old_q)
-            self.objects['door'].set_transform(old_pos)
-            self.robot.arm.Release(self.objects['door'])
-            return None
+        # back = numpy.array([[1, 0, 0, 0],
+        #                     [0, 1, 0, 0],
+        #                     [0, 0, 1, -.15],
+        #                     [0., 0., 0., 1.]])
+        # back_grasp = numpy.dot(new_grasp, back)
+        # q = self.robot.arm.ComputeIKQ(back_grasp, path[-1])
+        # if q is None:
+        #     print('back None')
+        #     self.robot.arm.SetJointValues(old_q)
+        #     self.objects['door'].set_transform(old_pos)
+        #     self.robot.arm.Release(self.objects['door'])
+        #     return None
         cmd = [vobj.TrajPath(self.robot, path), vobj.HandCmd(self.robot, self.objects['door'], relative_grasp), vobj.TrajPath(self.robot, [path[-1], q])]
         end_pose = self.objects['door'].get_transform()
         self.robot.arm.SetJointValues(old_q)

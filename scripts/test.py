@@ -21,19 +21,19 @@ if __name__ == '__main__':
     grasp = Grasp(robot, objects)
     tamp = TAMP_Functions(robot, objects, floor)
     q = vobj.BodyConf(robot, robot.arm.GetJointValues())
-    pose = vobj.Pose('door', objects['door'].get_transform())
-    result = tamp.get_open_traj('door', q, pose)[0]
-    print(result[0])
-    print(result[1])
-    input('execute?')
-
-    for cmd in result[0]:
-        print(cmd)
-        cmd.execute()
-    for cmd in result[1]:
-        print(cmd)
-        cmd.execute()
-    #rrt = RRT(robot, constraint=rotation_constraint)
+    # pose = vobj.Pose('door', objects['door'].get_transform())
+    # result = tamp.get_open_traj('door', q, pose)[0]
+    # print(result[0])
+    # print(result[1])
+    # input('execute?')
+    #
+    # for cmd in result[0]:
+    #     print(cmd)
+    #     cmd.execute()
+    # for cmd in result[1]:
+    #     print(cmd)
+    #     cmd.execute()
+    # #rrt = RRT(robot, constraint=rotation_constraint)
     # rrt = RRT(robot, objects)
     # placable = {key: objects[key] for key in (set(objects.keys()) - {'door'})}
     # place = Place(robot, placable, floor)
@@ -105,9 +105,11 @@ if __name__ == '__main__':
         objects['knife'].set_transform(numpy.dot(t, rotate))
         input('next')
     '''
-    # while True:
-    #     grasp, q = grasp.grasp('door')
-    #     robot.arm.SetJointValues(q)
+    while True:
+        g, q = grasp.grasp('door', objects['door'].get_transform())
+        robot.arm.SetJointValues(q)
+        print(robot.arm.IsCollisionFree(q))
+        input('next')
     #     while True:
     #         # robot.arm.hand.Close()
     #         # print(rotation_constraint2(robot, objects['bowl'].get_transform()))

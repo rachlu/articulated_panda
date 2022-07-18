@@ -14,7 +14,6 @@ class Grasp:
         self.utensils = ('fork', 'knife', 'spoon')
         self.grasp_tsr = {}
         self.set_info()
-        self.set_tsr()
 
     def set_info(self):
         # bowl
@@ -85,8 +84,8 @@ class Grasp:
 
         # Door
         translation = numpy.array([[1, 0, 0, 0],
-                                   [0, 1, 0, 0],
-                                   [0, 0, 1, -0.13],
+                                   [0, 1, 0, -0.13],
+                                   [0, 0, 1, -0.29],
                                    [0., 0., 0., 1.]])
         t1 = numpy.array([[1, 0, 0, 0],
                            [0, math.cos(math.pi/2), -math.sin(math.pi/2), 0],
@@ -104,9 +103,10 @@ class Grasp:
                            [0, math.cos(3*math.pi/2), -math.sin(3*math.pi/2), 0],
                            [0, math.sin(3*math.pi/2), math.cos(3*math.pi/2), 0],
                            [0., 0., 0., 1.]])
+        #y, z, x
         translation = numpy.array([[1, 0, 0, 0],
-                                   [0, 1, 0, 0],
-                                   [0, 0, 1, -0.13],
+                                   [0, 1, 0, -0.13],
+                                   [0, 0, 1, -0.29],
                                    [0., 0., 0., 1.]])
         rotation = numpy.dot(t1, t2)
         rel = numpy.dot(rotation, translation)
@@ -114,19 +114,19 @@ class Grasp:
         bw = numpy.array([[0, 0], [-0.03, 0.03], [0, 0], [0, 0], [0, 0], [0, 0]])
         self.bw_range['door'] = bw
 
-    def set_tsr(self):
-        for obj in self.utensils:
+    def set_tsr(self, obj, pose):
+        if obj in self.utensils:
             # Obj Pose, Relative Pose, Range
-            self.grasp_tsr[obj] = [TSR(self.objects[obj].get_transform(), self.relative[self.utensils][0], self.bw_range[self.utensils])]
-            self.grasp_tsr[obj].append(TSR(self.objects[obj].get_transform(), self.relative[self.utensils][1], self.bw_range[self.utensils]))
+            self.grasp_tsr[obj] = [TSR(pose, self.relative[self.utensils][0], self.bw_range[self.utensils])]
+            self.grasp_tsr[obj].append(TSR(pose, self.relative[self.utensils][1], self.bw_range[self.utensils]))
+        else:
+            self.grasp_tsr[obj] = [TSR(pose, self.relative[obj][0], self.bw_range[obj])]
+            self.grasp_tsr[obj].append(TSR(pose, self.relative[obj][1], self.bw_range[obj]))
 
-        for obj in set(self.objects.keys()) - set(self.utensils):
-            self.grasp_tsr[obj] = [TSR(self.objects[obj].get_transform(), self.relative[obj][0], self.bw_range[obj])]
-            self.grasp_tsr[obj].append(TSR(self.objects[obj].get_transform(), self.relative[obj][1], self.bw_range[obj]))
-
-    def grasp(self, obj):
+    def grasp(self, obj, pose):
         # Sample grasp of obj
         # r,g,b = x,y,z
+        self.set_tsr(obj, pose)
         computed_q = None
         for _ in range(50):
             if computed_q is not None:

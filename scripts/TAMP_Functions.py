@@ -80,7 +80,7 @@ class TAMP_Functions:
     def sampleGrabPose(self, obj, obj_pose):
         # grasp_pose is grasp in world frame
         for _ in range(20):
-            grasp_pose, q = self.grasp.grasp(obj)
+            grasp_pose, q = self.grasp.grasp(obj, obj_pose.pose)
             if q is not None and self.robot.arm.IsCollisionFree(q, obstacles=[self.floor]):
                 # Grasp in object frame
                 relative_grasp = numpy.dot(numpy.linalg.inv(obj_pose.pose), grasp_pose)
