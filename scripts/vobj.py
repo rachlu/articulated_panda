@@ -21,7 +21,9 @@ class TrajPath:
 
     def execute(self):
         self.robot.arm.ExecutePositionPath(self.path, timestep=0.2)
-
+    
+    #def __str__(self):
+    #    return str(self.path)
 
 class HandCmd:
     def __init__(self, robot, obj, grasp=None):
@@ -40,6 +42,9 @@ class HandCmd:
     def __repr__(self):
         return 't{}'.format(id(self) % 1000)
 
+    #def __str__(self):
+    #    result = 'Hand Cmd'
+    #    return result
 
 class Pose:
     def __init__(self, obj, pose):

@@ -34,6 +34,8 @@ class Spring:
 
         # new_q = self.arm.convertToDict(new_q)
         self.arm.set_joint_impedance_config(new_q)
+    
+    def move_to_position_force(self, q):
 
     def set_k(self, k):
         self.K = k

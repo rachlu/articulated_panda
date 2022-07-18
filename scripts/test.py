@@ -23,10 +23,15 @@ if __name__ == '__main__':
     q = vobj.BodyConf(robot, robot.arm.GetJointValues())
     pose = vobj.Pose('door', objects['door'].get_transform())
     result = tamp.get_open_traj('door', q, pose)[0]
+    print(result[0])
+    print(result[1])
     input('execute?')
+
     for cmd in result[0]:
+        print(cmd)
         cmd.execute()
     for cmd in result[1]:
+        print(cmd)
         cmd.execute()
     #rrt = RRT(robot, constraint=rotation_constraint)
     # rrt = RRT(robot, objects)

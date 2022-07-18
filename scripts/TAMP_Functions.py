@@ -65,7 +65,7 @@ class TAMP_Functions:
         return (None, )
 
     def get_open_traj(self, obj, start_q, obj_pose):
-        for _ in range(4):
+        for _ in range(5):
             relative_grasp = self.sampleGrabPose(obj, obj_pose)[0][0]
             end_q, hand_traj = self.computeIK(obj, obj_pose, relative_grasp)[0]
             t1 = self.calculate_path(start_q, end_q)[0][0]
@@ -73,6 +73,7 @@ class TAMP_Functions:
             if t1 is not None and t2 is not None:
                 t1.extend(hand_traj)
                 cmds = [t1, t2[0], t2[1], t2[2], relative_grasp]
+                #print('open', cmds)
                 return (cmds, )
         return (None, )
 
@@ -90,6 +91,22 @@ class TAMP_Functions:
     def execute_path(self, path):
         print(path)
         for action in path:
+            if action.name == 'open_door':
+                '''
+                cmds = list(action.args[-2])
+                print(cmds)
+                cmds.extend(action.args[-1])
+                print(cmds)
+                for cmd in cmds:
+                    cmd.execute()
+                    time.sleep(1)
+                '''
+                cmds = list(action.args[-2])
+                cmds.extend(action.args[-1])
+                for cmd in cmds:
+                    cmd.execute()
+                    time.sleep(1)
+                continue
             for cmd in action.args[-1]:
                 cmd.execute()
                 time.sleep(1)
