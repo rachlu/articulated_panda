@@ -79,24 +79,6 @@
         :effect (and (AtConf ?q2) (not (AtConf ?q1)) (not (CanMove)))
     )
 
-    ;(:action open_door
-     ;  :parameters (?o ?p ?g ?q1 ?q2 ?t)
-      ; :precondition (and (OpenDoor)
-;			                (not (HandEmpty))
-;			                (Holding ?o)
-;			                (Conf ?q1)
-;			                (Conf ?q2)
- ;                           (AtConf ?q1)
-  ;                          (Grasp ?o ?g)
-   ;                         (AtGrasp ?o ?g)
-    ;                        (Openable ?o)
-     ;                       (Open_Traj ?o ?g ?q1 ?q2 ?t)
-      ;                      (not (InCollision ?o ?p))
-       ;                     (not (UnSafeHolding ?t ?o ?g))
-        ;                    )
-        ;:effect (and (not (Holding ?o)) (HandEmpty) (AtPose ?o ?p) (not (AtGrasp ?o ?g)) (not (AtConf ?q1)) (CanMove) (Open ?o) (AtConf ?q2))
-    ;)
-
     (:action open_door
        :parameters (?o ?p1 ?p2 ?g ?q1 ?q2 ?t1 ?t2)
        :precondition (and (HandEmpty)
@@ -166,8 +148,4 @@
     (:derived (UnSafeHolding ?t ?o ?g)
         (exists (?o2 ?p) (and (Grasp ?o ?g) (ObjPose ?o2 ?p) (AtGrasp ?o ?g) (AtPose ?o2 ?p) (not (CFreeHolding ?t ?o ?g ?o2 ?p))))
     )
-
-    ;(:derived (OpenDoor)
-;	    (exists (?o ?g) (and (Grasp ?o ?g) (AtGrasp ?o ?g) (Openable ?o)))
-;    )
 )
