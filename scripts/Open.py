@@ -11,10 +11,9 @@ class Open:
         self.objects = objects
         self.nonmovable = [floor]
 
-    def get_trajectory(self, start_q, start_grasp):
+    def get_trajectory(self, start_q, start_grasp, increment):
         q = numpy.array(start_q)
         path = [q]
-        increment = -0.05
         back = numpy.array([[1, 0, 0, 0],
                             [0, 1, 0, 0],
                             [0, 0, 1, increment],
