@@ -45,7 +45,7 @@ if __name__ == '__main__':
     robot.arm.hand.Close()
     robot.arm.SetJointValues(q)
     increment = 0.05
-    traj = open_class.get_trajectory(q, g, -increment)
+    traj = open_class.get_cabinet_traj(q, g, -increment)
     x = 0
     input('execute')
     for q in traj:

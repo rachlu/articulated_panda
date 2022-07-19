@@ -5,13 +5,12 @@ import vobj
 import pb_robot
 
 class Open:
-    def __init__(self, robot, objects, floor, door_type='cabinet'):
-        self.door_type = door_type
+    def __init__(self, robot, objects, floor, ):
         self.robot = robot
         self.objects = objects
         self.nonmovable = [floor]
 
-    def get_trajectory(self, start_q, start_grasp, increment):
+    def get_cabinet_traj(self, start_q, start_grasp, increment):
         q = numpy.array(start_q)
         path = [q]
         back = numpy.array([[1, 0, 0, 0],
@@ -28,7 +27,7 @@ class Open:
                 return None
         return path
 
-    def get_circular(self, start_q, relative_grasp):
+    def get_door_traj(self, start_q, relative_grasp):
         old_q = self.robot.arm.GetJointValues()
         self.robot.arm.SetJointValues(start_q)
         start_grasp = self.robot.arm.GetEETransform()

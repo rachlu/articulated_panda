@@ -20,7 +20,7 @@ class TAMP_Functions:
         placable = {key: objects[key] for key in (set(objects.keys()) - {'door'})}
         self.place = Place(robot, placable, floor)
         self.grasp = Grasp(robot, objects)
-        self.open = Open(robot, objects, floor)
+        self.open_class = Open(robot, objects, floor)
 
     def calculate_path(self, q1, q2, constraint=None):
         print(q1, q2)
@@ -59,7 +59,7 @@ class TAMP_Functions:
 
     def get_open_traj2(self, obj, start_q, relative_grasp):
         for _ in range(4):
-            cmds = self.open.get_circular(start_q.conf, relative_grasp.pose)
+            cmds = self.open_class.get_door_traj(start_q.conf, relative_grasp.pose)
             if cmds is not None:
                 return (cmds, )
         return (None, )
@@ -69,11 +69,10 @@ class TAMP_Functions:
             relative_grasp = self.sampleGrabPose(obj, obj_pose)[0][0]
             end_q, hand_traj = self.computeIK(obj, obj_pose, relative_grasp)[0]
             t1 = self.calculate_path(start_q, end_q)[0][0]
-            t2 = self.open.get_circular(end_q.conf, relative_grasp.pose)
+            t2 = self.open_class.get_door_traj(end_q.conf, relative_grasp.pose)
             if t1 is not None and t2 is not None:
                 t1.extend(hand_traj)
                 cmds = [t1, t2[0], t2[1], t2[2], relative_grasp]
-                #print('open', cmds)
                 return (cmds, )
         return (None, )
 
