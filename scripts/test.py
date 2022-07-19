@@ -105,11 +105,11 @@ if __name__ == '__main__':
         objects['knife'].set_transform(numpy.dot(t, rotate))
         input('next')
     '''
-    while True:
-        g, q = grasp.grasp('door', objects['door'].get_transform())
-        robot.arm.SetJointValues(q)
-        print(robot.arm.IsCollisionFree(q))
-        input('next')
+    # while True:
+    #     g, q = grasp.grasp('door', objects['door'].get_transform())
+    #     robot.arm.SetJointValues(q)
+    #     print(robot.arm.IsCollisionFree(q))
+    #     input('next')
     #     while True:
     #         # robot.arm.hand.Close()
     #         # print(rotation_constraint2(robot, objects['bowl'].get_transform()))
