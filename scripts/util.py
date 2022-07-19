@@ -2,6 +2,8 @@ import random
 import numpy
 import vobj
 import math
+import util
+
 
 def sampleTable(obj):
     r = random.choice([(-0.5, -0.3), (0.2, 0.7)])
@@ -10,20 +12,22 @@ def sampleTable(obj):
     y = random.uniform(*r)
 
     # Random rotation
-    angle = random.uniform(0, 2*math.pi)
-    rotate = numpy.array([[math.cos(angle), -math.sin(angle), 0, 0],
-                 [math.sin(angle), math.cos(angle), 0, 0],
-                 [0, 0, 1, 0],
-                 [0., 0., 0., 1.]])
+    angle = random.uniform(0, 2 * math.pi)
+    # rotate = numpy.array([[math.cos(angle), -math.sin(angle), 0, 0],
+    #                       [math.sin(angle), math.cos(angle), 0, 0],
+    #                       [0, 0, 1, 0],
+    #                       [0., 0., 0., 1.]])
+    rotate = util.get_rotation_arr('Z', angle)
 
     translation = numpy.array([[1, 0, 0, x],
-                                [0, 1, 0, y],
-                                [0, 0, 1, 0],
-                                [0., 0., 0., 1.]])
+                               [0, 1, 0, y],
+                               [0, 0, 1, 0],
+                               [0., 0., 0., 1.]])
 
     pose = numpy.dot(translation, rotate)
     cmd = [vobj.Pose(obj, pose)]
     return (cmd,)
+
 
 def collision_Test(robot, objects, nonmovable, q1, q2, sample, constraint=None):
     """
@@ -37,9 +41,30 @@ def collision_Test(robot, objects, nonmovable, q1, q2, sample, constraint=None):
             return False
     return True
 
+
 def getDistance(q1, q2):
     """
     Returns the total radian distance from configuration q1 to configuration q2.
     """
     x = q1 - q2
     return numpy.sqrt(x.dot(x))
+
+
+def get_rotation_arr(axis, angle):
+    if axis.upper() == 'X':
+        return numpy.array([[1, 0, 0, 0],
+                            [0, math.cos(angle), -math.sin(angle), 0],
+                            [0, math.sin(angle), math.cos(angle), 0],
+                            [0., 0., 0., 1.]])
+    elif axis.upper() == 'Y':
+        return numpy.array([[math.cos(angle), 0, math.sin(angle), 0],
+                            [0, 1, 0, 0],
+                            [-math.sin(angle), 0, math.cos(angle), 0],
+                            [0., 0., 0., 1.]])
+    elif axis.upper() == 'Z':
+        return numpy.array([[math.cos(angle), -math.sin(angle), 0, 0],
+                            [math.sin(angle), math.cos(angle), 0, 0],
+                            [0, 0, 1, 0],
+                            [0., 0., 0., 1.]])
+    else:
+        raise Exception("Invalid Axis (not XYZ)")

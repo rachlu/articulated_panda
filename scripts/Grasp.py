@@ -4,6 +4,7 @@ import numpy
 import random
 import math
 from tsr.tsr import TSR
+import util
 
 class Grasp:
     def __init__(self, robot, objects):
@@ -19,14 +20,8 @@ class Grasp:
         # bowl
 
         # Relative rotation of the robot from the bowl
-        t_1 = numpy.array([[1, 0, 0, 0],
-                           [0, math.cos(math.pi), -math.sin(math.pi), 0],
-                           [0, math.sin(math.pi), math.cos(math.pi), 0],
-                           [0., 0., 0., 1.]])
-        t_2 = numpy.array([[1, 0, 0, 0],
-                           [0, math.cos(-math.pi / 7), -math.sin(-math.pi / 7), 0],
-                           [0, math.sin(-math.pi / 7), math.cos(-math.pi / 7), 0],
-                           [0., 0., 0., 1.]])
+        t_1 = util.get_rotation_arr('X', math.pi)
+        t_2 = util.get_rotation_arr('X', -math.pi/7)
         rotation = numpy.dot(t_1, t_2)
 
         # Relative translation of the robot from the bowl
@@ -38,10 +33,7 @@ class Grasp:
         self.relative[('bowl')] = [rel]
 
         # Rotation 180 degrees of the robot end-effector
-        t_3 = numpy.array([[math.cos(math.pi), -math.sin(math.pi), 0, 0],
-                           [math.sin(math.pi), math.cos(math.pi), 0, 0],
-                           [0, 0, 1, 0],
-                           [0., 0., 0., 1.]])
+        t_3 = util.get_rotation_arr('Z', math.pi)
         rotation = numpy.linalg.multi_dot([t_1, t_2, t_3])
         translation = numpy.array([[1, 0, 0, 0],
                                    [0, 1, 0, .039],
@@ -55,10 +47,7 @@ class Grasp:
         self.bw_range[('bowl')] = bw
 
         # utensils
-        rotation = numpy.array([[math.cos(math.pi), 0, math.sin(math.pi), 0],
-                           [0, 1, 0, 0],
-                           [-math.sin(math.pi), 0, math.cos(math.pi), 0],
-                           [0., 0., 0., 1.]])
+        rotation = util.get_rotation_arr('Y', math.pi)
         translation = numpy.array([[1, 0, 0, 0],
                                    [0, 1, 0, 0],
                                    [0, 0, 1, -.125],
@@ -66,10 +55,7 @@ class Grasp:
         rel = numpy.dot(rotation, translation)
         self.relative[self.utensils] = [rel]
 
-        z = numpy.array([[math.cos(math.pi), -math.sin(math.pi), 0, 0],
-                      [math.sin(math.pi), math.cos(math.pi), 0, 0],
-                      [0, 0, 1, 0],
-                      [0., 0., 0., 1.]])
+        z = util.get_rotation_arr('Z', math.pi)
         rotation = numpy.dot(z, rotation)
         translation = numpy.array([[1, 0, 0, 0],
                                    [0, 1, 0, 0],
@@ -82,37 +68,46 @@ class Grasp:
         bw = numpy.array([[-0.03, 0.03], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]])
         self.bw_range[self.utensils] = bw
 
-        # Door
+        # Cabinet
         translation = numpy.array([[1, 0, 0, 0],
-                                   [0, 1, 0, -0.13],
-                                   [0, 0, 1, -0.29],
+                                   [0, 1, 0, -0.125],
+                                   [0, 0, 1, -0.275],
                                    [0., 0., 0., 1.]])
-        t1 = numpy.array([[1, 0, 0, 0],
-                           [0, math.cos(math.pi/2), -math.sin(math.pi/2), 0],
-                           [0, math.sin(math.pi/2), math.cos(math.pi/2), 0],
-                           [0., 0., 0., 1.]])
-        t2 = numpy.array([[math.cos(math.pi/2), 0, math.sin(math.pi/2), 0],
-                           [0, 1, 0, 0],
-                           [-math.sin(math.pi/2), 0, math.cos(math.pi/2), 0],
-                           [0., 0., 0., 1.]])
+        t1 = util.get_rotation_arr('X', math.pi / 2)
+        t2 = util.get_rotation_arr('Y', math.pi / 2)
         rotation = numpy.dot(t1, t2)
         rel = numpy.dot(rotation, translation)
-        self.relative['door'] = [rel]
+        self.relative['cabinet_bottom'] = [rel]
 
-        t1 = numpy.array([[1, 0, 0, 0],
-                           [0, math.cos(3*math.pi/2), -math.sin(3*math.pi/2), 0],
-                           [0, math.sin(3*math.pi/2), math.cos(3*math.pi/2), 0],
-                           [0., 0., 0., 1.]])
+        translation = numpy.array([[1, 0, 0, 0],
+                                   [0, 1, 0, 0.125],
+                                   [0, 0, 1, -0.275],
+                                   [0., 0., 0., 1.]])
+        rel = numpy.dot(rotation, translation)
+        self.relative['cabinet_top'] = [rel]
+
+        t1 = util.get_rotation_arr('X', 3*math.pi/2)
         #y, z, x
         translation = numpy.array([[1, 0, 0, 0],
-                                   [0, 1, 0, -0.13],
-                                   [0, 0, 1, -0.29],
+                                   [0, 1, 0, 0.125],
+                                   [0, 0, 1, -0.275],
                                    [0., 0., 0., 1.]])
         rotation = numpy.dot(t1, t2)
         rel = numpy.dot(rotation, translation)
-        self.relative['door'].append(rel)
-        bw = numpy.array([[0, 0], [-0.03, 0.03], [0, 0], [0, 0], [0, 0], [0, 0]])
-        self.bw_range['door'] = bw
+        self.relative['cabinet_bottom'].append(rel)
+
+        translation = numpy.array([[1, 0, 0, 0],
+                                   [0, 1, 0, -0.125],
+                                   [0, 0, 1, -0.275],
+                                   [0., 0., 0., 1.]])
+        rel = numpy.dot(rotation, translation)
+        self.relative['cabinet_top'].append(rel)
+
+        bw = numpy.array([[0, 0], [0, 0], [-0.018, 0.018], [0, 0], [0, 0], [0, 0]])
+        self.bw_range['cabinet_bottom'] = bw
+        self.bw_range['cabinet_top'] = bw
+
+        # Door
 
     def set_tsr(self, obj, pose):
         if obj in self.utensils:

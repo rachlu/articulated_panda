@@ -52,7 +52,7 @@ def execute():
     floor_pose = floor.get_transform()
     floor_pose[0][3] += 0.16764
     floor.set_transform(floor_pose)
-
+    """
     # Add fork object
     fork_file = os.path.join(objects_path, 'fork.urdf')
     fork = pb_robot.body.createBody(fork_file)
@@ -81,18 +81,28 @@ def execute():
     while not collision_free([knife, spoon, fork, robot], bowl):
         random_pos = util.sampleTable('bowl')[0][0].pose
         bowl.set_transform(random_pos)
-
+    """
     door_file = os.path.join(objects_path, 'door.urdf')
 
     door = pb_robot.body.createBody(door_file)
-    pos = numpy.array([[1, 0, 0, .5],
+    pos = numpy.array([[1, 0, 0, .7],
                       [0, 1, 0, -0.5],
-                      [0, 0, 1, 0.5],
-                      [0, 0, 0, 0]])
-    door.set_transform(pos)
+                      [0, 0, 1, pb_robot.placements.stable_z(door, floor)],
+                      [0, 0, 0, 1]])
+    rotate = util.get_rotation_arr('Z', math.pi/2)
+    door.set_transform(numpy.dot(pos, rotate))
 
-    objects = {'fork': fork, 'spoon': spoon, 'knife': knife, 'bowl': bowl, 'door': door}
+    cabinet_file = os.path.join(objects_path, 'cabinet.urdf')
+    cabinet = pb_robot.body.createBody(cabinet_file)
+    pos = numpy.array([[1, 0, 0, -0.4],
+                       [0, 1, 0, 0.4],
+                       [0, 0, 1, pb_robot.placements.stable_z(cabinet, floor)],
+                       [0, 0, 0, 1]])
+    rotate = util.get_rotation_arr('Z', math.pi)
+    cabinet.set_transform(numpy.dot(pos, rotate))
+    # objects = {'fork': fork, 'spoon': spoon, 'knife': knife, 'bowl': bowl, 'door': door}
 
-    #objects = {'fork': fork, 'spoon': spoon, 'knife': knife, 'bowl': bowl}
+    # objects = {'fork': fork, 'spoon': spoon, 'knife': knife, 'bowl': bowl}
 
+    objects = {'door': door, 'cabinet': cabinet}
     return objects, floor, robot
