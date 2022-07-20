@@ -19,9 +19,24 @@ class TrajPath:
     def __repr__(self):
         return 't{}'.format(id(self) % 1000)
 
-    def execute(self):
-        self.robot.arm.ExecutePositionPath(self.path, timestep=0.2)
-    
+    def execute(self, *args):
+        holding = False
+        if args is not None:
+            obj, location, increment = args
+            position = 0
+            holding = True
+        for q in self.path:
+            self.robot.arm.SetJointValues(q)
+            if holding:
+                if location is None:
+                    obj.set_configuration((position, ))
+                elif location == 'top':
+                    obj.set_configuration((position, 0))
+                else:
+                    obj.set_configuration((0, position))
+                position += increment
+            time.sleep(0.2)
+
     #def __str__(self):
     #    return str(self.path)
 

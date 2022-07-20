@@ -108,6 +108,22 @@ class Grasp:
         self.bw_range['cabinet_top'] = bw
 
         # Door
+        translation = numpy.array([[1, 0, 0, 0.8],
+                                   [0, 1, 0, 0.0931],
+                                   [0, 0, 1, 0.588],
+                                   [0, 0, 0, 1]])
+        t1 = util.get_rotation_arr('X', math.pi)
+        t2 = util.get_rotation_arr('Z', math.pi / 2)
+        rotation = numpy.dot(t1, t2)
+        rel = numpy.dot(translation, rotation)
+        self.relative['door'] = [rel]
+
+        t2 = util.get_rotation_arr('Z', -math.pi / 2)
+        rotation = numpy.dot(t1, t2)
+        rel = numpy.dot(translation, rotation)
+        self.relative['door'].append(rel)
+        bw = numpy.array([[0, 0], [-0.02, 0.02], [0, 0], [0, 0], [0, 0], [0, 0]])
+        self.bw_range['door'] = bw
 
     def set_tsr(self, obj, pose):
         if obj in self.utensils:

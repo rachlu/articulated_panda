@@ -34,20 +34,22 @@ class Open:
 
         old_pos = self.objects['door'].get_transform()
         self.robot.arm.Grab(self.objects['door'], relative_grasp)
-        a = 0.25
-        b = 0.25
-        x_0 = start_grasp[0][-1] - a
-        y_0 = start_grasp[1][-1]
+        a = 0.77
+        b = 0.77
+
+        x_0 = start_grasp[0][-1]
+        y_0 = start_grasp[1][-1] - b
         q = numpy.array(start_q)
         path = [q]
-        for t in numpy.linspace(0, -math.pi / 2, 5):
+        for t in numpy.linspace(math.pi/2+math.pi/20, 3*math.pi/4, 5):
             new_grasp = start_grasp
             x = a * math.cos(t) + x_0
             y = b * math.sin(t) + y_0
             new_grasp[0][-1] = x
             new_grasp[1][-1] = y
+            new_grasp = numpy.dot(new_grasp, util.get_rotation_arr('Z', -(t-math.pi/2)))
             q = self.robot.arm.ComputeIKQ(new_grasp, q)
-            # pb_robot.viz.draw_tform(new_grasp)
+            pb_robot.viz.draw_tform(new_grasp)
             if q is not None and self.robot.arm.IsCollisionFree(q):
                 path.append(numpy.array(q))
             else:
