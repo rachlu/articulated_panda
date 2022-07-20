@@ -27,7 +27,7 @@ class Open:
                 return None
         return path
 
-    def get_door_traj(self, start_q, relative_grasp):
+    def get_door_traj(self, start_q, relative_grasp, end, increment):
         old_q = self.robot.arm.GetJointValues()
         self.robot.arm.SetJointValues(start_q)
         start_grasp = self.robot.arm.GetEETransform()
@@ -41,7 +41,8 @@ class Open:
         y_0 = start_grasp[1][-1] - b
         q = numpy.array(start_q)
         path = [q]
-        for t in numpy.linspace(math.pi/2+math.pi/20, 3*math.pi/4, 5):
+        sample = int((end - math.pi/2)/increment)
+        for t in numpy.linspace(math.pi/2+increment, end, sample):
             new_grasp = start_grasp
             x = a * math.cos(t) + x_0
             y = b * math.sin(t) + y_0
