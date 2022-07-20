@@ -48,7 +48,8 @@ if __name__ == '__main__':
         g, q = grasp.grasp('door', objects['door'].get_transform())
         robot.arm.hand.Close()
         robot.arm.SetJointValues(q)
-        traj = open_class.get_door_traj(q, numpy.dot(numpy.linalg.inv(objects['door'].get_transform()), g))[0][0]
+        traj = open_class.get_door_traj(q, numpy.dot(numpy.linalg.inv(objects['door'].get_transform()), g), 3*math.pi/4,
+                                        increment)[0][0]
         if traj is not None:
             break
     #
