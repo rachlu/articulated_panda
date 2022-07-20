@@ -5,7 +5,7 @@ import vobj
 import pb_robot
 
 class Open:
-    def __init__(self, robot, objects, floor, ):
+    def __init__(self, robot, objects, floor):
         self.robot = robot
         self.objects = objects
         self.nonmovable = [floor]
