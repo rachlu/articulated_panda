@@ -108,9 +108,9 @@ class Grasp:
         self.bw_range['cabinet_top'] = bw
 
         # Door
-        translation = numpy.array([[1, 0, 0, 0.8],
-                                   [0, 1, 0, 0.087],
-                                   [0, 0, 1, 0.65],
+        translation = numpy.array([[1, 0, 0, 0],
+                                   [0, 1, 0, 0.02],
+                                   [0, 0, 1, 0.11],
                                    [0, 0, 0, 1]])
         t1 = util.get_rotation_arr('X', math.pi)
         t2 = util.get_rotation_arr('Z', math.pi / 2)
@@ -118,11 +118,14 @@ class Grasp:
         rel = numpy.dot(translation, rotation)
         self.relative['door'] = [rel]
 
-        t2 = util.get_rotation_arr('Z', -math.pi / 2)
+        # t2 = util.get_rotation_arr('Z', -math.pi / 2)
+        t2 = util.get_rotation_arr('Z', math.pi / 2)
         rotation = numpy.dot(t1, t2)
         rel = numpy.dot(translation, rotation)
         self.relative['door'].append(rel)
-        bw = numpy.array([[0, 0], [-0.02, 0.02], [0, 0], [0, 0], [0, 0], [0, 0]])
+        # bw = numpy.array([[0, 0], [0, 0], [-0.1, 0.1], [0, 0], [0, 0], [0, 0]])
+        bw = numpy.array([[0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]])
+
         self.bw_range['door'] = bw
 
     def set_tsr(self, obj, pose):
@@ -145,6 +148,7 @@ class Grasp:
             grasp_idx = random.randint(0, 1)
             # Grasp in world frame
             grasp_world = self.grasp_tsr[obj][grasp_idx].sample()
+            print(grasp_world)
             computed_q = self.robot.arm.ComputeIK(grasp_world)
         return None, None
         

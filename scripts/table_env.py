@@ -85,7 +85,7 @@ def execute():
     door_file = os.path.join(objects_path, 'door.urdf')
 
     door = pb_robot.body.createBody(door_file)
-    pos = numpy.array([[1, 0, 0, .7],
+    pos = numpy.array([[1, 0, 0, .68],
                       [0, 1, 0, -0.5],
                       [0, 0, 1, pb_robot.placements.stable_z(door, floor)],
                       [0, 0, 0, 1]])

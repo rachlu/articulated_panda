@@ -33,7 +33,7 @@ class Spring:
         end_effector[2][-1] += distance
         new_q = self.robot.arm.ComputeIKQ(end_effector, current_q)
 
-        if self.robot.arm.InsideTorqueLimits(new_q, [0, 0, 0, 0, 0, force]):
+        if self.robot.arm.InsideTorqueLimits(new_q, [0, 0, force, 0, 0, 0]):
             self.arm.set_joint_impedance_config(new_q)
         else:
             print('Torque Limit!')
