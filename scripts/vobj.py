@@ -37,16 +37,26 @@ class TrajPath:
                 position += increment
             time.sleep(0.2)
 
+
     #def __str__(self):
     #    return str(self.path)
 
 class HandCmd:
-    def __init__(self, robot, obj, grasp=None):
+    def __init__(self, robot, obj, grasp=None, status=None):
         self.robot = robot
         self.obj = obj
         self.grasp = grasp
+        self.status = status
 
     def execute(self):
+        if self.status is not None:
+            if self.status.upper() == 'Open':
+                self.robot.arm.hand.Open()
+                self.robot.arm.Release(self.obj)
+            else:
+                self.robot.arm.hand.Close()
+                self.robot.arm.Grab(self.obj, self.grasp)
+            return
         if len(self.robot.arm.grabbedObjects) != 0:
             self.robot.arm.hand.Open()
             self.robot.arm.Release(self.obj)

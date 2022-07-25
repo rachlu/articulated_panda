@@ -64,12 +64,12 @@ class TAMP_Functions:
                 return (cmds, )
         return (None, )
 
-    def get_open_traj(self, obj, start_q, obj_pose):
+    def get_open_traj(self, obj, start_q, obj_pose, end=3*math.pi/4, increment=math.pi / 20):
         for _ in range(5):
             relative_grasp = self.sampleGrabPose(obj, obj_pose)[0][0]
             end_q, hand_traj = self.computeIK(obj, obj_pose, relative_grasp)[0]
             t1 = self.calculate_path(start_q, end_q)[0][0]
-            t2 = self.open_class.get_door_traj(end_q.conf, relative_grasp.pose)
+            t2 = self.open_class.get_door_traj(end_q.conf, relative_grasp.pose, end, increment)
             if t1 is not None and t2 is not None:
                 t1.extend(hand_traj)
                 cmds = [t1, t2[0], t2[1], t2[2], relative_grasp]

@@ -10,7 +10,7 @@ class Open:
         self.objects = objects
         self.nonmovable = [floor]
 
-    def get_cabinet_traj(self, start_q, start_grasp, increment):
+    def get_cabinet_traj(self, start_q, start_grasp, position, increment):
         q = numpy.array(start_q)
         path = [q]
         back = numpy.array([[1, 0, 0, 0],
@@ -18,24 +18,35 @@ class Open:
                             [0, 0, 1, increment],
                             [0., 0., 0., 1.]])
         grasp = start_grasp
-        for _ in range(5):
+        for x in range(5):
             grasp = numpy.dot(grasp, back)
             q = numpy.array(self.robot.arm.ComputeIKQ(grasp, q))
-            if q is not None:
+            if position.upper() == 'TOP':
+                self.objects['cabinet'].set_configuration((-1*(increment*(x+1)), 0))
+            else:
+                self.objects['cabinet'].set_configuration((0, -1*(increment*(x+1))))
+            for obj in set(self.objects.keys()) - {'cabinet'}:
+                if pb_robot.collisions.body_collision(self.objects['cabinet'], self.objects[obj]):
+                    self.objects['cabinet'].set_configuration((0, 0))
+                    print('cabinet collision')
+                    return None
+            if q is not None and self.robot.arm.IsCollisionFree(q):
                 path.append(q)
             else:
+                self.objects['cabinet'].set_configuration((0, 0))
                 return None
-        return path
+        cmd = [vobj.TrajPath(self.robot, path[:-1]), vobj.HandCmd(self.robot, self.objects['cabinet'], status='Open'), vobj.TrajPath(self.robot, path[-2:])]
+        end_pose = self.objects['cabinet'].get_configuration()
+        self.objects['cabinet'].set_configuration((0, 0))
+        return [cmd, vobj.BodyConf(self.robot, q), vobj.Pose('cabinet', end_pose)]
 
     def get_door_traj(self, start_q, relative_grasp, end, increment):
         old_q = self.robot.arm.GetJointValues()
         self.robot.arm.SetJointValues(start_q)
         start_grasp = self.robot.arm.GetEETransform()
 
-        old_pos = self.objects['door'].get_transform()
-        self.robot.arm.Grab(self.objects['door'], relative_grasp)
-        a = 0.77
-        b = 0.77
+        a = 0.8
+        b = 0.1
 
         x_0 = start_grasp[0][-1]
         y_0 = start_grasp[1][-1] - b
@@ -51,13 +62,19 @@ class Open:
             new_grasp = numpy.dot(new_grasp, util.get_rotation_arr('Z', -(t-math.pi/2)))
             q = self.robot.arm.ComputeIKQ(new_grasp, q)
             pb_robot.viz.draw_tform(new_grasp)
+            self.objects['door'].set_configuration((t-math.pi/2, ))
+            for obj in set(self.objects.keys()) - {'door'}:
+                if pb_robot.collisions.body_collision(self.objects['door'], self.objects[obj]):
+                    self.objects['door'].set_configuration((0, ))
+                    self.robot.arm.SetJointValues(old_q)
+                    return None
             if q is not None and self.robot.arm.IsCollisionFree(q):
                 path.append(numpy.array(q))
             else:
                 print(q, 'None')
-                self.robot.arm.SetJointValues(old_q)
-                self.objects['door'].set_transform(old_pos)
                 self.robot.arm.Release(self.objects['door'])
+                self.objects['door'].set_configuration((0,))
+                self.robot.arm.SetJointValues(old_q)
                 return None
         back = numpy.array([[1, 0, 0, 0],
                             [0, 1, 0, 0],
@@ -67,15 +84,14 @@ class Open:
         q = self.robot.arm.ComputeIKQ(back_grasp, path[-1])
         if q is None:
             print('back None')
-            self.robot.arm.SetJointValues(old_q)
-            self.objects['door'].set_transform(old_pos)
             self.robot.arm.Release(self.objects['door'])
+            self.objects['door'].set_configuration((0,))
+            self.robot.arm.SetJointValues(old_q)
             return None
-        cmd = [vobj.TrajPath(self.robot, path), vobj.HandCmd(self.robot, self.objects['door'], relative_grasp), vobj.TrajPath(self.robot, [path[-1], q])]
-        end_pose = self.objects['door'].get_transform()
+        cmd = [vobj.TrajPath(self.robot, path), vobj.HandCmd(self.robot, self.objects['door'], status='Open'), vobj.TrajPath(self.robot, [path[-1], q])]
+        end_pose = self.objects['door'].get_configuration()
+        self.objects['door'].set_configuration((0,))
         self.robot.arm.SetJointValues(old_q)
-        self.objects['door'].set_transform(old_pos)
-        self.robot.arm.Release(self.objects['door'])
         return [cmd, vobj.BodyConf(self.robot, q), vobj.Pose('door', end_pose)]
 
 
