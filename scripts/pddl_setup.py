@@ -16,7 +16,7 @@ from pddlstream.utils import user_input, read, INF
 from pddlstream.algorithms.meta import solve, create_parser
 
 
-def pddlstream_from_tamp(robot, movable, tamp, panda = None):
+def pddlstream_from_tamp(robot, movable, tamp, panda=None):
     domain_pddl = read('domain.pddl')
     stream_pddl = read('stream.pddl')
 
@@ -37,28 +37,31 @@ def pddlstream_from_tamp(robot, movable, tamp, panda = None):
         ('Region', 'fork_region'),
         ('Region', 'bowl_region'),
         ('Region', 'knife_region'),
-        ('UprightObj', 'bowl')
+        ('UprightObj', 'bowl'),
+        ('Openable', 'door')
     ]
-
-    #goal = (('Holding', 'fork'))
+    #goal = (('Open', 'door'))
+    #goal = ('and', ('Open', 'door'), ('AtConf', conf), ('Holding', 'knife'))
     #goal = (('On', 'bowl', 'bowl_region'))
-    #goal = (('On', 'spoon', 'spoon_region'))
+    # goal = ('and', ('On', 'spoon', 'spoon_region'), ('Open', 'door'))
 
-    #goal = ('and', ('On', 'knife', 'knife_region'), ('On', 'fork', 'fork_region'))
+    # goal = ('and', ('On', 'knife', 'knife_region'), ('On', 'fork', 'fork_region'))
 
-    #goal = ('and', ('On', 'knife', 'knife_region'), ('On', 'fork', 'fork_region'), ('On', 'spoon', 'spoon_region'))
+    # goal = ('and', ('On', 'knife', 'knife_region'), ('On', 'fork', 'fork_region'), ('On', 'spoon', 'spoon_region'))
 
-    #goal = ('and', ('On', 'knife', 'knife_region'), ('On', 'fork', 'fork_region'), ('On', 'spoon', 'spoon_region'), ('AtConf', conf))
-
-    goal = ('and', ('On', 'knife', 'knife_region'), ('On', 'fork', 'fork_region'), ('On', 'spoon', 'spoon_region'), ('On', 'bowl', 'bowl_region'), ('AtConf', conf))
+    # goal = ('and', ('On', 'knife', 'knife_region'), ('On', 'fork', 'fork_region'), ('On', 'spoon', 'spoon_region'), ('AtConf', conf))
+    # goal = ('and', ('Open', 'door'), ('AtConf', conf))
+    goal = ('and', ('On', 'knife', 'knife_region'), ('On', 'fork', 'fork_region'), ('On', 'spoon', 'spoon_region'),
+            ('On', 'bowl', 'bowl_region'), ('Open', 'door'), ('AtConf', conf))
     # objPoses = {}
     for obj in movable:
         position = vobj.Pose(robot, movable[obj].get_transform())
         # objPoses[obj] = position
-        init.extend([('Graspable', obj),
-                 ('AtPose', obj, position),
-                  ('ObjPose', obj, position)
-        ])
+        init.extend([('AtPose', obj, position),
+                     ('ObjPose', obj, position)
+                     ])
+        if obj != 'door':
+            init.extend([('Placeable', obj)])
     # init += ('ObjPoses', objPoses)
     stream_map = {
         'get_trajectory': from_gen_fn(tamp.calculate_path),
@@ -70,7 +73,8 @@ def pddlstream_from_tamp(robot, movable, tamp, panda = None):
         'collisionCheck': from_test(tamp.collisionCheck),
         'sampleTable': from_gen_fn(util.sampleTable),
         'cfree': from_test(tamp.cfreeTraj_Check),
-        'cfreeholding': from_test(tamp.cfreeTrajHolding_Check)
+        'cfreeholding': from_test(tamp.cfreeTrajHolding_Check),
+        'open_traj': from_gen_fn(tamp.get_open_traj)
     }
 
     return domain_pddl, constant_map, stream_pddl, stream_map, init, goal

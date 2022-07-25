@@ -4,3 +4,4 @@
 statistics/
 temp/
 *.swp
+*.patch

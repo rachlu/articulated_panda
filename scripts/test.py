@@ -9,6 +9,9 @@ import math
 import vobj
 from TAMP_Functions import *
 from Place import Place
+from Open import Open
+from scipy.spatial.transform import Rotation as R
+
 
 if __name__ == '__main__':
     # pb_robot.utils.connect(use_gui=True)
@@ -18,141 +21,61 @@ if __name__ == '__main__':
     objects, floor, robot = table_env.execute()
     robot.arm.hand.Open()
     grasp = Grasp(robot, objects)
-    #rrt = RRT(robot, constraint=rotation_constraint)
-    rrt = RRT(robot)
-    place = Place(robot, objects, floor)
-    # q1 = robot.arm.GetJointValues()
-    # q2 = robot.arm.randomConfiguration()
-    # sample = int(np.sqrt((q1 - q2).dot(q1 - q2)) / 0.5)
-    # num = 1
-    # while num < sample:
-    #     q_new = q1 + (q2 - q1) / sample * num
-    #     robot.arm.SetJointValues(q_new)
-    #     input('next')
-    #     num += 1
-    # q1 = traj[0]
-    # q2 = traj[1]
-    # for num in range(10):
-    #     q_new = q1 + (q2 - q1) / 9 * num
-    #     robot.arm.SetJointValues(q_new)
-    #     input('next')
-    '''
-    while True:
-        t = numpy.array([[1, 0, 0, -0.5],
-                         [0, 1, 0, 0],
-                         [0, 0, 1, 0.005],
-                         [0., 0., 0., 1.]])
-        angle = random.uniform(0, 2 * math.pi)
-        rotate = numpy.array([[math.cos(angle), -math.sin(angle), 0, 0],
-                              [math.sin(angle), math.cos(angle), 0, 0],
-                              [0, 0, 1, 0],
-                              [0., 0., 0., 1.]])
-        objects['knife'].set_transform(numpy.dot(t, rotate))
-        input('next')
-    '''
-    ''' 
-    while True:
-        q = grasp.grasp('bowl')[1]
-        robot.arm.SetJointValues(q)
-        robot.arm.hand.Close()
-        print(rotation_constraint2(robot, objects['bowl'].get_transform()))
-        pb_robot.viz.draw_tform(objects['bowl'].get_transform(), length=0.3, width=3)
-        ans = input('next?')
-        if ans.upper() == 'N':
-            break
-    '''
-    '''
-    while True:
-        q_start = robot.arm.GetJointValues()
-        print('start', q_start)
-        q_end = rrt.sample_config()
-        print('goal', q_end)
-        path = rrt.motion(q_start, q_end)
-        print(path)
-        if path is None:
-            continue
-        input('execute?')
-        p = vobj.TrajPath(robot, path)
-        p.execute()
-        ans = input('next')
-        if ans.upper() == 'N':
-            break
+    # translation = numpy.array([[1, 0, 0, 0.8],
+    #                            [0,  1,  0, 0.0931],
+    #                            [0,  0, 1, 0.588],
+    #                            [ 0,  0,  0, 1]])
+    # t1 = util.get_rotation_arr('X', math.pi)
+    # t2 = util.get_rotation_arr('Z', math.pi/2)
+    # rotation = numpy.dot(t1, t2)
+    # rel = numpy.dot(translation, rotation)
+    # world_grasp = numpy.dot(objects['door'].get_transform(), rel)
+    # # # print(world_grasp)
+    # q = robot.arm.ComputeIK(world_grasp)
+    # robot.arm.SetJointValues(q)
 
-    while True:
-        q_start = robot.arm.GetJointValues()
-        q_goal = rrt.sample_config()
-        path = rrt.motion(q_start, q_goal)
-        print(path)
-        if path is None:
-            continue
-        p = vobj.TrajPath(robot, path)
-        p.execute()
-        input('next')
-    '''
-    obj = 'bowl'
-    grasp, q = grasp.grasp(obj)
-    robot.arm.SetJointValues(q)
-    grasp = numpy.dot(numpy.linalg.inv(objects[obj].get_transform()), grasp)
-    robot.arm.Grab(objects[obj], grasp)
-    robot.arm.hand.Close()
-    # tamp = TAMP_Functions(robot, objects, floor)
-    # #old_pos = objects['bowl'].get_transform()
-    
-    while True:
-        print()
-        q = robot.arm.randomConfiguration()
-        robot.arm.SetJointValues(q)
-        #t = robot.arm.GetEETransform()
-        #print(t)
-        p = objects['bowl'].get_transform()
-        pb_robot.viz.draw_tform(p, length=0.2, width=3)
-        print(rotation_constraint2(robot, p))
-        if input('next').upper() == 'N':
-            break     
-    '''    
-    while True:
-    #     old_pos = vobj.Pose(obj, objects[obj].get_transform())
-    #     #obj_pose = sampleTable(obj, old_pos)[0][0].pose
-         obj_pose = place.samplePlacePose(obj)
-         world_grasp = numpy.dot(obj_pose, grasp)
-         new_q = robot.arm.ComputeIK(world_grasp)
-         if new_q is None:
-             print('none')
-             continue
-         robot.arm.SetJointValues(q)
-         print(rotation_constraint(robot, new_q))
-         #q_start = robot.arm.GetJointValues()
-         #input('goal')
-         robot.arm.SetJointValues(new_q)
-         #input('plan?')
-         #path = vobj.TrajPath(robot, rrt.motion(q_start, new_q))
-         #print(path.path)
-         #if path.path is None:
-             #print('no path')
-             #continue
-    #     for num in range(len(path.path)):
-    #         print((num+1), '/', len(path.path))
-    #         print(robot.arm.IsCollisionFree(path.path[num]))
-         #path.execute()
-         #robot.arm.SetJointValues(new_q)
-         #print(robot.arm.IsCollisionFree(new_q))
-         input('next')
-         
-         ans = input('next? (R?)')
-         #while ans.upper() == 'R':
-            #path.execute()
-            #ans = input('next? (R?)')
+    # while True:
+    #     g, q = grasp.grasp('cabinet_top', objects['cabinet'].get_transform())
+    #     robot.arm.SetJointValues(q)
+    #     print(robot.arm.IsCollisionFree(q))
+    #     input('next')
+
+    open_class = Open(robot, objects, floor)
+    increment = math.pi / 20
+    # objects['door'].set_configuration((math.pi/2, ))
+    # increment = -.04
+    # g, q = grasp.grasp('cabinet_top', objects['cabinet'].get_transform())
+    # robot.arm.SetJointValues(q)
+    # robot.arm.hand.Close()
+    # for link in objects['cabinet'].links:
+    #     if pb_robot.collisions.body_collision(link.body, robot):
+    #         print(link.get_link_name())
+        # if pb_robot.collisions.pairwise_link_collision(objects['cabinet'], link, robot):
+        #     print(link.get_link_name())
+    # open_class.get_door_traj(q, numpy.dot(numpy.linalg.inv(objects['door'].get_transform()), g))
+    # for _ in range(7):
+    #     g, q = grasp.grasp('door', objects['door'].get_transform())
+    #     if q is None:
+    #         continue
+    #     # g, q = grasp.grasp('cabinet_top', objects['cabinet'].get_transform())
+    #     robot.arm.SetJointValues(q)
+    #     robot.arm.hand.Close()
+    #     traj = open_class.get_door_traj(q, numpy.dot(numpy.linalg.inv(objects['door'].get_transform()), g), 3*math.pi/4,
+    #                                     increment)
+    #     # traj = open_class.get_cabinet_traj(q, g, 'top', increment)
+    #     if traj is not None:
+    #         break
     #
-         if ans.upper() == 'N':
-             break
-         #input('next')
-    #     '''
-    '''
-    for obj in objects:
-        print(obj)
-        obj_pose = place.samplePlacePose(obj)
-        objects[obj].set_transform(obj_pose)
-    '''
+    # # print('traj', traj)
+    # # # x = 0
+    # input('execute')
+    # # for t in traj[0]:
+    # #     if isinstance(t, vobj.TrajPath):
+    # #         t.execute()
+    # traj = vobj.TrajPath(robot, traj.path)
+    # traj[0][0].execute(objects['door'], None, increment)
+    # r = R.from_matrix([[0, -1, 0], [-1, 0, 0], [0, 0, -1]])
+    # print(r.as_euler('XYZ', degrees=True))
     IPython.embed()
     pb_robot.utils.wait_for_user()
     pb_robot.utils.disconnect()
