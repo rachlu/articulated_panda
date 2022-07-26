@@ -17,7 +17,7 @@ class TAMP_Functions:
         self.robot = robot
         self.objects = objects
         self.floor = floor
-        placable = {key: objects[key] for key in (set(objects.keys()) - {'door'})}
+        placable = {key: objects[key] for key in (set(objects.keys()) - {'door', 'cabinet'})}
         self.place = Place(robot, placable, floor)
         self.grasp = Grasp(robot, objects)
         self.open_class = Open(robot, objects, floor)

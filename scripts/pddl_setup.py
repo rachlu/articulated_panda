@@ -40,7 +40,7 @@ def pddlstream_from_tamp(robot, movable, tamp, panda=None):
         ('UprightObj', 'bowl'),
         ('Openable', 'door')
     ]
-    #goal = (('Open', 'door'))
+    goal = (('Open', 'door'))
     #goal = ('and', ('Open', 'door'), ('AtConf', conf), ('Holding', 'knife'))
     #goal = (('On', 'bowl', 'bowl_region'))
     # goal = ('and', ('On', 'spoon', 'spoon_region'), ('Open', 'door'))
@@ -51,8 +51,8 @@ def pddlstream_from_tamp(robot, movable, tamp, panda=None):
 
     # goal = ('and', ('On', 'knife', 'knife_region'), ('On', 'fork', 'fork_region'), ('On', 'spoon', 'spoon_region'), ('AtConf', conf))
     # goal = ('and', ('Open', 'door'), ('AtConf', conf))
-    goal = ('and', ('On', 'knife', 'knife_region'), ('On', 'fork', 'fork_region'), ('On', 'spoon', 'spoon_region'),
-            ('On', 'bowl', 'bowl_region'), ('Open', 'door'), ('AtConf', conf))
+    #goal = ('and', ('On', 'knife', 'knife_region'), ('On', 'fork', 'fork_region'), ('On', 'spoon', 'spoon_region'),
+    #        ('On', 'bowl', 'bowl_region'), ('Open', 'door'), ('AtConf', conf))
     # objPoses = {}
     for obj in movable:
         if obj in ['door', 'cabinet']:
