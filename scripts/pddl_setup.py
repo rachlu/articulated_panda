@@ -55,12 +55,15 @@ def pddlstream_from_tamp(robot, movable, tamp, panda=None):
             ('On', 'bowl', 'bowl_region'), ('Open', 'door'), ('AtConf', conf))
     # objPoses = {}
     for obj in movable:
-        position = vobj.Pose(robot, movable[obj].get_transform())
+        if obj in ['door', 'cabinet']:
+            position = vobj.Pose(robot, movable[obj].get_configuration())
+        else:
+            position = vobj.Pose(robot, movable[obj].get_transform())
         # objPoses[obj] = position
         init.extend([('AtPose', obj, position),
                      ('ObjPose', obj, position)
                      ])
-        if obj != 'door':
+        if obj not in ['door', 'cabinet']:
             init.extend([('Placeable', obj)])
     # init += ('ObjPoses', objPoses)
     stream_map = {

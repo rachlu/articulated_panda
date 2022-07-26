@@ -56,18 +56,18 @@ if __name__ == '__main__':
         # if pb_robot.collisions.pairwise_link_collision(objects['cabinet'], link, robot):
         #     print(link.get_link_name())
     # open_class.get_door_traj(q, numpy.dot(numpy.linalg.inv(objects['door'].get_transform()), g))
-    for _ in range(7):
-        g, q = grasp.grasp('door',  objects['door'].link_from_name('door_knob').get_link_tform(True))
-        if q is None:
-            continue
-        # g, q = grasp.grasp('cabinet_top', objects['cabinet'].get_transform())
-        robot.arm.SetJointValues(q)
-        # robot.arm.hand.Close()
-        traj = open_class.get_door_traj(q, numpy.dot(numpy.linalg.inv(objects['door'].link_from_name('door_knob').get_link_tform(True)), g), 2*math.pi/3,
-                                        increment)
-        # traj = open_class.get_cabinet_traj(q, g, 'top', increment)
-        if traj is not None:
-            break
+    # for _ in range(7):
+    #     g, q = grasp.grasp('door',  objects['door'].link_from_name('door_knob').get_link_tform(True))
+    #     if q is None:
+    #         continue
+    #     # g, q = grasp.grasp('cabinet_top', objects['cabinet'].get_transform())
+    #     robot.arm.SetJointValues(q)
+    #     # robot.arm.hand.Close()
+    #     traj = open_class.get_door_traj(q, numpy.dot(numpy.linalg.inv(objects['door'].link_from_name('door_knob').get_link_tform(True)), g), 2*math.pi/3,
+    #                                     increment)
+    #     # traj = open_class.get_cabinet_traj(q, g, 'top', increment)
+    #     if traj is not None:
+    #         break
     # # sample = math.ceil((math.pi - math.pi/2) / increment)
     # for t in numpy.linspace(math.pi / 2, math.pi, 11):
     #     print(t)
@@ -92,12 +92,12 @@ if __name__ == '__main__':
 
     # # print('traj', traj)
     # # # x = 0
-    input('execute')
+    # input('execute')
     # # for t in traj[0]:
     # #     if isinstance(t, vobj.TrajPath):
     # #         t.execute()
     # traj = vobj.TrajPath(robot, traj.path)
-    traj[0][0].execute(objects['door'], None, increment)
+    # traj[0][0].execute(objects['door'], None, increment)
     # r = R.from_matrix([[0, -1, 0], [-1, 0, 0], [0, 0, -1]])
     # print(r.as_euler('XYZ', degrees=True))
     IPython.embed()

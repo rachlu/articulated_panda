@@ -175,14 +175,27 @@ class TAMP_Functions:
         :param pose: Pose of the object
         :return: True if traj is collision free
         """
-        obj_oldpos = self.objects[obj].get_transform()
-        self.objects[obj].set_transform(pose.pose)
+        conf = False
+        if obj in ['door', 'cabinet']:
+            obj_oldpos = self.objects[obj].get_configuration()
+            self.objects[obj].set_configuration(pose.pose)
+            conf = True
+        else:
+            obj_oldpos = self.objects[obj].get_transform()
+            self.objects[obj].set_transform(pose.pose)
         for traj in cmds:
             if isinstance(traj, vobj.TrajPath):
                 for num in range(len(traj.path) - 1):
                     if not util.collision_Test(self.robot, self.objects, [self.floor, self.objects[obj]], traj.path[num], traj.path[num + 1], 50):
-                        self.objects[obj].set_transform(obj_oldpos)
+                        if conf:
+                            self.objects[obj].set_configuration(obj_oldpos)
+                        else:
+                            self.objects[obj].set_transform(obj_oldpos)
                         return False
+        if conf:
+            self.objects[obj].set_configuration(obj_oldpos)
+        else:
+            self.objects[obj].set_transform(obj_oldpos)
         self.objects[obj].set_transform(obj_oldpos)
         return True
 
