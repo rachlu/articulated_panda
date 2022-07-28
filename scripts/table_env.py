@@ -52,6 +52,7 @@ def execute():
     floor_pose = floor.get_transform()
     floor_pose[0][3] += 0.16764
     floor.set_transform(floor_pose)
+    openable = ['door', 'cabinet']
     """
     # Add fork object
     fork_file = os.path.join(objects_path, 'fork.urdf')
@@ -85,7 +86,7 @@ def execute():
     door_file = os.path.join(objects_path, 'door.urdf')
 
     door = pb_robot.body.createBody(door_file)
-    pos = numpy.array([[1, 0, 0, .68],
+    pos = numpy.array([[1, 0, 0, .6],
                       [0, 1, 0, -0.5],
                       [0, 0, 1, pb_robot.placements.stable_z(door, floor)],
                       [0, 0, 0, 1]])
@@ -105,4 +106,4 @@ def execute():
     # objects = {'fork': fork, 'spoon': spoon, 'knife': knife, 'bowl': bowl}
 
     objects = {'door': door, 'cabinet': cabinet}
-    return objects, floor, robot
+    return objects, openable, floor, robot

@@ -18,30 +18,42 @@ if __name__ == '__main__':
     # pb_robot.utils.disable_real_time()
     # pb_robot.utils.set_default_camera()
 
-    objects, floor, robot = table_env.execute()
+    objects, openable, floor, robot = table_env.execute()
     robot.arm.hand.Open()
     grasp = Grasp(robot, objects)
-    # translation = numpy.array([[1, 0, 0, 0.8],
-    #                            [0,  1,  0, 0.0931],
-    #                            [0,  0, 1, 0.588],
-    #                            [ 0,  0,  0, 1]])
-    # t1 = util.get_rotation_arr('X', math.pi)
-    # t2 = util.get_rotation_arr('Z', math.pi/2)
-    # rotation = numpy.dot(t1, t2)
-    # rel = numpy.dot(translation, rotation)
-    # world_grasp = numpy.dot(objects['door'].get_transform(), rel)
-    # # # print(world_grasp)
-    # q = robot.arm.ComputeIK(world_grasp)
-    # robot.arm.SetJointValues(q)
-
-    # while True:
-    #     g, q = grasp.grasp('cabinet_top', objects['cabinet'].get_transform())
-    #     robot.arm.SetJointValues(q)
-    #     print(robot.arm.IsCollisionFree(q))
-    #     input('next')
-
+    tamp = TAMP_Functions(robot, objects, floor, openable)
     open_class = Open(robot, objects, floor)
-    increment = math.pi / 20
+
+    for angle in numpy.linspace(0, 2*math.pi, 40):
+        objects['door'].set_configuration((angle, ))
+        pose = objects['door'].link_from_name('knob').get_link_tform(True)
+        pb_robot.viz.draw_tform(pose)
+
+    relative_grasp = tamp.sampleGrabPose('door', vobj.Pose('door', objects['door'].get_configuration()))[0][0].pose
+
+    objects['door'].set_configuration((0,))
+    start_grasp = objects['door'].link_from_name('knob').get_link_tform(True)
+    # start_grasp = numpy.dot(knob_pose, relative_grasp)
+
+    objects['door'].set_configuration((math.pi / 2,))
+    right_angle = objects['door'].link_from_name('knob').get_link_tform(True)
+
+    # right_angle = numpy.dot(knob_pose, relative_grasp)
+
+    x_0 = start_grasp[0][-1]
+    y_0 = right_angle[1][-1]
+    a = x_0 - right_angle[0][-1]
+    b = start_grasp[1][-1] - y_0
+
+    for t in numpy.linspace(0, 2 * math.pi, 40):
+        new_grasp = numpy.array(start_grasp)
+        x = a * math.cos(t) + x_0
+        y = b * math.sin(t) + y_0
+        new_grasp[0][-1] = x
+        new_grasp[1][-1] = y
+        new_grasp = numpy.dot(new_grasp, util.get_rotation_arr('Z', -(t - math.pi / 2)))
+        pb_robot.viz.draw_tform(new_grasp)
+
     # rotate = util.get_rotation_arr('Z', math.pi/8)
     # g = robot.arm.GetEETransform()
     # q = robot.arm.ComputeIK(numpy.dot(g, rotate))
@@ -51,20 +63,21 @@ if __name__ == '__main__':
     # robot.arm.SetJointValues(q)
     # robot.arm.hand.Close()
     # for link in objects['cabinet'].links:
-    #     if pb_robot.collisions.body_collision(link.body, robot):
+    #     # if pb_robot.collisions.body_collision(link.body, robot):
+    #     #     print(link.get_link_name())
+    #     if pb_robot.collisions.pairwise_link_collision(objects['cabinet'], link, robot):
     #         print(link.get_link_name())
-        # if pb_robot.collisions.pairwise_link_collision(objects['cabinet'], link, robot):
-        #     print(link.get_link_name())
     # open_class.get_door_traj(q, numpy.dot(numpy.linalg.inv(objects['door'].get_transform()), g))
     # for _ in range(7):
-    #     g, q = grasp.grasp('door',  objects['door'].link_from_name('door_knob').get_link_tform(True))
+    #     g, q = grasp.grasp('door',  objects['door'].link_from_name('knob').get_link_tform(True))
     #     if q is None:
     #         continue
     #     # g, q = grasp.grasp('cabinet_top', objects['cabinet'].get_transform())
     #     robot.arm.SetJointValues(q)
     #     # robot.arm.hand.Close()
-    #     traj = open_class.get_door_traj(q, numpy.dot(numpy.linalg.inv(objects['door'].link_from_name('door_knob').get_link_tform(True)), g), 2*math.pi/3,
-    #                                     increment)
+    #     # Door closed is pi/2
+    #     traj = open_class.get_door_traj(q, numpy.dot(numpy.linalg.inv(objects['door'].link_from_name('knob').get_link_tform(True)), g),
+    #                                     increment, 3)
     #     # traj = open_class.get_cabinet_traj(q, g, 'top', increment)
     #     if traj is not None:
     #         break
@@ -72,14 +85,12 @@ if __name__ == '__main__':
     # for t in numpy.linspace(math.pi / 2, math.pi, 11):
     #     print(t)
     #     objects['door'].set_configuration((t - math.pi / 2,))
-    #     pose = objects['door'].link_from_name('door_knob').get_link_tform(True)
+    #     pose = objects['door'].link_from_name('knob').get_link_tform(True)
     #     print(pose)
-    x_0 = 0.59
-    y_0 = -0.54
-    a = 33 / 50
-    b = 42 / 50
-    g, q = grasp.grasp('door',  objects['door'].link_from_name('door_knob').get_link_tform(True))
-
+    # g, q = grasp.grasp('cabinet_bottom',  objects['cabinet'].get_transform())
+    # robot.arm.SetJointValues(q)
+    # robot.arm.hand.Close()
+    # print(util.collision_link_body(objects['cabinet'], objects['cabinet'].link_from_name('top_drawer_knob'), robot))
     # for t in numpy.linspace(math.pi / 2, 3*math.pi/4, 10):
     #     new_grasp = numpy.array(g)
     #     x = a * math.cos(t) + x_0
@@ -103,3 +114,4 @@ if __name__ == '__main__':
     IPython.embed()
     pb_robot.utils.wait_for_user()
     pb_robot.utils.disconnect()
+

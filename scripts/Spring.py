@@ -33,6 +33,7 @@ class Spring:
         end_effector[2][-1] += distance
         new_q = self.robot.arm.ComputeIKQ(end_effector, current_q)
 
+        # List represents wrench: [x, y, z, torque_x, torque_y, torque_z]
         if self.robot.arm.InsideTorqueLimits(new_q, [0, 0, force, 0, 0, 0]):
             self.arm.set_joint_impedance_config(new_q)
         else:

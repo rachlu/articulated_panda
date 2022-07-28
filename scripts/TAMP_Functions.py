@@ -13,11 +13,12 @@ from Open import Open
 
 
 class TAMP_Functions:
-    def __init__(self, robot, objects, floor):
+    def __init__(self, robot, objects, floor, openable):
         self.robot = robot
         self.objects = objects
         self.floor = floor
-        placable = {key: objects[key] for key in (set(objects.keys()) - {'door', 'cabinet'})}
+        self.openable = openable
+        placable = {key: objects[key] for key in (set(objects.keys()) - set(self.openable))}
         self.place = Place(robot, placable, floor)
         self.grasp = Grasp(robot, objects)
         self.open_class = Open(robot, objects, floor)
@@ -33,7 +34,6 @@ class TAMP_Functions:
                 cmd = [[vobj.TrajPath(self.robot, path)]]
                 return (cmd,)
         return (None, )
-
 
     def calculate_path_holding(self, q1, q2, obj, grasp):
         original_position = self.objects[obj].get_transform()
@@ -57,21 +57,25 @@ class TAMP_Functions:
         self.objects[obj].set_transform(original_position)
         return path
 
-    def get_open_traj2(self, obj, start_q, relative_grasp):
-        for _ in range(4):
-            cmds = self.open_class.get_door_traj(start_q.conf, relative_grasp.pose)
-            if cmds is not None:
-                return (cmds, )
-        return (None, )
-
-    def get_open_traj(self, obj, start_q, obj_pose, end=3*math.pi/4, increment=math.pi / 20):
+    def get_open_traj(self, obj, start_q, obj_pose, increment, sample):
         for _ in range(5):
             relative_grasp = self.sampleGrabPose(obj, obj_pose)[0][0]
-            end_q, hand_traj = self.computeIK(obj, obj_pose, relative_grasp)[0]
-            t1 = self.calculate_path(start_q, end_q)[0][0]
-            t2 = self.open_class.get_door_traj(end_q.conf, relative_grasp.pose, end, increment)
+            result = self.computeIK(obj, obj_pose, relative_grasp)[0]
+            if result is None:
+                print('result None')
+                continue
+            # end_q is up conf
+            end_q, hand_traj = result
+            t1 = self.calculate_path(start_q, end_q)[0]
+            # Change to grasp conf
+            end_q = vobj.BodyConf(self.robot, hand_traj[0].path[1])
+            hand_traj[1].set_status('Close')
+            if obj == 'cabinet':
+                t2 = self.open_class.get_cabinet_traj(end_q.conf, relative_grasp.pose, 'top', increment, sample)
+            t2 = self.open_class.get_door_traj(end_q.conf, relative_grasp.pose, increment, sample)
             if t1 is not None and t2 is not None:
-                t1.extend(hand_traj)
+                t1 = t1[0]
+                t1.extend(hand_traj[:2])
                 cmds = [t1, t2[0], t2[1], t2[2], relative_grasp]
                 return (cmds, )
         return (None, )
@@ -79,6 +83,11 @@ class TAMP_Functions:
     def sampleGrabPose(self, obj, obj_pose):
         # grasp_pose is grasp in world frame
         for _ in range(20):
+            if obj in self.openable:
+                old_pos = self.objects[obj].get_configuration()
+                self.objects[obj].set_configuration(obj_pose.pose)
+                obj_pose = vobj.Pose(obj, self.objects[obj].link_from_name('knob').get_link_tform(True))
+                self.objects[obj].set_configuration(old_pos)
             grasp_pose, q = self.grasp.grasp(obj, obj_pose.pose)
             if q is not None and self.robot.arm.IsCollisionFree(q, obstacles=[self.floor]):
                 # Grasp in object frame
@@ -88,23 +97,18 @@ class TAMP_Functions:
         return (None,)
 
     def execute_path(self, path):
-        print(path)
         for action in path:
             if action.name == 'open_door':
-                '''
-                cmds = list(action.args[-2])
-                print(cmds)
-                cmds.extend(action.args[-1])
-                print(cmds)
-                for cmd in cmds:
+                for cmd in action.args[-2]:
+                    print('new cmd')
                     cmd.execute()
                     time.sleep(1)
-                '''
-                cmds = list(action.args[-2])
-                cmds.extend(action.args[-1])
-                for cmd in cmds:
+                increment = action.args[7]
+                print('new cmd')
+                action.args[-1][0].execute(self.objects[action.args[0]], None, increment)
+                for cmd in action.args[-1][1:]:
+                    print('new cmd')
                     cmd.execute()
-                    time.sleep(1)
                 continue
             for cmd in action.args[-1]:
                 cmd.execute()
@@ -117,9 +121,15 @@ class TAMP_Functions:
         :param grasp: Relative grasp in object frame
         :return: start and end configuration and trajectory
         """
+        if obj in self.openable:
+            old_pos = self.objects[obj].get_configuration()
+            self.objects[obj].set_configuration(obj_pose.pose)
+            obj_pose = vobj.Pose(obj, self.objects[obj].link_from_name('knob').get_link_tform(True))
+            self.objects[obj].set_configuration(old_pos)
         grasp_in_world = numpy.dot(obj_pose.pose, grasp.pose)
         q_g = self.robot.arm.ComputeIK(grasp_in_world)
         if q_g is None or not self.robot.arm.IsCollisionFree(q_g, obstacles=[self.floor]):
+            print('q_g None')
             return (None,)
         up = numpy.array([[1, 0, 0, 0],
                           [0, 1, 0, 0],
@@ -128,6 +138,7 @@ class TAMP_Functions:
         new_g = numpy.dot(grasp_in_world, up)
         translated_q = self.robot.arm.ComputeIK(new_g, seed_q=q_g)
         if translated_q is None:
+            print('translated none')
             return (None,)
         translated_q = numpy.array(translated_q)
         q_g = numpy.array(q_g)

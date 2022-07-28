@@ -3,6 +3,7 @@ import numpy
 import vobj
 import math
 import util
+import pb_robot
 
 
 def sampleTable(obj):
@@ -68,3 +69,13 @@ def get_rotation_arr(axis, angle):
                             [0., 0., 0., 1.]])
     else:
         raise Exception("Invalid Axis (not XYZ)")
+
+
+def collision_link_body(body1, link, body2):
+    """
+    Returns whether body2 is in collision with specified link of body1.
+    """
+    for link2 in body2.links:
+        if pb_robot.collisions.pairwise_link_collision(body1, link, body2, link2):
+            return True
+    return False

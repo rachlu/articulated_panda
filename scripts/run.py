@@ -11,10 +11,10 @@ from TAMP_Functions import *
 from pddl_setup import *
 
 if __name__ == '__main__':
-    objects, floor, robot = table_env.execute()
+    objects, openable, floor, robot = table_env.execute()
     robot.arm.hand.Open()
 
-    tamp = TAMP_Functions(robot, objects, floor)
+    tamp = TAMP_Functions(robot, objects, floor, openable)
     pddlstream_problem = pddlstream_from_tamp(robot, objects, tamp)
     _, _, _, stream_map, init, goal = pddlstream_problem
     print('stream', stream_map)
