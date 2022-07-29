@@ -44,23 +44,31 @@ class Open:
     def get_door_traj(self, start_q, relative_grasp, increment, sample):
         old_pos = self.objects['door'].get_configuration()
 
-        self.objects['door'].set_configuration((0, ))
+        self.objects['door'].set_configuration((0,))
         knob_pose = self.objects['door'].link_from_name('knob').get_link_tform(True)
         start_grasp = numpy.dot(knob_pose, relative_grasp)
 
-        self.objects['door'].set_configuration((math.pi/2, ))
+        self.objects['door'].set_configuration((math.pi / 2,))
         knob_pose = self.objects['door'].link_from_name('knob').get_link_tform(True)
 
         right_angle = numpy.dot(knob_pose, relative_grasp)
 
-        x_0 = start_grasp[0][-1]
-        print('x_0', x_0)
-        y_0 = right_angle[1][-1]
-        print('y_0', y_0)
-        a = x_0 - right_angle[0][-1]
-        print('a', a)
-        b = start_grasp[1][-1] - y_0
-        print('b', b)
+        self.objects['door'].set_configuration((math.pi,))
+        knob_pose = self.objects['door'].link_from_name('knob').get_link_tform(True)
+
+        one_eighty = numpy.dot(knob_pose, relative_grasp)
+
+        self.objects['door'].set_configuration((3 * math.pi / 2,))
+        knob_pose = self.objects['door'].link_from_name('knob').get_link_tform(True)
+
+        two_seventy = numpy.dot(knob_pose, relative_grasp)
+
+        a = (two_seventy[0][-1] - right_angle[0][-1]) / 2
+        b = (start_grasp[1][-1] - one_eighty[1][-1]) / 2
+        x_0 = two_seventy[0][-1] - a
+        y_0 = start_grasp[1][-1] - b
+        angle = math.atan((start_grasp[1][-1] - y_0) / (start_grasp[0][-1] - x_0)) + math.pi/2
+        print('angle', angle)
 
         q = numpy.array(start_q)
         path = [q]
@@ -68,8 +76,8 @@ class Open:
         for _ in range(sample):
             t += increment
             new_grasp = numpy.array(start_grasp)
-            x = a * math.cos(t) + x_0
-            y = b * math.sin(t) + y_0
+            x = a * math.cos(t + angle) + x_0
+            y = b * math.sin(t + angle) + y_0
             new_grasp[0][-1] = x
             new_grasp[1][-1] = y
             new_grasp = numpy.dot(new_grasp, util.get_rotation_arr('Z', -(t-math.pi/2)))
@@ -82,11 +90,10 @@ class Open:
                     # print('collision')
                     return None
             # TODO: Add Collision Checking
-            if q is not None:
+            if q is not None and self.robot.arm.IsCollisionFree(q):
                 path.append(numpy.array(q))
             else:
-                # print(q, 'None')
-                # print(self.robot.arm.IsCollisionFree(q))
+                self.robot.arm.SetJointValues(q)
                 self.objects['door'].set_configuration(old_pos)
                 return None
         back = numpy.array([[1, 0, 0, 0],

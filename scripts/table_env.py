@@ -52,7 +52,7 @@ def execute():
     floor_pose = floor.get_transform()
     floor_pose[0][3] += 0.16764
     floor.set_transform(floor_pose)
-    openable = ['door', 'cabinet']
+    openable = ['door', 'cabinet', 'spring']
     """
     # Add fork object
     fork_file = os.path.join(objects_path, 'fork.urdf')
@@ -91,6 +91,11 @@ def execute():
                       [0, 0, 1, pb_robot.placements.stable_z(door, floor)],
                       [0, 0, 0, 1]])
     rotate = util.get_rotation_arr('Z', math.pi/2)
+    # pos = numpy.array([[1, 0, 0, -.6],
+    #                   [0, 1, 0, -0.5],
+    #                   [0, 0, 1, pb_robot.placements.stable_z(door, floor)],
+    #                   [0, 0, 0, 1]])
+    # rotate = util.get_rotation_arr('Z', 0)
     door.set_transform(numpy.dot(pos, rotate))
 
     cabinet_file = os.path.join(objects_path, 'cabinet.urdf')
@@ -101,9 +106,17 @@ def execute():
                        [0, 0, 0, 1]])
     rotate = util.get_rotation_arr('Z', math.pi)
     cabinet.set_transform(numpy.dot(pos, rotate))
+
+    spring_file = os.path.join(objects_path, 'block.urdf')
+    spring = pb_robot.body.createBody(spring_file)
+    pos = numpy.array([[1, 0, 0, 0.4],
+                       [0, 1, 0, 0.4],
+                       [0, 0, 1, pb_robot.placements.stable_z(spring, floor)],
+                       [0, 0, 0, 1]])
+    spring.set_transform(pos)
     # objects = {'fork': fork, 'spoon': spoon, 'knife': knife, 'bowl': bowl, 'door': door}
 
     # objects = {'fork': fork, 'spoon': spoon, 'knife': knife, 'bowl': bowl}
 
-    objects = {'door': door, 'cabinet': cabinet}
+    objects = {'door': door, 'cabinet': cabinet, 'spring':spring}
     return objects, openable, floor, robot

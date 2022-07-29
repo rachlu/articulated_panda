@@ -102,9 +102,13 @@ class Grasp:
         rotation = numpy.dot(t1, t2)
         rel = numpy.dot(translation, rotation)
         self.relative['door'].append(rel)
-        bw = numpy.array([[0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]])
 
         self.bw_range['door'] = bw
+
+        # Spring
+        self.relative['spring'] = self.relative[self.utensils]
+        bw = numpy.array([[0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]])
+        self.bw_range['spring'] = bw
 
     def set_tsr(self, obj, pose):
         if obj in self.utensils:
@@ -126,8 +130,6 @@ class Grasp:
             grasp_idx = random.randint(0, 1)
             # Grasp in world frame
             grasp_world = self.grasp_tsr[obj][grasp_idx].sample()
-            print(grasp_world)
-            # print(grasp_world)
             computed_q = self.robot.arm.ComputeIK(grasp_world)
         return None, None
         

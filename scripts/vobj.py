@@ -36,7 +36,6 @@ class TrajPath:
                 else:
                     obj.set_configuration((0, position))
                 position += increment
-                input('next')
             time.sleep(0.2)
 
 
