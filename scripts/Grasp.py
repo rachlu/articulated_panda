@@ -106,7 +106,11 @@ class Grasp:
         self.bw_range['door'] = bw
 
         # Spring
-        self.relative['spring'] = self.relative[self.utensils]
+        translation = 
+        self.relative['spring'] = [numpy.array([[1, 0, 0, 0],
+                                   [0, 1, 0, 0],
+                                   [0, 0, 1, -.125],
+                                   [0., 0., 0., 1.]])]
         bw = numpy.array([[0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]])
         self.bw_range['spring'] = bw
 

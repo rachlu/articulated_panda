@@ -65,7 +65,7 @@ def reset():
 if __name__ == '__main__':
     rospy.init_node('testing_node')
     arm = ArmInterface()
-    objects, floor, robot = table_env.execute()
+    objects, openable, floor, robot = table_env.execute()
     arm.hand.open()
     robot.arm.hand.Open()
     

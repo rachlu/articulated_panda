@@ -52,7 +52,7 @@ def execute():
     floor_pose = floor.get_transform()
     floor_pose[0][3] += 0.16764
     floor.set_transform(floor_pose)
-    openable = ['door', 'cabinet', 'spring']
+    openable = ['door', 'cabinet']
     """
     # Add fork object
     fork_file = os.path.join(objects_path, 'fork.urdf')

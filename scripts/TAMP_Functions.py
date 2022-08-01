@@ -18,7 +18,7 @@ class TAMP_Functions:
         self.objects = objects
         self.floor = floor
         self.openable = openable
-        placable = {key: objects[key] for key in (set(objects.keys()) - set(self.openable))}
+        placable = {key: objects[key] for key in (set(objects.keys()) - set(self.openable)-{'spring'})}
         self.place = Place(robot, placable, floor)
         self.grasp = Grasp(robot, objects)
         self.open_class = Open(robot, objects, floor)
@@ -164,18 +164,51 @@ class TAMP_Functions:
         :param other_pos: other object position
         :return: True or False
         """
-        obj_oldpos = self.objects[obj].get_transform()
-        other_oldpos = self.objects[other].get_transform()
+        print(obj, pos.pose)
+        print(other, other_pos.pose)
+        if obj in self.openable:
+            obj_oldpos = self.objects[obj].get_configuration()
+        else:
+            obj_oldpos = self.objects[obj].get_transform()
+
+        if other in self.openable:
+            other_oldpos = self.objects[other].get_configuration()
+        else:
+            other_oldpos = self.objects[other].get_transform()
+        
         if other != obj:
-            self.objects[obj].set_transform(pos.pose)
-            self.objects[other].set_transform(other_pos.pose)
+            if obj in self.openable:
+                self.objects[obj].set_configuration(pos.pose)
+            else:
+                self.objects[obj].set_transform(pos.pose)
+            
+            if other in self.openable:
+                self.objects[other].set_configuration(other_pos.pose)
+            else:
+                self.objects[other].set_transform(other_pos.pose)
+            
             if pb_robot.collisions.body_collision(self.objects[obj], self.objects[other]):
-                self.objects[obj].set_transform(obj_oldpos)
-                self.objects[other].set_transform(other_oldpos)
+                if obj in self.openable:
+                    self.objects[obj].set_configuration(obj_oldpos)
+                else:
+                    self.objects[obj].set_transform(obj_oldpos)
+                
+                if other in self.openable:
+                    self.objects[other].set_configuration(other_oldpos)
+                else:
+                    self.objects[other].set_transform(other_oldpos)
+
                 print('False', obj, other)
                 return False
-        self.objects[obj].set_transform(obj_oldpos)
-        self.objects[other].set_transform(other_oldpos)
+
+        if obj in self.openable:
+            self.objects[obj].set_configuration(obj_oldpos)
+        else:
+            self.objects[obj].set_transform(obj_oldpos)
+        if other in self.openable:
+            self.objects[other].set_configuration(other_oldpos)
+        else:
+            self.objects[other].set_transform(other_oldpos)
         print('True', obj, other)
         return True
 
@@ -207,7 +240,6 @@ class TAMP_Functions:
             self.objects[obj].set_configuration(obj_oldpos)
         else:
             self.objects[obj].set_transform(obj_oldpos)
-        self.objects[obj].set_transform(obj_oldpos)
         return True
 
     def cfreeTrajHolding_Check(self, traj, obj, grasp, obj2, pose):
