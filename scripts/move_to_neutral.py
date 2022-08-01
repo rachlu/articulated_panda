@@ -40,12 +40,9 @@ if __name__ == '__main__':
     traj = convert(traj.path)
     input('execute')
     arm.execute_position_path(traj)
-    for action in hand_traj:
-        action.execute()
-        if isinstance(action, vobj.TrajPath):
-            traj = convert(action.path)
-            arm.execute_position_path(traj)
-        else:
-            arm.hand.close()
+    hand_traj[1].execute()
+    arm.hand.close()
+    hand_traj[0].execute()
+    arm.move_to_touch(hand_traj[0].path[1])
 
     IPython.embed()

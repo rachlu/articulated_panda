@@ -57,10 +57,6 @@ class Grasp:
 
         z = util.get_rotation_arr('Z', math.pi)
         rotation = numpy.dot(z, rotation)
-        translation = numpy.array([[1, 0, 0, 0],
-                                   [0, 1, 0, 0],
-                                   [0, 0, 1, -.125],
-                                   [0., 0., 0., 1.]])
         rel = numpy.dot(rotation, translation)
 
         self.relative[self.utensils].append(rel)
@@ -106,11 +102,21 @@ class Grasp:
         self.bw_range['door'] = bw
 
         # Spring
-        translation = 
-        self.relative['spring'] = [numpy.array([[1, 0, 0, 0],
+        rotation = util.get_rotation_arr('Y', math.pi)
+        translation = numpy.array([[1, 0, 0, 0],
                                    [0, 1, 0, 0],
-                                   [0, 0, 1, -.125],
-                                   [0., 0., 0., 1.]])]
+                                   [0, 0, 1, -.16],
+                                   [0., 0., 0., 1.]])
+        z = util.get_rotation_arr('Z', math.pi)
+        rotation = numpy.dot(z, rotation)
+        rel = numpy.dot(rotation, translation)
+        self.relative['spring'] = [rel]
+
+        z = util.get_rotation_arr('Z', math.pi)
+        rotation = numpy.dot(z, rotation)
+        rel = numpy.dot(rotation, translation)
+        self.relative['spring'].append(rel)
+
         bw = numpy.array([[0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]])
         self.bw_range['spring'] = bw
 
