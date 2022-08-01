@@ -4,6 +4,7 @@ import IPython
 from TAMP_Functions import TAMP_Functions
 import table_env
 import vobj
+from Spring import Spring
 
 def convert(path):
     """
@@ -29,6 +30,10 @@ if __name__ == '__main__':
     if ans.upper() != 'N':
         arm.move_to_neutral()
     
+    start_q = arm.convertToList(arm.joint_angles())
+    robot.arm.SetJointValues(start_q)
+    
+    spring = Spring(robot, arm)
     tamp = TAMP_Functions(robot, objects, floor, openable)
     start_conf = vobj.BodyConf(robot, robot.arm.GetJointValues())
     pose = vobj.Pose('spring', objects['spring'].get_transform())
@@ -43,6 +48,7 @@ if __name__ == '__main__':
     hand_traj[1].execute()
     arm.hand.close()
     hand_traj[0].execute()
-    arm.move_to_touch(hand_traj[0].path[1])
+    input('move_to_touch')
+    arm.move_to_touch(arm.convertToDict(hand_traj[0].path[1]))
 
     IPython.embed()
