@@ -7,7 +7,7 @@ import IPython
 import pb_robot
 
 if __name__ == '__main__':
-    objects, floor, robot = table_env.execute()
+    objects, openable, floor, robot = table_env.execute()
     robot.arm.hand.Open()
     grasp = Grasp(robot, objects)
     rrt = RRT(robot, constraint=rotation_constraint)
