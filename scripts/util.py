@@ -13,10 +13,6 @@ def sampleTable(obj):
 
     # Random rotation
     angle = random.uniform(0, 2 * math.pi)
-    # rotate = numpy.array([[math.cos(angle), -math.sin(angle), 0, 0],
-    #                       [math.sin(angle), math.cos(angle), 0, 0],
-    #                       [0, 0, 1, 0],
-    #                       [0., 0., 0., 1.]])
     rotate = get_rotation_arr('Z', angle)
 
     translation = numpy.array([[1, 0, 0, x],
@@ -90,3 +86,40 @@ def convert(arm, path):
         q = path[num]
         final_path.append(arm.convertToDict(q))
     return final_path
+
+
+def skewMatrix(v):
+    """
+    Creates a 3x3 skew symmetric matrix from given 3D vector. (Credit to Rachel Holladay)
+    :param v: 3D v vector
+    :return: 3x3 skew symmetric matrix
+    """
+
+    skew = numpy.array([[0, -v[2], v[1]],
+                        [v[2], 0, -v[0]],
+                        [-v[1], v[0], 0]])
+    return skew
+
+
+def adjointTransform(T):
+    """
+    Given a Transform T in SE(3), create the adjoint representation.
+    (Credit: Lynch and Park's book and Rachel Holladay)
+    :param T: Homogenous Transformation in SE(3)
+    :return: Adjoint 6x6 matrix representation of T
+    """
+
+    rotation = T[:3, :3]
+    transform = T[:3, 3]
+
+    adj = numpy.zeros((6, 6))
+    adj[:3, :3] = numpy.dot(skewMatrix(transform), rotation)
+    adj[:3, 3:6] = rotation
+    adj[3:6, :3] = rotation
+
+    return adj
+
+
+def wrenchFrameTransform(w, frame):
+    new_w = numpy.dot(numpy.transpose(adjointTransform(frame)), w)
+    return new_w

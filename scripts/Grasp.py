@@ -85,7 +85,7 @@ class Grasp:
 
         # Door
         translation = numpy.array([[1, 0, 0, 0],
-                                   [0, 1, 0, 0.03],
+                                   [0, 1, 0, 0.08],
                                    [0, 0, 1, 0.11],
                                    [0, 0, 0, 1]])
         t1 = util.get_rotation_arr('X', math.pi)
@@ -133,16 +133,12 @@ class Grasp:
         # Sample grasp of obj
         # r,g,b = x,y,z
         self.set_tsr(obj, pose)
-        computed_q = None
-        for _ in range(15):
-            if computed_q is not None and self.robot.arm.IsCollisionFree(computed_q):
-                return grasp_world, computed_q
-            grasp_idx = random.randint(0, 1)
-            # Grasp in world frame
-            grasp_world = self.grasp_tsr[obj][grasp_idx].sample()
-            computed_q = self.robot.arm.ComputeIK(grasp_world)
-        return None, None
-        
+        grasp_idx = random.randint(0, 1)
+        # Grasp in world frame
+        grasp_world = self.grasp_tsr[obj][grasp_idx].sample()
+        computed_q = self.robot.arm.ComputeIK(grasp_world)
+        return grasp_world, computed_q
+
     
         
     

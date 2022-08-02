@@ -8,6 +8,7 @@ import util
 import numpy
 import vobj
 
+
 class Spring:
     def __init__(self, robot, arm, k_constant=None, stiffness=None):
         self.K = k_constant
@@ -36,10 +37,7 @@ class Spring:
         :param force: Force in Newtons
         """
         distance = self.get_distance_from_force(force)
-        end_effector = self.robot.arm.GetEETransform()
-        current_q = self.robot.arm.GetJointValues()
-        end_effector[2][-1] += distance
-        new_q = self.robot.arm.ComputeIKQ(end_effector, current_q)
+        new_q = self.q_from_distance(distance)
         print(new_q)
         if new_q:
             self.robot.arm.SetJointValues(new_q)
@@ -48,15 +46,26 @@ class Spring:
             self.arm.set_joint_impedance_config(new_q)
         else:
             print('Torque Limit!')
+
+    def q_from_distance(self, distance):
+        end_effector = self.robot.arm.GetEETransform()
+        current_q = self.robot.arm.GetJointValues()
+        end_effector[2][-1] += distance
+        new_q = self.robot.arm.ComputeIKQ(end_effector, current_q)
+        return new_q
     
-    def move_to_position_force(self, q, error=0.001):
+    def move_to_position_force(self, q, error=0.005):
         q = numpy.array(q)
+        self.robot.arm.SetJointValues(q)
+        initial = numpy.array(self.robot.arm.GetEETransform())
         diff = 999999
         force = 1
         while diff > error:
             self.apply_force(force)
+            current_q = arm.convertToList(self.arm.joint_angles())
+            self.robot.arm.SetJointValues(current_q)
             current = numpy.array(self.robot.arm.GetEETransform())
-            diff = util.getDistance(q, current)
+            diff = util.getDistance(initial, current)
             force += 0.3
 
     def set_k(self, k):

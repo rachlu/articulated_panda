@@ -5,8 +5,7 @@ from pddlstream.utils import user_input, read, INF
 
 import vobj
 import util
-
-
+import math
 
 def pddlstream_from_tamp(robot, movable, tamp, panda=None):
     domain_pddl = read('domain.pddl')

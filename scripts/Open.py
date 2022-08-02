@@ -1,3 +1,5 @@
+from scipy.spatial.transform import Rotation as R
+
 import numpy
 import util
 import math
@@ -45,6 +47,10 @@ class Open:
         old_pos = self.objects['door'].get_configuration()
 
         self.objects['door'].set_configuration((0,))
+        t = self.objects['door'].link_from_name('knob').get_link_tform(True)
+        r = R.from_matrix(t[:3, :3])
+        offset = r.as_euler('xyz')[-1]
+
         knob_pose = self.objects['door'].link_from_name('knob').get_link_tform(True)
         start_grasp = numpy.dot(knob_pose, relative_grasp)
 
@@ -67,13 +73,15 @@ class Open:
         b = (start_grasp[1][-1] - one_eighty[1][-1]) / 2
         x_0 = two_seventy[0][-1] - a
         y_0 = start_grasp[1][-1] - b
-        angle = math.atan((start_grasp[1][-1] - y_0) / (start_grasp[0][-1] - x_0)) + math.pi/2
+        print(a, b, x_0, y_0)
+        angle = math.atan((start_grasp[1][-1] - y_0) / (start_grasp[0][-1] - x_0)) + offset
         print('angle', angle)
 
         q = numpy.array(start_q)
         path = [q]
         t = math.pi/2
         for _ in range(sample):
+            print('open', t)
             t += increment
             new_grasp = numpy.array(start_grasp)
             x = a * math.cos(t + angle) + x_0
@@ -81,8 +89,8 @@ class Open:
             new_grasp[0][-1] = x
             new_grasp[1][-1] = y
             new_grasp = numpy.dot(new_grasp, util.get_rotation_arr('Z', -(t-math.pi/2)))
-            q = self.robot.arm.ComputeIKQ(new_grasp, q)
             pb_robot.viz.draw_tform(new_grasp)
+            q = self.robot.arm.ComputeIKQ(new_grasp, q)
             self.objects['door'].set_configuration((t-math.pi/2, ))
             for obj in set(self.objects.keys()) - {'door'}:
                 if pb_robot.collisions.body_collision(self.objects['door'], self.objects[obj]):
@@ -93,7 +101,6 @@ class Open:
             if q is not None and self.robot.arm.IsCollisionFree(q):
                 path.append(numpy.array(q))
             else:
-                self.robot.arm.SetJointValues(q)
                 self.objects['door'].set_configuration(old_pos)
                 return None
         back = numpy.array([[1, 0, 0, 0],
