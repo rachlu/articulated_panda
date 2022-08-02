@@ -1,10 +1,10 @@
-#!/usr/bin/env python
+from tsr.tsr import TSR
 
 import numpy
 import random
 import math
-from tsr.tsr import TSR
 import util
+
 
 class Grasp:
     def __init__(self, robot, objects):

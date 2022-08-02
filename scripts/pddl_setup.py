@@ -1,19 +1,11 @@
 from __future__ import print_function
-
-import vobj
-import numpy
-import IPython
-import pb_robot
-import os
-import util
-
 from TAMP_Functions import *
-
-from pddlstream.algorithms.focused import solve_focused
-from pddlstream.language.constants import And, Equal, TOTAL_COST, print_solution, PDDLProblem
 from pddlstream.language.generator import from_gen_fn, from_fn, from_test
 from pddlstream.utils import user_input, read, INF
-from pddlstream.algorithms.meta import solve, create_parser
+
+import vobj
+import util
+
 
 
 def pddlstream_from_tamp(robot, movable, tamp, panda=None):

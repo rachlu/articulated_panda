@@ -1,19 +1,9 @@
-#!/usr/bin/env python
-
-# from __future__ import print_function
-
 import os
-import IPython
 import pb_robot
 import numpy
 import math
 import util
-import vobj
 
-from Plan import Plan
-from Grasp import Grasp
-from RRT import RRT
-from Place import Place
 
 def collision_free(objects, obj):
     """

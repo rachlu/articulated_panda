@@ -2,7 +2,6 @@ import random
 import numpy
 import vobj
 import math
-import util
 import pb_robot
 
 
@@ -18,7 +17,7 @@ def sampleTable(obj):
     #                       [math.sin(angle), math.cos(angle), 0, 0],
     #                       [0, 0, 1, 0],
     #                       [0., 0., 0., 1.]])
-    rotate = util.get_rotation_arr('Z', angle)
+    rotate = get_rotation_arr('Z', angle)
 
     translation = numpy.array([[1, 0, 0, x],
                                [0, 1, 0, y],
@@ -79,3 +78,15 @@ def collision_link_body(body1, link, body2):
         if pb_robot.collisions.pairwise_link_collision(body1, link, body2, link2):
             return True
     return False
+
+
+def convert(arm, path):
+    """
+    :param path: list of robot configurations
+    :return: list of dictionaries of robot configurations
+    """
+    final_path = []
+    for num in range(len(path)):
+        q = path[num]
+        final_path.append(arm.convertToDict(q))
+    return final_path

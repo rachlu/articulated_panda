@@ -1,9 +1,6 @@
-import math
 import numpy
 import random
 from tsr.tsr import TSR
-
-from RRT import RRT
 
 
 class Place:

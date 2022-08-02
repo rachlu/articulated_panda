@@ -1,28 +1,12 @@
-import rospy
 from franka_interface import ArmInterface
-import table_env
-from Grasp import Grasp
-import numpy
-import pb_robot
-from RRT import RRT
-import IPython
-
 from pddl_setup import *
+
+import rospy
+import table_env
+import pb_robot
+import IPython
 import vobj
-
-
-def convert(path):
-    """
-    :param path: list of robot configurations
-    :return: list of dictionaries of robot configurations
-    """
-    final_path = []
-    for num in range(len(path)):
-        q = path[num]
-        print(q)
-        print(num+1, '/', len(path), '...')
-        final_path.append(arm.convertToDict(q))
-    return final_path
+import util
 
 
 def execute_plan(plan, g=False):
@@ -39,7 +23,7 @@ def execute_plan(plan, g=False):
                 cmd.execute()
                 ans = input('Redo? (Y/N)')
             if isinstance(cmd, vobj.TrajPath):
-                path = convert(cmd.path)
+                path = util.convert(arm, cmd.path)
                 arm.execute_position_path(path)
             else:
                 if action.name == 'grab':
@@ -58,7 +42,7 @@ def reset():
         robot.arm.Release(robot.arm.grabbedObjects[obj])
     robot.arm.SetJointValues(init_conditions['initial_q'])
     path = [arm.joint_angles(), init_conditions['initial_q']]
-    path = convert(path)
+    path = util.convert(arm, path)
     arm.execute_position_path(path)
 
 

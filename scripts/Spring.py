@@ -1,11 +1,12 @@
-import rospy
 from franka_interface import ArmInterface
+from TAMP_Functions import TAMP_Functions
+
+import rospy
 import IPython
-import pb_robot
 import table_env
 import util
 import numpy
-
+import vobj
 
 class Spring:
     def __init__(self, robot, arm, k_constant=None, stiffness=None):
@@ -24,17 +25,23 @@ class Spring:
         return -1 * self.K * distance
 
     def get_distance_from_force(self, force):
+        """
+        :param force: Force in Newtons
+        :return: Linear distance to apply specified force in meters
+        """
         return -1 * force / self.K
 
     def apply_force(self, force):
+        """
+        :param force: Force in Newtons
+        """
         distance = self.get_distance_from_force(force)
         end_effector = self.robot.arm.GetEETransform()
         current_q = self.robot.arm.GetJointValues()
         end_effector[2][-1] += distance
         new_q = self.robot.arm.ComputeIKQ(end_effector, current_q)
         
-        self.arm.set_joint_impedance_config(new_q)
-        return
+        # self.arm.set_joint_impedance_config(new_q)
         # List represents wrench: [x, y, z, torque_x, torque_y, torque_z]
         if self.robot.arm.InsideTorqueLimits(new_q, [0, 0, force, 0, 0, 0]):
             self.arm.set_joint_impedance_config(new_q)
@@ -61,5 +68,32 @@ class Spring:
 if __name__ == '__main__':
     rospy.init_node('Spring')
     arm = ArmInterface()
-    objects, floor, robot = table_env.execute()
+    objects, openable, floor, robot = table_env.execute()
     spring = Spring(robot, arm)
+
+    start_q = arm.convertToList(arm.joint_angles())
+    robot.arm.SetJointValues(start_q)
+
+    spring = Spring(robot, arm)
+    tamp = TAMP_Functions(robot, objects, floor, openable)
+    start_conf = vobj.BodyConf(robot, robot.arm.GetJointValues())
+    pose = vobj.Pose('spring', objects['spring'].get_transform())
+    relative_grasp = tamp.sampleGrabPose('spring', pose)[0][0]
+    q, hand_traj = tamp.computeIK('spring', pose, relative_grasp)[0]
+    hand_traj = hand_traj[:2]
+    traj = tamp.calculate_path(start_conf, q)[0][0][0]
+    traj.execute()
+    traj = util.convert(arm, traj.path)
+
+    input('execute')
+    arm.execute_position_path(traj)
+    hand_traj[1].execute()
+    arm.hand.close()
+    hand_traj[0].execute()
+
+    input('move_to_touch')
+    arm.move_to_touch(arm.convertToDict(hand_traj[0].path[1]))
+
+    IPython.embed()
+
+

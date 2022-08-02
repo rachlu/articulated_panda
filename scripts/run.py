@@ -1,14 +1,11 @@
 from __future__ import print_function
+from pddl_setup import *
+from TAMP_Functions import *
 
-import vobj
-import numpy
 import IPython
 import pb_robot
-import os
 import table_env
 
-from TAMP_Functions import *
-from pddl_setup import *
 
 if __name__ == '__main__':
     objects, openable, floor, robot = table_env.execute()

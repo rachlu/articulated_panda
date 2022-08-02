@@ -1,16 +1,9 @@
-from RRT import *
-import numpy
-from Plan import Plan
+from TAMP_Functions import *
+from Open import Open
+
 import pb_robot
 import table_env
 import IPython
-from Grasp import Grasp
-import math
-import vobj
-from TAMP_Functions import *
-from Place import Place
-from Open import Open
-from scipy.spatial.transform import Rotation as R
 
 
 if __name__ == '__main__':

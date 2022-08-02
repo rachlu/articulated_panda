@@ -1,13 +1,10 @@
-import os
-import IPython
-import pb_robot
-import numpy
-
-import time
-import pybullet
 from RRT import RRT
 from Grasp import Grasp
 from Place import Place
+
+import numpy
+import time
+import pybullet
 
 
 class Plan:

@@ -1,15 +1,11 @@
-import time
-import vobj
-import numpy
-import pb_robot
-import random
-import util
-
-from Plan import Plan
 from RRT import *
 from Grasp import Grasp
 from Place import Place
 from Open import Open
+
+import vobj
+import numpy
+import pb_robot
 
 
 class TAMP_Functions:
