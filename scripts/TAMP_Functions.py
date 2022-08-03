@@ -82,14 +82,16 @@ class TAMP_Functions:
             if obj in self.openable:
                 old_pos = self.objects[obj].get_configuration()
                 self.objects[obj].set_configuration(obj_pose.pose)
-                obj_pose = vobj.Pose(obj, self.objects[obj].link_from_name('knob').get_link_tform(True))
+                new_obj_pose = vobj.Pose(obj, self.objects[obj].link_from_name('knob').get_link_tform(True))
                 self.objects[obj].set_configuration(old_pos)
-            grasp_pose, q = self.grasp.grasp(obj, obj_pose.pose)
-            if q is not None and self.robot.arm.IsCollisionFree(q, obstacles=[self.floor]):
+            else:
+                new_obj_pose = obj_pose
+            grasp_pose, q = self.grasp.grasp(obj, new_obj_pose.pose)
+            if q is not None and self.robot.arm.IsCollisionFree(q, obstacles=[self.floor, self.objects[obj]]):
                 # Grasp in object frame
-                relative_grasp = numpy.dot(numpy.linalg.inv(obj_pose.pose), grasp_pose)
-                cmd1 = [vobj.Pose(obj, relative_grasp)]
-                return (cmd1,)
+                relative_grasp = numpy.dot(numpy.linalg.inv(new_obj_pose.pose), grasp_pose)
+                cmd1 = [vobj.Pose(obj, relative_grasp), q]
+                return (cmd1, )
         return (None,)
 
     def execute_path(self, path):

@@ -85,7 +85,7 @@ class Grasp:
 
         # Door
         translation = numpy.array([[1, 0, 0, 0],
-                                   [0, 1, 0, 0.08],
+                                   [0, 1, 0, 0],
                                    [0, 0, 1, 0.11],
                                    [0, 0, 0, 1]])
         t1 = util.get_rotation_arr('X', math.pi)
@@ -98,7 +98,7 @@ class Grasp:
         rotation = numpy.dot(t1, t2)
         rel = numpy.dot(translation, rotation)
         self.relative['door'].append(rel)
-
+        bw = numpy.array([[0, 0], [-0.11, 0.11], [-0.018, 0.018], [0, 0], [0, 0], [0, 0]])
         self.bw_range['door'] = bw
 
         # Spring

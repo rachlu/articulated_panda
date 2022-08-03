@@ -10,7 +10,7 @@ class Open:
     def __init__(self, robot, objects, floor):
         self.robot = robot
         self.objects = objects
-        self.nonmovable = [floor]
+        self.floor = floor
 
     def get_cabinet_traj(self, start_q, start_grasp, position, increment, sample):
         old_pos = self.objects['cabinet'].get_configuration()
@@ -69,17 +69,25 @@ class Open:
 
         two_seventy = numpy.dot(knob_pose, relative_grasp)
 
-        a = (two_seventy[0][-1] - right_angle[0][-1]) / 2
-        b = (start_grasp[1][-1] - one_eighty[1][-1]) / 2
-        x_0 = two_seventy[0][-1] - a
-        y_0 = start_grasp[1][-1] - b
-        print(a, b, x_0, y_0)
+        if offset % math.pi == 0:
+            b = (two_seventy[1][-1] - right_angle[1][-1]) / 2
+            y_0 = two_seventy[1][-1] - b
+
+            a = (one_eighty[0][-1] - start_grasp[0][-1]) / 2
+            x_0 = one_eighty[0][-1] - a
+            t = (offset + math.pi) % (2 * math.pi)
+        else:
+            a = (two_seventy[0][-1] - right_angle[0][-1]) / 2
+            x_0 = two_seventy[0][-1] - a
+
+            b = (start_grasp[1][-1] - one_eighty[1][-1]) / 2
+            y_0 = start_grasp[1][-1] - b
+            t = math.pi / 2
+
         angle = math.atan((start_grasp[1][-1] - y_0) / (start_grasp[0][-1] - x_0)) + offset
-        print('angle', angle)
 
         q = numpy.array(start_q)
         path = [q]
-        t = math.pi/2
         for _ in range(sample):
             print('open', t)
             t += increment
@@ -98,7 +106,7 @@ class Open:
                     # print('collision')
                     return None
             # TODO: Add Collision Checking
-            if q is not None and self.robot.arm.IsCollisionFree(q):
+            if q is not None and self.robot.arm.IsCollisionFree(q, obstacles=[self.floor, self.objects['door']]):
                 path.append(numpy.array(q))
             else:
                 self.objects['door'].set_configuration(old_pos)
