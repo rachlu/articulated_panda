@@ -72,37 +72,38 @@ if __name__ == '__main__':
     sample = 10
 
     increment = math.pi/18
-    for _ in range(sample):
-        print('t', t)
-        t += increment
-        new_grasp = numpy.array(start_grasp)
-        x = a * math.cos(t + angle) + x_0
-        y = b * math.sin(t + angle) + y_0
-        print('x, y', x, y)
-        new_grasp[0][-1] = x
-        new_grasp[1][-1] = y
-        new_grasp = numpy.dot(new_grasp, util.get_rotation_arr('Z', -(t - math.pi / 2)))
-        pb_robot.viz.draw_tform(new_grasp)
-        input('next')
+    initial = t
+    # for _ in range(sample):
+    #     print('t', t)
+    #     t += increment
+    #     new_grasp = numpy.array(start_grasp)
+    #     x = a * math.cos(t + angle) + x_0
+    #     y = b * math.sin(t + angle) + y_0
+    #     print('x, y', x, y)
+    #     new_grasp[0][-1] = x
+    #     new_grasp[1][-1] = y
+    #     new_grasp = numpy.dot(new_grasp, util.get_rotation_arr('Z', -(t - initial)))
+    #     pb_robot.viz.draw_tform(new_grasp)
+    #     input('next')
 
-    # for _ in range(7):
-    #     relative_grasp, q = tamp.sampleGrabPose('door', vobj.Pose('door', objects['door'].get_configuration()))[0]
-    #     # if q is None or not robot.arm.IsCollisionFree(q):
-    #     #     print('q None')
-    #     #     continue
-    #     # g, q = grasp.grasp('cabinet_top', objects['cabinet'].get_transform())
-    #     robot.arm.SetJointValues(q)
-    #     # robot.arm.hand.Close()
-    #     # Door closed is pi/2
-    #     # traj = open_class.get_door_traj(q, numpy.dot(numpy.linalg.inv(objects['door'].link_from_name('knob').get_link_tform(True)), g),
-    #     #                                 increment, 3)
-    #     traj = open_class.get_door_traj(q, relative_grasp.pose, increment, 3)
-    #     # traj = open_class.get_cabinet_traj(q, g, 'top', increment)
-    #     if traj is not None:
-    #         break
-    #
-    # input('execute')
-    # traj[0][0].execute(objects['door'], None, increment)
+    for _ in range(7):
+        relative_grasp, q = tamp.sampleGrabPose('door', vobj.Pose('door', objects['door'].get_configuration()))[0]
+        # if q is None or not robot.arm.IsCollisionFree(q):
+        #     print('q None')
+        #     continue
+        # g, q = grasp.grasp('cabinet_top', objects['cabinet'].get_transform())
+        robot.arm.SetJointValues(q)
+        # robot.arm.hand.Close()
+        # Door closed is pi/2
+        # traj = open_class.get_door_traj(q, numpy.dot(numpy.linalg.inv(objects['door'].link_from_name('knob').get_link_tform(True)), g),
+        #                                 increment, 3)
+        traj = open_class.get_door_traj(q, relative_grasp.pose, increment, 3)
+        # traj = open_class.get_cabinet_traj(q, g, 'top', increment)
+        if traj is not None:
+            break
+
+    input('execute')
+    traj[0][0].execute(objects['door'], None, increment)
 
     IPython.embed()
     pb_robot.utils.wait_for_user()

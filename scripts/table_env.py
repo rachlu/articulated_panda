@@ -76,11 +76,11 @@ def execute():
     door_file = os.path.join(objects_path, 'door.urdf')
 
     door = pb_robot.body.createBody(door_file)
-    # pos = numpy.array([[1, 0, 0, .6],
-    #                   [0, 1, 0, -0.5],
-    #                   [0, 0, 1, pb_robot.placements.stable_z(door, floor)],
-    #                   [0, 0, 0, 1]])
-    # rotate = util.get_rotation_arr('Z', math.pi/2)
+    pos = numpy.array([[1, 0, 0, .6],
+                      [0, 1, 0, -0.5],
+                      [0, 0, 1, pb_robot.placements.stable_z(door, floor)],
+                      [0, 0, 0, 1]])
+    rotate = util.get_rotation_arr('Z', math.pi/2)
 
     # rotate = util.get_rotation_arr('Z', 3*math.pi/2)
     # pos = numpy.array([[1, 0, 0, .4],
@@ -94,11 +94,11 @@ def execute():
     #                   [0, 0, 1, pb_robot.placements.stable_z(door, floor)],
     #                   [0, 0, 0, 1]])
 
-    rotate = util.get_rotation_arr('Z', 0)
-    pos = numpy.array([[1, 0, 0, -0.4],
-                      [0, 1, 0, 0.4],
-                      [0, 0, 1, pb_robot.placements.stable_z(door, floor)],
-                      [0, 0, 0, 1]])
+    # rotate = util.get_rotation_arr('Z', 0)
+    # pos = numpy.array([[1, 0, 0, -0.4],
+    #                   [0, 1, 0, 0.4],
+    #                   [0, 0, 1, pb_robot.placements.stable_z(door, floor)],
+    #                   [0, 0, 0, 1]])
     door.set_transform(numpy.dot(pos, rotate))
 
     cabinet_file = os.path.join(objects_path, 'cabinet.urdf')

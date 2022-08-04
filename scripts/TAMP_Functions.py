@@ -90,7 +90,7 @@ class TAMP_Functions:
             if q is not None and self.robot.arm.IsCollisionFree(q, obstacles=[self.floor, self.objects[obj]]):
                 # Grasp in object frame
                 relative_grasp = numpy.dot(numpy.linalg.inv(new_obj_pose.pose), grasp_pose)
-                cmd1 = [vobj.Pose(obj, relative_grasp), q]
+                cmd1 = [vobj.Pose(obj, relative_grasp)]
                 return (cmd1, )
         return (None,)
 

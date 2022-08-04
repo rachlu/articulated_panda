@@ -6,6 +6,7 @@ import math
 import vobj
 import pb_robot
 
+
 class Open:
     def __init__(self, robot, objects, floor):
         self.robot = robot
@@ -33,7 +34,7 @@ class Open:
                     self.objects['cabinet'].set_configuration(old_pos)
                     # print('cabinet collision')
                     return None
-            if q is not None and self.robot.arm.IsCollisionFree(q):
+            if q is not None and self.robot.arm.IsCollisionFree(q, obstacles=[self.floor, self.objects['cabinet']]):
                 path.append(q)
             else:
                 self.objects['cabinet'].set_configuration(old_pos)
@@ -88,6 +89,7 @@ class Open:
 
         q = numpy.array(start_q)
         path = [q]
+        initial = t
         for _ in range(sample):
             print('open', t)
             t += increment
@@ -96,7 +98,7 @@ class Open:
             y = b * math.sin(t + angle) + y_0
             new_grasp[0][-1] = x
             new_grasp[1][-1] = y
-            new_grasp = numpy.dot(new_grasp, util.get_rotation_arr('Z', -(t-math.pi/2)))
+            new_grasp = numpy.dot(new_grasp, util.get_rotation_arr('Z', -(t-initial)))
             pb_robot.viz.draw_tform(new_grasp)
             q = self.robot.arm.ComputeIKQ(new_grasp, q)
             self.objects['door'].set_configuration((t-math.pi/2, ))
