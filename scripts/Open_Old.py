@@ -110,7 +110,7 @@ class Open:
                     self.objects['door'].set_configuration(old_pos)
                     # print('collision')
                     return None
-            # TODO: Add Collision Checking
+
             if q is not None and self.robot.arm.IsCollisionFree(q, obstacles=[self.floor, self.objects['door']]):
                 path.append(numpy.array(q))
             else:
