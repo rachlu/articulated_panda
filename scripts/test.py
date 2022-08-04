@@ -51,9 +51,9 @@ if __name__ == '__main__':
     #     # traj = open_class.get_cabinet_traj(q, g, 'top', increment)
     #     if traj is not None:
     #         break
-    #
-    # input('execute')
-    # traj[0][0].execute(objects['door'], None, increment)
+
+    input('execute')
+    traj[0][0].execute(objects['door'], None, increment)
 
 
     IPython.embed()
