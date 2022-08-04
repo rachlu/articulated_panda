@@ -55,7 +55,11 @@ class TAMP_Functions:
 
     def get_open_traj(self, obj, start_q, obj_pose, increment, sample):
         for _ in range(5):
-            relative_grasp = self.sampleGrabPose(obj, obj_pose)[0][0]
+            if obj == 'cabinet':
+                knob = 'top_drawer_knob'
+            else:
+                knob = 'knob'
+            relative_grasp = self.sampleGrabPose(obj, obj_pose, knob)[0][0]
             result = self.computeIK(obj, obj_pose, relative_grasp)[0]
             if result is None:
                 print('result None')
@@ -67,7 +71,7 @@ class TAMP_Functions:
             end_q = vobj.BodyConf(self.robot, hand_traj[0].path[1])
             hand_traj[1].set_status('Close')
             if obj == 'cabinet':
-                t2 = self.open_class.get_cabinet_traj(end_q.conf, relative_grasp.pose, 'top', increment, sample)
+                t2 = self.open_class.get_cabinet_traj(end_q.conf, relative_grasp.pose, obj_pose.pose, 'top', increment, sample)
             t2 = self.open_class.get_door_traj(end_q.conf, relative_grasp.pose, increment, sample)
             if t1 is not None and t2 is not None:
                 t1 = t1[0]
@@ -76,13 +80,13 @@ class TAMP_Functions:
                 return (cmds, )
         return (None, )
 
-    def sampleGrabPose(self, obj, obj_pose):
+    def sampleGrabPose(self, obj, obj_pose, knob='knob'):
         # grasp_pose is grasp in world frame
         for _ in range(20):
             if obj in self.openable:
                 old_pos = self.objects[obj].get_configuration()
                 self.objects[obj].set_configuration(obj_pose.pose)
-                new_obj_pose = vobj.Pose(obj, self.objects[obj].link_from_name('knob').get_link_tform(True))
+                new_obj_pose = vobj.Pose(obj, self.objects[obj].link_from_name(knob).get_link_tform(True))
                 self.objects[obj].set_configuration(old_pos)
             else:
                 new_obj_pose = obj_pose
@@ -112,7 +116,7 @@ class TAMP_Functions:
                 cmd.execute()
                 time.sleep(1)
 
-    def computeIK(self, obj, obj_pose, grasp):
+    def computeIK(self, obj, obj_pose, grasp, knob='knob'):
         """
         :param obj: string of object name
         :param obj_pose: Pose Object
@@ -122,7 +126,9 @@ class TAMP_Functions:
         if obj in self.openable:
             old_pos = self.objects[obj].get_configuration()
             self.objects[obj].set_configuration(obj_pose.pose)
-            obj_pose = vobj.Pose(obj, self.objects[obj].link_from_name('knob').get_link_tform(True))
+            if obj == 'cabinet':
+                knob = 'top_drawer_knob'
+            obj_pose = vobj.Pose(obj, self.objects[obj].link_from_name(knob).get_link_tform(True))
             self.objects[obj].set_configuration(old_pos)
         grasp_in_world = numpy.dot(obj_pose.pose, grasp.pose)
         q_g = self.robot.arm.ComputeIK(grasp_in_world)

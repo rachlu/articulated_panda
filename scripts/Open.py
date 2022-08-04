@@ -13,8 +13,11 @@ class Open:
         self.objects = objects
         self.floor = floor
 
-    def get_cabinet_traj(self, start_q, start_grasp, position, increment, sample):
+    def get_cabinet_traj(self, start_q, relative_grasp, obj_pose, position, increment, sample):
         old_pos = self.objects['cabinet'].get_configuration()
+        self.objects['cabinet'].set_configuration(obj_pose)
+        knob_pose = self.objects['cabinet'].link_from_name(position+'_drawer_knob').get_link_tform(True)
+        start_grasp = numpy.dot(knob_pose, relative_grasp)
         q = numpy.array(start_q)
         path = [q]
         back = numpy.array([[1, 0, 0, 0],

@@ -9,6 +9,7 @@ import vobj
 import util
 import math
 
+
 def pddlstream_from_tamp(robot, movable, tamp, panda=None):
     domain_pddl = read('domain.pddl')
     stream_pddl = read('stream.pddl')
@@ -31,10 +32,10 @@ def pddlstream_from_tamp(robot, movable, tamp, panda=None):
         ('Region', 'bowl_region'),
         ('Region', 'knife_region'),
         ('UprightObj', 'bowl'),
-        ('Openable', 'door'),
+        ('Openable', 'cabinet'),
         ('Open_Amount', math.pi/18, 3)
     ]
-    goal = (('Open', 'door', math.pi/18, 3))
+    goal = (('Open', 'cabinet', math.pi/18, 3))
     # goal = (('Holding', 'spring'))
     #goal = ('and', ('Open', 'door'), ('AtConf', conf), ('Holding', 'knife'))
     #goal = (('On', 'bowl', 'bowl_region'))
