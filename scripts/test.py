@@ -51,9 +51,18 @@ if __name__ == '__main__':
     #     # traj = open_class.get_cabinet_traj(q, g, 'top', increment)
     #     if traj is not None:
     #         break
-
+    #
+    # input('execute')
+    # traj[0][0].execute(objects['door'], None, increment)
+    for _ in range(7):
+        relative_grasp, q = tamp.sampleGrabPose('cabinet', vobj.Pose('cabinet', objects['cabinet'].get_configuration()), 'top_drawer_knob')[0]
+        robot.arm.SetJointValues(q)
+        traj = open_class.get_cabinet_traj(q, relative_grasp.pose, objects['cabinet'].get_configuration(), 'top', 0.05, 5)
+        if traj is not None:
+            break
     input('execute')
-    traj[0][0].execute(objects['door'], None, increment)
+    traj[0][0].execute(objects['cabinet'], 'top', 0.05)
+    # print(util.get_increment('cabinet', .2))
 
 
     IPython.embed()

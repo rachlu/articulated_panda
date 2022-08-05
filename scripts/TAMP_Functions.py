@@ -53,13 +53,17 @@ class TAMP_Functions:
         self.objects[obj].set_transform(original_position)
         return path
 
-    def get_open_traj(self, obj, start_q, obj_pose, increment, sample):
+    def get_open_traj(self, obj, start_q, obj_pose, total):
+        increment, sample = util.get_increment(obj, total)
         for _ in range(5):
             if obj == 'cabinet':
                 knob = 'top_drawer_knob'
             else:
                 knob = 'knob'
-            relative_grasp = self.sampleGrabPose(obj, obj_pose, knob)[0][0]
+            relative_grasp = self.sampleGrabPose(obj, obj_pose, knob)[0]
+            if relative_grasp is None:
+                continue
+            relative_grasp = relative_grasp[0]
             result = self.computeIK(obj, obj_pose, relative_grasp)[0]
             if result is None:
                 print('result None')
@@ -72,11 +76,12 @@ class TAMP_Functions:
             hand_traj[1].set_status('Close')
             if obj == 'cabinet':
                 t2 = self.open_class.get_cabinet_traj(end_q.conf, relative_grasp.pose, obj_pose.pose, 'top', increment, sample)
-            t2 = self.open_class.get_door_traj(end_q.conf, relative_grasp.pose, increment, sample)
+            else:
+                t2 = self.open_class.get_door_traj(end_q.conf, relative_grasp.pose, obj_pose.pose, increment, sample)
             if t1 is not None and t2 is not None:
                 t1 = t1[0]
                 t1.extend(hand_traj[:2])
-                cmds = [t1, t2[0], t2[1], t2[2], relative_grasp]
+                cmds = [t1, t2[0], t2[1], t2[2], relative_grasp, increment, sample]
                 return (cmds, )
         return (None, )
 
@@ -94,13 +99,13 @@ class TAMP_Functions:
             if q is not None and self.robot.arm.IsCollisionFree(q, obstacles=[self.floor, self.objects[obj]]):
                 # Grasp in object frame
                 relative_grasp = numpy.dot(numpy.linalg.inv(new_obj_pose.pose), grasp_pose)
-                cmd1 = [vobj.Pose(obj, relative_grasp)]
+                cmd1 = [vobj.Pose(obj, relative_grasp), q]
                 return (cmd1, )
         return (None,)
 
     def execute_path(self, path):
         for action in path:
-            if action.name == 'open_door':
+            if action.name == 'open_obj':
                 for cmd in action.args[-2]:
                     print('new cmd')
                     cmd.execute()

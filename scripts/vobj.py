@@ -19,7 +19,6 @@ class TrajPath:
         return 't{}'.format(id(self) % 1000)
 
     def execute(self, *args):
-        print(args)
         holding = False
         if args:
             obj, location, increment = args
@@ -37,9 +36,9 @@ class TrajPath:
                 position += increment
             time.sleep(0.2)
 
-
-    #def __str__(self):
+    # def __str__(self):
     #    return str(self.path)
+
 
 class HandCmd:
     def __init__(self, robot, obj, grasp=None, status=None):
@@ -49,7 +48,6 @@ class HandCmd:
         self.status = status
 
     def execute(self):
-        print(self.status)
         if self.status is not None:
             if self.status.upper() == 'OPEN':
                 print('opening')
@@ -70,9 +68,10 @@ class HandCmd:
     def __repr__(self):
         return 't{}'.format(id(self) % 1000)
 
-    #def __str__(self):
+    # def __str__(self):
     #    result = 'Hand Cmd'
     #    return result
+
 
 class Pose:
     def __init__(self, obj, pose):

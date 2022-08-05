@@ -46,6 +46,27 @@ def getDistance(q1, q2):
     return numpy.sqrt(x.dot(x))
 
 
+def get_increment(obj, total):
+    """
+    Given a total return the increment and number of samples to get to the specified total. Sample is an integer.
+    Total = increment * sample.
+    :param obj: Object being moved
+    :param total: Total distance or radians the object is moved
+    :return: Increment and sample (integer)
+    """
+    increment = math.pi/18 if obj == 'door' else 0.05
+    if total < increment:
+        sample = 1
+        increment = total
+    else:
+        sample = total/increment
+        if not float(sample).is_integer():
+            sample = math.ceil(sample)
+            increment = total/sample
+
+    return increment, int(sample)
+
+
 def get_rotation_arr(axis, angle):
     if axis.upper() == 'X':
         return numpy.array([[1, 0, 0, 0],

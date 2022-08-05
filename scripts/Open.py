@@ -16,42 +16,43 @@ class Open:
     def get_cabinet_traj(self, start_q, relative_grasp, obj_pose, position, increment, sample):
         old_pos = self.objects['cabinet'].get_configuration()
         self.objects['cabinet'].set_configuration(obj_pose)
-        knob_pose = self.objects['cabinet'].link_from_name(position+'_drawer_knob').get_link_tform(True)
-        start_grasp = numpy.dot(knob_pose, relative_grasp)
         q = numpy.array(start_q)
         path = [q]
-        back = numpy.array([[1, 0, 0, 0],
-                            [0, 1, 0, 0],
-                            [0, 0, 1, increment],
-                            [0., 0., 0., 1.]])
-        grasp = start_grasp
-        for x in range(sample):
-            grasp = numpy.dot(grasp, back)
-            q = numpy.array(self.robot.arm.ComputeIKQ(grasp, q))
+        for x in range(sample+1):
             if position.upper() == 'TOP':
-                self.objects['cabinet'].set_configuration((-1*(increment*(x+1)), 0))
+                self.objects['cabinet'].set_configuration((obj_pose[0] + -1*(increment*(x+1)), obj_pose[1]))
             else:
-                self.objects['cabinet'].set_configuration((0, -1*(increment*(x+1))))
+                self.objects['cabinet'].set_configuration((obj_pose[0], obj_pose[1] + -1*(increment*(x+1))))
+            knob_pose = self.objects['cabinet'].link_from_name(position + '_drawer_knob').get_link_tform(True)
+            world_grasp = numpy.dot(knob_pose, relative_grasp)
+            pb_robot.viz.draw_tform(world_grasp)
+            q = numpy.array(self.robot.arm.ComputeIKQ(world_grasp, q))
             for obj in set(self.objects.keys()) - {'cabinet'}:
                 if pb_robot.collisions.body_collision(self.objects['cabinet'], self.objects[obj]):
                     self.objects['cabinet'].set_configuration(old_pos)
-                    # print('cabinet collision')
+                    print('collison')
                     return None
             if q is not None and self.robot.arm.IsCollisionFree(q, obstacles=[self.floor, self.objects['cabinet']]):
                 path.append(q)
             else:
+                self.robot.arm.SetJointValues(q)
+                print(self.robot.arm.IsCollisionFree(q, obstacles=[self.floor, self.objects['cabinet']], self_collisions=False))
+                print(q)
+                print('q?')
                 self.objects['cabinet'].set_configuration(old_pos)
+                input('next')
                 return None
         cmd = [vobj.TrajPath(self.robot, path[:-1]), vobj.HandCmd(self.robot, self.objects['cabinet'], status='Open'), vobj.TrajPath(self.robot, path[-2:])]
         end_pose = self.objects['cabinet'].get_configuration()
         self.objects['cabinet'].set_configuration(old_pos)
         return [cmd, vobj.BodyConf(self.robot, q), vobj.Pose('cabinet', end_pose)]
 
-    def get_door_traj(self, start_q, relative_grasp, increment, sample):
+    def get_door_traj(self, start_q, relative_grasp, obj_pose, increment, sample):
         old_pos = self.objects['door'].get_configuration()
+        self.objects['door'].set_configuration(obj_pose)
         q = numpy.array(start_q)
         path = [q]
-        t = 0
+        t = obj_pose
         for _ in range(sample):
             t += increment
             self.objects['door'].set_configuration((t,))

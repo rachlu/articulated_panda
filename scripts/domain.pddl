@@ -27,10 +27,12 @@
         (Safe ?o ?p ?o2 ?p2)
         (CanMove)
         (Openable ?o)
-        (Open ?o ?i ?s)
-        (Open_Traj ?o ?g ?q1 ?q2 ?i ?s ?t1 ?t2)
+        (Open ?o ?a)
+        (Open_Traj ?o ?g ?q1 ?q2 ?a ?i ?s ?t1 ?t2)
+        (OpenAllAmount ?o ?a)
+        (Open_Amount ?o ?a)
+        (OpenAll ?o)
         (Placeable ?o)
-        (Open_Amount ?i ?s)
     )
 
     (:action move_free
@@ -78,10 +80,9 @@
         :effect (and (AtConf ?q2) (not (AtConf ?q1)) (not (CanMove)))
     )
 
-    (:action open_door
-       :parameters (?o ?p1 ?p2 ?g ?q1 ?q2 ?e ?i ?s ?t1 ?t2)
+    (:action open_obj
+       :parameters (?o ?p1 ?p2 ?g ?q1 ?q2 ?a ?i ?s ?t1 ?t2)
        :precondition (and (HandEmpty)
-                            (Open_Amount ?i ?s)
                             (ObjPose ?o ?p1)
                             (ObjPose ?o ?p2)
                             (AtPose ?o ?p1)
@@ -90,14 +91,14 @@
                             (Conf ?q2)
                             (AtConf ?q1)
                             (Openable ?o)
-                            (Open_Traj ?o ?g ?q1 ?q2 ?i ?s ?t1 ?t2)
+                            (Open_Traj ?o ?g ?q1 ?q2 ?a ?i ?s ?t1 ?t2)
                             (Traj ?t1)
                             (Traj_Holding ?t2 ?o ?g)
                             (not (UnSafeTraj ?t1))
                             (not (InCollision ?o ?p2))
                             (not (UnSafeHolding ?t2 ?o ?g))
                             )
-        :effect (and (not (AtPose ?o ?p1)) (AtPose ?o ?p2) (not (AtConf ?q1)) (CanMove) (Open ?o ?i ?s) (AtConf ?q2))
+        :effect (and (not (AtPose ?o ?p1)) (AtPose ?o ?p2) (not (AtConf ?q1)) (CanMove) (Open ?o ?a) (AtConf ?q2))
     )
 
     (:action grab
@@ -146,5 +147,9 @@
 
     (:derived (UnSafeHolding ?t ?o ?g)
         (exists (?o2 ?p) (and (Grasp ?o ?g) (ObjPose ?o2 ?p) (AtGrasp ?o ?g) (AtPose ?o2 ?p) (not (CFreeHolding ?t ?o ?g ?o2 ?p))))
+    )
+
+    (:derived (OpenAll ?o)
+        (exists (?o ?a) (and (Openable ?o) (Open ?o ?a) (OpenAllAmount ?o ?a)))
     )
 )
