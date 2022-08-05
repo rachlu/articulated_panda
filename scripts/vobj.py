@@ -29,7 +29,7 @@ class TrajPath:
             if holding:
                 if location is None:
                     obj.set_configuration((position, ))
-                elif location == 'top':
+                elif location.upper() == 'TOP':
                     obj.set_configuration((position, 0))
                 else:
                     obj.set_configuration((0, position))
@@ -50,7 +50,6 @@ class HandCmd:
     def execute(self):
         if self.status is not None:
             if self.status.upper() == 'OPEN':
-                print('opening')
                 self.robot.arm.hand.Open()
             else:
                 self.robot.arm.hand.Close()

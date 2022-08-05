@@ -20,9 +20,9 @@ class Open:
         path = [q]
         for x in range(sample+1):
             if position.upper() == 'TOP':
-                self.objects['cabinet'].set_configuration((obj_pose[0] + -1*(increment*(x+1)), obj_pose[1]))
+                self.objects['cabinet'].set_configuration((obj_pose[0] + 1*(increment*(x+1)), obj_pose[1]))
             else:
-                self.objects['cabinet'].set_configuration((obj_pose[0], obj_pose[1] + -1*(increment*(x+1))))
+                self.objects['cabinet'].set_configuration((obj_pose[0], obj_pose[1] + 1*(increment*(x+1))))
             knob_pose = self.objects['cabinet'].link_from_name(position + '_drawer_knob').get_link_tform(True)
             world_grasp = numpy.dot(knob_pose, relative_grasp)
             pb_robot.viz.draw_tform(world_grasp)
@@ -35,12 +35,7 @@ class Open:
             if q is not None and self.robot.arm.IsCollisionFree(q, obstacles=[self.floor, self.objects['cabinet']]):
                 path.append(q)
             else:
-                self.robot.arm.SetJointValues(q)
-                print(self.robot.arm.IsCollisionFree(q, obstacles=[self.floor, self.objects['cabinet']], self_collisions=False))
-                print(q)
-                print('q?')
                 self.objects['cabinet'].set_configuration(old_pos)
-                input('next')
                 return None
         cmd = [vobj.TrajPath(self.robot, path[:-1]), vobj.HandCmd(self.robot, self.objects['cabinet'], status='Open'), vobj.TrajPath(self.robot, path[-2:])]
         end_pose = self.objects['cabinet'].get_configuration()

@@ -107,14 +107,14 @@ class TAMP_Functions:
         for action in path:
             if action.name == 'open_obj':
                 for cmd in action.args[-2]:
-                    print('new cmd')
                     cmd.execute()
                     time.sleep(1)
                 increment = action.args[7]
-                print('new cmd')
-                action.args[-1][0].execute(self.objects[action.args[0]], None, increment)
+                if action.args[0] == 'door':
+                    action.args[-1][0].execute(self.objects[action.args[0]], None, increment)
+                else:
+                    action.args[-1][0].execute(self.objects[action.args[0]], 'top', increment)
                 for cmd in action.args[-1][1:]:
-                    print('new cmd')
                     cmd.execute()
                 continue
             for cmd in action.args[-1]:
