@@ -10,8 +10,7 @@ import vobj
 
 
 class Spring:
-    def __init__(self, robot, arm, k_constant=None, stiffness=None):
-        self.K = k_constant
+    def __init__(self, robot, arm, stiffness=None):
         self.arm = arm
         self.robot = robot
         self.stiffness = stiffness

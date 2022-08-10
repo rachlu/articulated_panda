@@ -18,13 +18,12 @@ class Open:
         self.objects[obj].set_configuration(obj_conf)
         q = numpy.array(start_q)
         path = [q]
-        t = obj_conf
+        t = numpy.array(obj_conf)
         for _ in range(sample):
             t += increment
             self.objects[obj].set_configuration(t)
             knob_pose = self.objects[obj].link_from_name(knob).get_link_tform(True)
             new_grasp = numpy.dot(knob_pose, relative_grasp)
-            pb_robot.viz.draw_tform(new_grasp)
             q = self.robot.arm.ComputeIKQ(new_grasp, q)
 
             for o in set(self.objects.keys()) - {obj}:
@@ -48,6 +47,7 @@ class Open:
             self.robot.arm.Release(self.objects[obj])
             self.objects[obj].set_configuration(old_pos)
             return None
+
         cmd = [vobj.TrajPath(self.robot, path), vobj.HandCmd(self.robot, self.objects[obj], status='Open'),
                vobj.TrajPath(self.robot, [path[-1], q])]
         end_pose = self.objects[obj].get_configuration()

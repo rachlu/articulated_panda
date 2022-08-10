@@ -65,6 +65,7 @@ class TAMP_Functions:
                 continue
             relative_grasp = relative_grasp[0]
             result = self.computeIK(obj, obj_pose, relative_grasp)[0]
+
             if result is None:
                 print('result None')
                 continue
@@ -74,10 +75,6 @@ class TAMP_Functions:
             # Change to grasp conf
             end_q = vobj.BodyConf(self.robot, hand_traj[0].path[1])
             hand_traj[1].set_status('Close')
-            # if obj == 'cabinet':
-            #     t2 = self.open_class.get_cabinet_traj(end_q.conf, relative_grasp.pose, obj_pose.pose, 'top', increment, sample)
-            # else:
-            #     t2 = self.open_class.get_door_traj(end_q.conf, relative_grasp.pose, obj_pose.pose, increment, sample)
             t2 = self.open_class.open_obj(obj, end_q.conf, relative_grasp.pose, obj_pose.pose, increment, sample, knob)
             if t1 is not None and t2 is not None:
                 t1 = t1[0]
@@ -95,7 +92,7 @@ class TAMP_Functions:
                 new_obj_pose = vobj.Pose(obj, self.objects[obj].link_from_name(knob).get_link_tform(True))
                 self.objects[obj].set_configuration(old_pos)
             else:
-                new_obj_pose = obj_pose
+                new_obj_pose = vobj.Pose(obj, obj_pose.pose)
             grasp_pose, q = self.grasp.grasp(obj, new_obj_pose.pose)
             if q is not None and self.robot.arm.IsCollisionFree(q, obstacles=[self.floor, self.objects[obj]]):
                 # Grasp in object frame
