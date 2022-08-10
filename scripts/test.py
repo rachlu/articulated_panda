@@ -54,16 +54,15 @@ if __name__ == '__main__':
     #
     # input('execute')
     # traj[0][0].execute(objects['door'], None, increment)
+    obj = 'door'
     for _ in range(7):
-        relative_grasp, q = tamp.sampleGrabPose('cabinet', vobj.Pose('cabinet', objects['cabinet'].get_configuration()), 'top_drawer_knob')[0]
+        relative_grasp, q = tamp.sampleGrabPose(obj, vobj.Pose(obj, objects[obj].get_configuration()), 'knob')[0]
         robot.arm.SetJointValues(q)
-        traj = open_class.get_cabinet_traj(q, relative_grasp.pose, objects['cabinet'].get_configuration(), 'top', 0.05, 5)
+        traj = open_class.open_obj(obj, q, relative_grasp.pose, objects[obj].get_configuration(), (math.pi/20,), 3, 'knob')
         if traj is not None:
             break
     input('execute')
-    traj[0][0].execute(objects['cabinet'], 'top', 0.05)
-    # print(util.get_increment('cabinet', .2))
-
+    traj[0][0].execute(objects[obj], None, math.pi/20)
 
     IPython.embed()
     pb_robot.utils.wait_for_user()

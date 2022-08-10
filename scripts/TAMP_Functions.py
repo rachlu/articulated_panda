@@ -74,10 +74,11 @@ class TAMP_Functions:
             # Change to grasp conf
             end_q = vobj.BodyConf(self.robot, hand_traj[0].path[1])
             hand_traj[1].set_status('Close')
-            if obj == 'cabinet':
-                t2 = self.open_class.get_cabinet_traj(end_q.conf, relative_grasp.pose, obj_pose.pose, 'top', increment, sample)
-            else:
-                t2 = self.open_class.get_door_traj(end_q.conf, relative_grasp.pose, obj_pose.pose, increment, sample)
+            # if obj == 'cabinet':
+            #     t2 = self.open_class.get_cabinet_traj(end_q.conf, relative_grasp.pose, obj_pose.pose, 'top', increment, sample)
+            # else:
+            #     t2 = self.open_class.get_door_traj(end_q.conf, relative_grasp.pose, obj_pose.pose, increment, sample)
+            t2 = self.open_class.open_obj(obj, end_q.conf, relative_grasp.pose, obj_pose.pose, increment, sample, knob)
             if t1 is not None and t2 is not None:
                 t1 = t1[0]
                 t1.extend(hand_traj[:2])

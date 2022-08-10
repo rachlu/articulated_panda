@@ -150,6 +150,6 @@
     )
 
     (:derived (OpenAll ?o)
-        (exists (?o ?a) (and (Openable ?o) (Open ?o ?a) (OpenAllAmount ?o ?a)))
+        (exists (?a) (and (Openable ?o) (Open ?o ?a) (OpenAllAmount ?o ?a)))
     )
 )

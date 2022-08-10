@@ -22,17 +22,17 @@ class TrajPath:
         holding = False
         if args:
             obj, location, increment = args
-            position = 0
+            position = obj.get_configuration()
             holding = True
         for q in self.path:
             self.robot.arm.SetJointValues(q)
             if holding:
                 if location is None:
-                    obj.set_configuration((position, ))
+                    obj.set_configuration(position)
                 elif location.upper() == 'TOP':
-                    obj.set_configuration((position, 0))
+                    obj.set_configuration(position)
                 else:
-                    obj.set_configuration((0, position))
+                    obj.set_configuration(position)
                 position += increment
             time.sleep(0.2)
 
