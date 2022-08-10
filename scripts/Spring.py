@@ -10,19 +10,12 @@ import vobj
 
 
 class Spring:
-    def __init__(self, robot, arm, stiffness=None):
+    def __init__(self, robot, arm):
         self.arm = arm
         self.robot = robot
-        self.stiffness = stiffness
 
-    def set_stiffness_conf(self, stiffness):
-        self.stiffness = stiffness
-
-    def set_stiffness_conf_quad(self, transform, rotational):
-        self.stiffness = [*transform, *rotational]
-
-    def get_force(self, distance):
-        return -1 * self.K * distance
+    def get_force(self, distance, stiffness):
+        return -1 * numpy.dot(stiffness, distance)
 
     def get_distance_from_force(self, force):
         """
