@@ -9,26 +9,28 @@ import numpy
 import vobj
 
 
+def get_force(distance, stiffness):
+    return -1 * numpy.linalg.norm(numpy.dot(stiffness, distance))
+
+
+def get_distance_from_force(force, stiffness):
+    """
+    :param force: Force in Newtons
+    :return: Linear distance to apply specified force in meters
+    """
+    return -1 * numpy.linalg.norm(numpy.dot(force, numpy.linalg.inv(stiffness)))
+
+
 class Spring:
     def __init__(self, robot, arm):
         self.arm = arm
         self.robot = robot
 
-    def get_force(self, distance, stiffness):
-        return -1 * numpy.dot(stiffness, distance)
-
-    def get_distance_from_force(self, force):
-        """
-        :param force: Force in Newtons
-        :return: Linear distance to apply specified force in meters
-        """
-        return -1 * force / self.K
-
     def apply_force(self, force):
         """
         :param force: Force in Newtons
         """
-        distance = self.get_distance_from_force(force)
+        distance = get_distance_from_force(force)
         new_q = self.q_from_distance(distance)
         print(new_q)
         if new_q:
@@ -49,7 +51,7 @@ class Spring:
     def move_to_position_force(self, q, error=0.005):
         q = numpy.array(q)
         self.robot.arm.SetJointValues(q)
-        initial = numpy.array(self.robot.arm.GetEETransform())
+        goal = numpy.array(self.robot.arm.GetEETransform())
         diff = 999999
         force = 1
         while diff > error:
@@ -57,14 +59,8 @@ class Spring:
             current_q = arm.convertToList(self.arm.joint_angles())
             self.robot.arm.SetJointValues(current_q)
             current = numpy.array(self.robot.arm.GetEETransform())
-            diff = util.getDistance(initial, current)
+            diff = util.getDistance(goal, current)
             force += 0.3
-
-    def set_k(self, k):
-        self.K = k
-
-    def get_k(self):
-        return self.K
 
 
 if __name__ == '__main__':
