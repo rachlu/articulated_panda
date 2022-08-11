@@ -95,7 +95,6 @@ class Open:
         path = [q]
         initial = t
         for _ in range(sample):
-            print('open', t)
             t += increment
             new_grasp = numpy.array(start_grasp)
             x = a * math.cos(t + angle) + x_0
