@@ -57,7 +57,7 @@ class Spring:
         goal = numpy.array(self.robot.arm.GetEETransform())
         goal = goal[:, -1]
         diff = 999999
-        force = 1
+        force = 0.05
         while diff > error:
             print('diff', diff)
             self.apply_force(force)
@@ -66,7 +66,7 @@ class Spring:
             current = numpy.array(self.robot.arm.GetEETransform())
             current = current[:, -1]
             diff = util.getDistance(goal, current)
-            force += 0.3
+            force += 0.05
 
 
 if __name__ == '__main__':
