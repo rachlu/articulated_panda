@@ -55,6 +55,7 @@ class Spring:
         q = numpy.array(q)
         self.robot.arm.SetJointValues(q)
         goal = numpy.array(self.robot.arm.GetEETransform())
+        goal = goal[:, -1]
         diff = 999999
         force = 1
         while diff > error:
@@ -63,6 +64,7 @@ class Spring:
             current_q = arm.convertToList(self.arm.joint_angles())
             self.robot.arm.SetJointValues(current_q)
             current = numpy.array(self.robot.arm.GetEETransform())
+            current = current[:, -1]
             diff = util.getDistance(goal, current)
             force += 0.3
 
