@@ -15,14 +15,16 @@ class Spring:
         self.stiffness = [1, 1, 1, 1, 1, 1, 1]
 
     def get_force(self, distance):
-        return -1 * numpy.linalg.norm(numpy.dot(self.stiffness, distance))
+        return -1 * distance * 10
+        # return -1 * numpy.linalg.norm(numpy.dot(self.stiffness, distance))
 
     def get_distance_from_force(self, force):
         """
         :param force: Force in Newtons
         :return: Linear distance to apply specified force in meters
         """
-        return -1 * numpy.linalg.norm(numpy.dot(force, numpy.linalg.inv(self.stiffness)))
+        return -1 * force / 10
+        # return -1 * numpy.linalg.norm(numpy.dot(force, numpy.linalg.inv(self.stiffness)))
 
     def apply_force(self, force):
         """
@@ -33,6 +35,9 @@ class Spring:
         print(new_q)
         if new_q:
             self.robot.arm.SetJointValues(new_q)
+        else:
+            print('Q None')
+            return
         input('Exert Force')
         if self.robot.arm.InsideTorqueLimits(new_q, [0, 0, force, 0, 0, 0]):
             self.arm.set_joint_impedance_config(new_q)
@@ -53,6 +58,7 @@ class Spring:
         diff = 999999
         force = 1
         while diff > error:
+            print('diff', diff)
             self.apply_force(force)
             current_q = arm.convertToList(self.arm.joint_angles())
             self.robot.arm.SetJointValues(current_q)

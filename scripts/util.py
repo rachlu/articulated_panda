@@ -42,7 +42,11 @@ def getDistance(q1, q2):
     """
     Returns the total radian distance from configuration q1 to configuration q2.
     """
+    print('q1', q1)
+    print('q2', q2)
     x = q1 - q2
+    print('x', x)
+    print('dot', x.dot(x))
     return numpy.sqrt(x.dot(x))
 
 
