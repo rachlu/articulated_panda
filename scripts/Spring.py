@@ -9,6 +9,39 @@ import numpy
 import vobj
 
 
+def stiff_matrix(stiffness):
+    return numpy.array([400, 400, stiffness, 40, 40, 40])
+
+
+def stiffness_and_force(force):
+    """
+    Given a force (Newtons) to be applied return the difference in Z and
+    corresponding stiffness 6x1 matrix.
+
+    Maximizes stiffness with the condition that Z offset is less than 0.
+
+    Stiffness Equations (Source: Rachel Holladay)
+    Stiffness 400:  f = 426d - 2.39
+    Stiffness 200:  f = 231d - 1.87
+    Stiffness 100:  f = 124d - 1.23
+    Stiffness 50:   f = 79.3d - 0.99
+    Stiffness 0:    f = 50.7d - 0
+
+    :param force: Force in Newtons
+    :return: (Z offset, stiffness)
+    """
+
+    stiffness_funcs = {400: lambda x: (x + 2.39) / 426, 200: lambda x: (x + 1.87) / 231, 100: lambda x: (x + 1.23) / 124,
+                 50: lambda x: (x + 0.99) / 79.3, 0: lambda x: x / 50.7}
+
+    for stiffness in stiffness_funcs:
+        z_offset = stiffness_funcs[stiffness](force)
+        if z_offset <= 0:
+            return z_offset, stiff_matrix(stiffness)
+
+    return (None, None)
+
+
 class Spring:
     def __init__(self, robot, arm):
         self.arm = arm
@@ -56,22 +89,23 @@ class Spring:
         end_effector[2][-1] += distance
         new_q = self.robot.arm.ComputeIKQ(end_effector, current_q)
         return new_q
-    
+
     def move_to_distance_force(self, distance, error=0.01):
         q = numpy.array(self.q_from_distance(distance))
         self.robot.arm.SetJointValues(q)
         goal = numpy.array(self.robot.arm.GetEETransform())
-        goal = goal[:, -1]
+        # goal = goal[:, -1]
         diff = 999999
-        force = self.get_force(distance)/2
+        force = self.get_force(distance)
         while diff > error:
             print('diff', diff)
             current_q = self.apply_force(force)
             # current_q = self.arm.convertToList(self.arm.joint_angles())
             self.robot.arm.SetJointValues(current_q)
             current = numpy.array(self.robot.arm.GetEETransform())
-            current = current[:, -1]
-            diff = util.getDistance(goal, current)
+            # current = current[:, -1]
+            # diff = util.getDistance(goal, current)
+            diff = current[2][-1] - goal[2][-1]
             force += 0.001
         print('Position Reached!')
 
@@ -108,5 +142,3 @@ if __name__ == '__main__':
     # arm.move_to_touch(arm.convertToDict(hand_traj[0].path[1]))
 
     IPython.embed()
-
-
