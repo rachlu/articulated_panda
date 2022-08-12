@@ -1,14 +1,13 @@
-from franka_interface import ArmInterface
+# from franka_interface import ArmInterface
 from TAMP_Functions import TAMP_Functions
 
-import rospy
+# import rospy
 import IPython
 import table_env
 import util
 import numpy
 import vobj
 import quaternion
-import math
 
 
 def stiff_matrix(stiffness):
@@ -83,7 +82,6 @@ class Spring:
     def __init__(self, robot, arm):
         self.arm = arm
         self.robot = robot
-        self.stiffness = [1, 1, 1, 1, 1, 1, 1]
 
     # Tested Using Simulation Only!
     def apply_force(self, force):
@@ -96,20 +94,21 @@ class Spring:
             print('No distance and stiffness matrix')
             return
         cart, new_q = self.qp_from_distance(distance)
+        print(cart, new_q)
         if new_q:
             self.robot.arm.SetJointValues(new_q)
         else:
             print('Q None')
             return None
         
-        ans = input('Exert Force')
-        if ans.upper() == 'N':
-            return
-
-        if self.robot.arm.InsideTorqueLimits(new_q, [0, 0, force, 0, 0, 0]):
-            self.arm.set_cart_impedance_pose(cart, matrix)
-        else:
-            print('Torque Limit!')
+        # ans = input('Exert Force')
+        # if ans.upper() == 'N':
+        #     return
+        #
+        # if self.robot.arm.InsideTorqueLimits(new_q, [0, 0, force, 0, 0, 0]):
+        #     self.arm.set_cart_impedance_pose(cart, matrix)
+        # else:
+        #     print('Torque Limit!')
         return new_q
 
     # Tested!
@@ -142,16 +141,16 @@ class Spring:
 
 
 if __name__ == '__main__':
-    rospy.init_node('Spring')
-    arm = ArmInterface()
+    # rospy.init_node('Spring')
+    # arm = ArmInterface()
     objects, openable, floor, robot = table_env.execute()
-    spring = Spring(robot, arm)
-    # spring = Spring(robot, None)
+    # spring = Spring(robot, arm)
+    spring = Spring(robot, None)
 
-    start_q = arm.convertToList(arm.joint_angles())
-    robot.arm.SetJointValues(start_q)
+    # start_q = arm.convertToList(arm.joint_angles())
+    # robot.arm.SetJointValues(start_q)
     robot.arm.hand.Open()
-    arm.hand.open()
+    # arm.hand.open()
 
     tamp = TAMP_Functions(robot, objects, floor, openable)
     start_conf = vobj.BodyConf(robot, robot.arm.GetJointValues())
@@ -161,15 +160,15 @@ if __name__ == '__main__':
     hand_traj = hand_traj[:2]
     traj = tamp.calculate_path(start_conf, q)[0][0][0]
     traj.execute()
-    traj = util.convert(arm, traj.path)
+    # traj = util.convert(arm, traj.path)
 
-    input('execute')
-    arm.execute_position_path(traj)
+    # input('execute')
+    # arm.execute_position_path(traj)
     hand_traj[1].execute()
-    arm.hand.close()
+    # arm.hand.close()
     hand_traj[0].execute()
-
-    input('move_to_touch')
-    arm.move_to_touch(arm.convertToDict(hand_traj[0].path[1]))
+    #
+    # input('move_to_touch')
+    # arm.move_to_touch(arm.convertToDict(hand_traj[0].path[1]))
 
     IPython.embed()
