@@ -8,6 +8,7 @@ import util
 import numpy
 import vobj
 import quaternion
+import math
 
 
 def stiff_matrix(stiffness):
@@ -66,14 +67,14 @@ def stiffness_and_force(offset):
 
     for stiffness in stiffness_funcs:
         force = stiffness_funcs[stiffness](offset)
-        if 0 <= force <= 400:
+        if 0 <= abs(force) <= 400:
             return force, stiff_matrix(stiffness)
 
     return None, None
 
 
 def get_cartesian(pose):
-    rotation = quaternion.from_rot_matrix(pose[:3, :3])
+    rotation = quaternion.from_rotation_matrix(pose[:3, :3])
     transform = pose[:3, 3]
     return {'position': transform, 'orientation': rotation}
 
@@ -90,6 +91,7 @@ class Spring:
         :param force: Force in Newtons
         """
         distance, matrix = stiffness_and_offset(force)
+        print(distance, matrix)
         if distance is None:
             print('No distance and stiffness matrix')
             return
@@ -99,11 +101,15 @@ class Spring:
         else:
             print('Q None')
             return None
-        # input('Exert Force')
-        # if self.robot.arm.InsideTorqueLimits(new_q, [0, 0, force, 0, 0, 0]):
-        #     self.arm.set_cart_impedance_pose(cart, matrix)
-        # else:
-        #     print('Torque Limit!')
+        
+        ans = input('Exert Force')
+        if ans.upper() == 'N':
+            return
+
+        if self.robot.arm.InsideTorqueLimits(new_q, [0, 0, force, 0, 0, 0]):
+            self.arm.set_cart_impedance_pose(cart, matrix)
+        else:
+            print('Torque Limit!')
         return new_q
 
     # Tested!
@@ -136,16 +142,16 @@ class Spring:
 
 
 if __name__ == '__main__':
-    # rospy.init_node('Spring')
+    rospy.init_node('Spring')
     arm = ArmInterface()
     objects, openable, floor, robot = table_env.execute()
     spring = Spring(robot, arm)
     # spring = Spring(robot, None)
 
-    # start_q = arm.convertToList(arm.joint_angles())
-    # robot.arm.SetJointValues(start_q)
+    start_q = arm.convertToList(arm.joint_angles())
+    robot.arm.SetJointValues(start_q)
     robot.arm.hand.Open()
-    # arm.hand.open()
+    arm.hand.open()
 
     tamp = TAMP_Functions(robot, objects, floor, openable)
     start_conf = vobj.BodyConf(robot, robot.arm.GetJointValues())
