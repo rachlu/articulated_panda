@@ -1,7 +1,7 @@
-from franka_interface import ArmInterface
+# from franka_interface import ArmInterface
 from TAMP_Functions import TAMP_Functions
 
-import rospy
+# import rospy
 import IPython
 import table_env
 import util
@@ -32,7 +32,7 @@ def stiffness_and_offset(force):
     :return: (Z offset, stiffness)
     """
 
-    if force <= -20 or force >= 0:
+    if force <= -20 or force > 0:
         print('Invalid Force')
         return None, None
 
@@ -86,6 +86,18 @@ def get_cartesian(pose):
     return {'position': transform, 'orientation': rotation}
 
 
+def get_matrix(cart):
+    matrix = numpy.zeros((4, 4))
+    orientation = quaternion.as_rotation_matrix(cart['orientation'])
+    transform = cart['position']
+    print(orientation)
+    print(transform)
+    matrix[:3, :3] = orientation
+    matrix[:3, 3] = transform
+    matrix[3, :] = [0, 0, 0, 1]
+    return matrix
+
+
 class Spring:
     def __init__(self, robot, arm):
         self.arm = arm
@@ -112,7 +124,7 @@ class Spring:
         ans = input('Exert Force')
         if ans.upper() == 'N':
             return
-        #
+
         if self.robot.arm.InsideTorqueLimits(new_q, [0, 0, force, 0, 0, 0]):
             self.arm.set_cart_impedance_pose(cart, matrix)
         else:
@@ -121,14 +133,23 @@ class Spring:
 
     # Tested!
     def qp_from_distance(self, distance):
-        end_effector = self.robot.arm.GetEETransform()
-        current_q = self.robot.arm.GetJointValues()
+        # end_effector = self.robot.arm.GetEETransform()
+        # current_q = self.robot.arm.GetJointValues()
+        # end_effector[2][-1] += distance
+        # new_q = self.robot.arm.ComputeIKQ(end_effector, current_q)
+        # return get_cartesian(end_effector), new_q
+        if distance > 0:
+            print('Nonnegative Distance')
+            return None, None
+        end_effector = self.arm.endpoint_pose()
+        current_q = self.arm.convertToList(self.arm.joint_angles())
+        end_effector = get_matrix(end_effector)
         end_effector[2][-1] += distance
         new_q = self.robot.arm.ComputeIKQ(end_effector, current_q)
         return get_cartesian(end_effector), new_q
 
     def move_to_distance_force(self, distance, error=0.01):
-        cart, q = numpy.array(self.qc_from_distance(distance))
+        cart, q = numpy.array(self.qp_from_distance(distance))
         force, matrix = stiffness_and_force(distance)
         if force is None:
             print('No force and stiffness matrix')
@@ -149,41 +170,41 @@ class Spring:
 
 
 if __name__ == '__main__':
-    rospy.init_node('Spring')
-    arm = ArmInterface()
+    # rospy.init_node('Spring')
+    # arm = ArmInterface()
     objects, openable, floor, robot = table_env.execute()
-    spring = Spring(robot, arm)
-    # spring = Spring(robot, None)
+    # spring = Spring(robot, arm)
+    spring = Spring(robot, None)
 
-    start_q = arm.convertToList(arm.joint_angles())
-    robot.arm.SetJointValues(start_q)
+    # start_q = arm.convertToList(arm.joint_angles())
+    # robot.arm.SetJointValues(start_q)
     robot.arm.hand.Open()
-    arm.hand.open()
+    # arm.hand.open()
 
-    tamp = TAMP_Functions(robot, objects, floor, openable)
-    start_conf = vobj.BodyConf(robot, robot.arm.GetJointValues())
-    pose = vobj.Pose('spring', objects['spring'].get_transform())
-    relative_grasp = tamp.sampleGrabPose('spring', pose)[0][0]
-    q, hand_traj = tamp.computeIK('spring', pose, relative_grasp)[0]
-    hand_traj = hand_traj[:2]
-    traj = tamp.calculate_path(start_conf, q)[0][0][0]
-    #traj.execute()
-    input('execute')
-    for q in traj.path:
-        robot.arm.SetJointValues(q)
-        pose = robot.arm.GetEETransform()
-        pose = get_cartesian(pose)
-        arm.set_cart_impedance_pose(pose, [200, 200, 200, 20, 20, 20])
-        input('next')
-    traj = util.convert(arm, traj.path)
-
-    input('execute')
-    arm.execute_position_path(traj)
-    hand_traj[1].execute()
-    arm.hand.close()
-    hand_traj[0].execute()
+    # tamp = TAMP_Functions(robot, objects, floor, openable)
+    # start_conf = vobj.BodyConf(robot, robot.arm.GetJointValues())
+    # pose = vobj.Pose('spring', objects['spring'].get_transform())
+    # relative_grasp = tamp.sampleGrabPose('spring', pose)[0][0]
+    # q, hand_traj = tamp.computeIK('spring', pose, relative_grasp)[0]
+    # hand_traj = hand_traj[:2]
+    # traj = tamp.calculate_path(start_conf, q)[0][0][0]
+    # # traj.execute()
+    # input('execute')
+    # for q in traj.path:
+    #     robot.arm.SetJointValues(q)
+    #     pose = robot.arm.GetEETransform()
+    #     pose = get_cartesian(pose)
+    #     arm.set_cart_impedance_pose(pose, [200, 200, 200, 20, 20, 20])
+    #     input('next')
+    # traj = util.convert(arm, traj.path)
     #
-    input('move_to_touch')
-    arm.move_to_touch(arm.convertToDict(hand_traj[0].path[1]))
+    # input('execute')
+    # arm.execute_position_path(traj)
+    # hand_traj[1].execute()
+    # arm.hand.close()
+    # hand_traj[0].execute()
+    #
+    # input('move_to_touch')
+    # arm.move_to_touch(arm.convertToDict(hand_traj[0].path[1]))
 
     IPython.embed()
