@@ -88,8 +88,9 @@ class Spring:
         """
         :param force: Force in Newtons
         """
+        force *= -1
         distance, matrix = stiffness_and_offset(force)
-        print(distance, matrix)
+        print(force, distance, matrix)
         if distance is None:
             print('No distance and stiffness matrix')
             return
