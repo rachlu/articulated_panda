@@ -32,6 +32,10 @@ def stiffness_and_offset(force):
     :return: (Z offset, stiffness)
     """
 
+    if force <= -20 or force >= 0:
+        print('Invalid Force')
+        return None, None
+
     stiffness_funcs = {400: lambda x: (x + 2.39) / 426, 200: lambda x: (x + 1.87) / 231,
                        100: lambda x: (x + 1.23) / 124, 50: lambda x: (x + 0.99) / 79.3, 0: lambda x: x / 50.7}
 
@@ -45,7 +49,7 @@ def stiffness_and_offset(force):
 
 def stiffness_and_force(offset):
     """
-    Given a force (Newtons) to be applied return the difference in Z and
+    Given a Z offset (meters) return force (Newtons) and
     corresponding 6x1 stiffness matrix.
 
     Maximizes stiffness with the condition that Z offset is less than 0.
@@ -57,8 +61,8 @@ def stiffness_and_force(offset):
     Stiffness 50:   f = 79.3d - 0.99
     Stiffness 0:    f = 50.7d - 0
 
-    :param force: Force in Newtons
-    :return: (Z offset, stiffness)
+    :param offset: offset in meters
+    :return: (force , stiffness)
     """
 
     stiffness_funcs = {400: lambda x: (x * 426) - 2.39, 200: lambda x: (x * 231) - 1.87,
@@ -66,7 +70,7 @@ def stiffness_and_force(offset):
 
     for stiffness in stiffness_funcs:
         force = stiffness_funcs[stiffness](offset)
-        if 0 <= abs(force) <= 400:
+        if -20 <= force <= 0:
             return force, stiff_matrix(stiffness)
 
     return None, None
@@ -88,7 +92,6 @@ class Spring:
         """
         :param force: Force in Newtons
         """
-        force *= -1
         distance, matrix = stiffness_and_offset(force)
         print(force, distance, matrix)
         if distance is None:
