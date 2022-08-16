@@ -86,8 +86,6 @@ def get_matrix(cart):
     matrix = numpy.zeros((4, 4))
     orientation = quaternion.as_rotation_matrix(cart['orientation'])
     transform = cart['position']
-    print(orientation)
-    print(transform)
     matrix[:3, :3] = orientation
     matrix[:3, 3] = transform
     matrix[3, :] = [0, 0, 0, 1]
@@ -144,12 +142,12 @@ class Spring:
         new_q = self.robot.arm.ComputeIKQ(end_effector, current_q)
         return get_cartesian(end_effector), new_q
 
-    def move_to_distance_force(self, distance, error=0.1):
+    def move_to_distance_force(self, distance, error=0.01):
         cart, q = numpy.array(self.qp_from_distance(distance))
-        self.robot.arm.SetJointValues(q)
-        goal = cart['position'][2]
-        diff = 999999
+        goal = cart['position'][-1]
+        print('goal', goal)
         offset = distance
+        diff = 9999
         while diff > error:
             force, matrix = stiffness_and_force(offset)
             if force is None:
@@ -163,8 +161,10 @@ class Spring:
             self.apply_force(force)
             current_pose = self.arm.endpoint_pose()
             current = current_pose['position'][-1]
-            diff = goal - current
-            offset += 0.01
+            print('current', current)
+            diff = current - goal
+            print('diff', diff)
+            offset -= 0.01
         print('Position Reached!')
 
 
