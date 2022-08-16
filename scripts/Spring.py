@@ -1,7 +1,7 @@
-# from franka_interface import ArmInterface
+from franka_interface import ArmInterface
 from TAMP_Functions import TAMP_Functions
 
-# import rospy
+import rospy
 import IPython
 import table_env
 import util
@@ -40,8 +40,6 @@ def stiffness_and_offset(force):
                        100: lambda x: (x + 1.23) / 124, 50: lambda x: (x + 0.99) / 79.3, 0: lambda x: x / 50.7}
 
     for stiffness in stiffness_funcs:
-        if stiffness > 100:
-            continue
         z_offset = stiffness_funcs[stiffness](force)
         if z_offset <= 0:
             return z_offset, stiff_matrix(stiffness)
@@ -71,8 +69,6 @@ def stiffness_and_force(offset):
                        100: lambda x: (x * 124) - 1.23, 50: lambda x: (x * 79.3) - 0.99, 0: lambda x: x * 50.7}
 
     for stiffness in stiffness_funcs:
-        if stiffness > 100:
-            continue
         force = stiffness_funcs[stiffness](offset)
         if -20 <= force <= 0:
             return force, stiff_matrix(stiffness)
@@ -148,7 +144,7 @@ class Spring:
         new_q = self.robot.arm.ComputeIKQ(end_effector, current_q)
         return get_cartesian(end_effector), new_q
 
-    def move_to_distance_force(self, distance, error=0.01):
+    def move_to_distance_force(self, distance, error=0.1):
         cart, q = numpy.array(self.qp_from_distance(distance))
         force, matrix = stiffness_and_force(distance)
         if force is None:
@@ -159,6 +155,7 @@ class Spring:
         diff = 999999
         while diff > error:
             print('diff', diff)
+            print(force, matrix)
             self.apply_force(force)
             current_q = self.arm.convertToList(self.arm.joint_angles())
             self.robot.arm.SetJointValues(current_q)
@@ -170,25 +167,25 @@ class Spring:
 
 
 if __name__ == '__main__':
-    # rospy.init_node('Spring')
-    # arm = ArmInterface()
+    rospy.init_node('Spring')
+    arm = ArmInterface()
     objects, openable, floor, robot = table_env.execute()
-    # spring = Spring(robot, arm)
-    spring = Spring(robot, None)
+    spring = Spring(robot, arm)
+    # spring = Spring(robot, None)
 
-    # start_q = arm.convertToList(arm.joint_angles())
-    # robot.arm.SetJointValues(start_q)
+    start_q = arm.convertToList(arm.joint_angles())
+    robot.arm.SetJointValues(start_q)
     robot.arm.hand.Open()
-    # arm.hand.open()
+    arm.hand.open()
 
-    # tamp = TAMP_Functions(robot, objects, floor, openable)
-    # start_conf = vobj.BodyConf(robot, robot.arm.GetJointValues())
-    # pose = vobj.Pose('spring', objects['spring'].get_transform())
-    # relative_grasp = tamp.sampleGrabPose('spring', pose)[0][0]
-    # q, hand_traj = tamp.computeIK('spring', pose, relative_grasp)[0]
-    # hand_traj = hand_traj[:2]
-    # traj = tamp.calculate_path(start_conf, q)[0][0][0]
-    # # traj.execute()
+    tamp = TAMP_Functions(robot, objects, floor, openable)
+    start_conf = vobj.BodyConf(robot, robot.arm.GetJointValues())
+    pose = vobj.Pose('spring', objects['spring'].get_transform())
+    relative_grasp = tamp.sampleGrabPose('spring', pose)[0][0]
+    q, hand_traj = tamp.computeIK('spring', pose, relative_grasp)[0]
+    hand_traj = hand_traj[:2]
+    traj = tamp.calculate_path(start_conf, q)[0][0][0]
+    traj.execute()
     # input('execute')
     # for q in traj.path:
     #     robot.arm.SetJointValues(q)
@@ -196,15 +193,16 @@ if __name__ == '__main__':
     #     pose = get_cartesian(pose)
     #     arm.set_cart_impedance_pose(pose, [200, 200, 200, 20, 20, 20])
     #     input('next')
-    # traj = util.convert(arm, traj.path)
+    traj = util.convert(arm, traj.path)
     #
-    # input('execute')
-    # arm.execute_position_path(traj)
-    # hand_traj[1].execute()
-    # arm.hand.close()
-    # hand_traj[0].execute()
+    input('execute')
+    arm.execute_position_path(traj)
+    hand_traj[1].execute()
+    arm.hand.close()
+    hand_traj[0].execute()
     #
-    # input('move_to_touch')
-    # arm.move_to_touch(arm.convertToDict(hand_traj[0].path[1]))
+    ans = input('move_to_touch')
+    if ans.upper() != 'N':
+        arm.move_to_touch(arm.convertToDict(hand_traj[0].path[1]))
 
     IPython.embed()
