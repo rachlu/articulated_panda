@@ -146,23 +146,25 @@ class Spring:
 
     def move_to_distance_force(self, distance, error=0.1):
         cart, q = numpy.array(self.qp_from_distance(distance))
-        force, matrix = stiffness_and_force(distance)
-        if force is None:
-            print('No force and stiffness matrix')
-            return
         self.robot.arm.SetJointValues(q)
         goal = cart['position'][2]
         diff = 999999
+        offset = distance
         while diff > error:
+            force, matrix = stiffness_and_force(offset)
+            if force is None:
+                print('No force and stiffness matrix')
+                return
             print('diff', diff)
             print(force, matrix)
+            ans = input('Apply force?')
+            if ans.upper() == 'N':
+                break
             self.apply_force(force)
-            current_q = self.arm.convertToList(self.arm.joint_angles())
-            self.robot.arm.SetJointValues(current_q)
-            current = numpy.array(self.robot.arm.GetEETransform())
-            current = get_cartesian(current)['position'][2]
-            diff = current - goal
-            force += 0.01
+            current_pose = self.arm.endpoint_pose()
+            current = current_pose['position'][-1]
+            diff = goal - current
+            offset += 0.01
         print('Position Reached!')
 
 
