@@ -1,6 +1,8 @@
 from franka_interface import ArmInterface
 from TAMP_Functions import TAMP_Functions
 
+from franka_tools import collision_behaviour_interface as interface
+
 import rospy
 import IPython
 import table_env
@@ -167,7 +169,7 @@ class Spring:
             current_pose = self.arm.endpoint_pose()
             current = current_pose['position'][-1]
             execute_pose = {'position': numpy.array(current_pose['position']),
-                            'orientation': numpy.array(current_pose['orientation'])}
+                            'orientation': current_pose['orientation']}
             execute_pose['position'][-1] -= 0.01
             self.arm.set_cart_impedance_pose(execute_pose, matrix)
             print('current', current)
@@ -197,7 +199,7 @@ class Spring:
             print('current', current)
             diff = current - goal
             print('diff', diff)
-            force -= 0.01
+            force -= 1
         print('Position Reached!')
 
 

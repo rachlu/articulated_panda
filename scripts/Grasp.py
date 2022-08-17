@@ -105,7 +105,7 @@ class Grasp:
         rotation = util.get_rotation_arr('Y', math.pi)
         translation = numpy.array([[1, 0, 0, 0],
                                    [0, 1, 0, 0],
-                                   [0, 0, 1, -.16],
+                                   [0, 0, 1, -.13],
                                    [0., 0., 0., 1.]])
         z = util.get_rotation_arr('Z', math.pi)
         rotation = numpy.dot(z, rotation)
