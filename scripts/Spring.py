@@ -97,6 +97,12 @@ class Spring:
         self.arm = arm
         self.robot = robot
 
+    def valid_force(self, q, force):
+        if force < -20 or force > 0:
+            return False
+
+        return self.robot.arm.InsideTorqueLimits(q, [0, 0, force, 0, 0, 0])
+
     # Tested Using Simulation Only!
     def apply_force(self, force):
         """
@@ -114,12 +120,12 @@ class Spring:
         else:
             print('Q None')
             return None
-        
+
         ans = input('Exert Force')
         if ans.upper() == 'N':
             return
 
-        if self.robot.arm.InsideTorqueLimits(new_q, [0, 0, force, 0, 0, 0]):
+        if self.valid_force(new_q, force):
             self.arm.set_cart_impedance_pose(cart, matrix)
         else:
             print('Torque Limit!')
@@ -142,7 +148,7 @@ class Spring:
         new_q = self.robot.arm.ComputeIKQ(end_effector, current_q)
         return get_cartesian(end_effector), new_q
 
-    def move_to_distance_force(self, distance, error=0.01):
+    def move_to_distance_offset(self, distance, error=0.01):
         cart, q = numpy.array(self.qp_from_distance(distance))
         goal = cart['position'][-1]
         print('goal', goal)
@@ -158,13 +164,40 @@ class Spring:
             ans = input('Apply force?')
             if ans.upper() == 'N':
                 break
+            current_pose = self.arm.endpoint_pose()
+            current = current_pose['position'][-1]
+            execute_pose = {'position': numpy.array(current_pose['position']),
+                            'orientation': numpy.array(current_pose['orientation'])}
+            execute_pose['position'][-1] -= 0.01
+            self.arm.set_cart_impedance_pose(execute_pose, matrix)
+            print('current', current)
+            diff = current - goal
+            print('diff', diff)
+            offset -= 0.01
+        print('Position Reached!')
+
+    def move_to_distance_force(self, distance, error=0.01):
+        cart, q = numpy.array(self.qp_from_distance(distance))
+        goal = cart['position'][-1]
+        print('goal', goal)
+        offset = distance
+        diff = 9999
+        force, matrix = stiffness_and_force(offset)
+        if force is None:
+            print('No force and stiffness matrix')
+            return
+        while diff > error:
+            print('diff', diff)
+            ans = input('Apply force?')
+            if ans.upper() == 'N':
+                break
             self.apply_force(force)
             current_pose = self.arm.endpoint_pose()
             current = current_pose['position'][-1]
             print('current', current)
             diff = current - goal
             print('diff', diff)
-            offset -= 0.01
+            force -= 0.01
         print('Position Reached!')
 
 
