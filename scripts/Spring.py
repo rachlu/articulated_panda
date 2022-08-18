@@ -34,7 +34,7 @@ def stiffness_and_offset(force):
     :return: (Z offset, stiffness)
     """
 
-    if force <= -20 or force > 0:
+    if force < -20 or force > 0:
         print('Invalid Force')
         return None, None
 
@@ -170,12 +170,13 @@ class Spring:
             current = current_pose['position'][-1]
             execute_pose = {'position': numpy.array(current_pose['position']),
                             'orientation': current_pose['orientation']}
-            execute_pose['position'][-1] -= 0.01
+            execute_pose['position'][-1] -= 0.1
             self.arm.set_cart_impedance_pose(execute_pose, matrix)
+            print(execute_pose)
             print('current', current)
             diff = current - goal
             print('diff', diff)
-            offset -= 0.01
+            offset -= 0.1
         print('Position Reached!')
 
     def move_to_distance_force(self, distance, error=0.01):
