@@ -1,7 +1,7 @@
 from franka_interface import ArmInterface
 from TAMP_Functions import TAMP_Functions
 
-from franka_tools import collision_behaviour_interface as interface
+from franka_tools import CollisionBehaviourInterface
 
 import rospy
 import IPython
@@ -154,7 +154,7 @@ class Spring:
         cart, q = numpy.array(self.qp_from_distance(distance))
         goal = cart['position'][-1]
         print('goal', goal)
-        offset = distance
+        offset = -0.05
         diff = 9999
         while diff > error:
             # force, matrix = stiffness_and_force(offset)
@@ -171,13 +171,15 @@ class Spring:
             current = current_pose['position'][-1]
             execute_pose = {'position': numpy.array(current_pose['position']),
                             'orientation': current_pose['orientation']}
-            execute_pose['position'][-1] += offset
-            self.arm.set_cart_impedance_pose(execute_pose, matrix)
+            print('before')
             print(execute_pose)
+            execute_pose['position'][-1] += offset
+            print('parameters')
+            print(execute_pose, matrix)
+            self.arm.set_cart_impedance_pose(execute_pose, matrix)
             print('current', current)
             diff = current - goal
             print('diff', diff)
-            offset = -0.1
         print('Position Reached!')
 
     def move_to_distance_force(self, distance, error=0.01):
@@ -238,10 +240,10 @@ if __name__ == '__main__':
     arm.execute_position_path(traj)
     hand_traj[1].execute()
     arm.hand.close()
-    hand_traj[0].execute()
-    #
+    
     ans = input('move_to_touch')
     if ans.upper() != 'N':
+        hand_traj[0].execute()
         arm.move_to_touch(arm.convertToDict(hand_traj[0].path[1]))
 
     IPython.embed()
