@@ -13,7 +13,7 @@ import quaternion
 
 
 def stiff_matrix(stiffness):
-    return numpy.array([400, 400, stiffness, 40, 40, 40])
+    return numpy.array([stiffness, stiffness, stiffness, stiffness/10, stiffness/10, stiffness/10])
 
 
 def stiffness_and_offset(force):
@@ -157,12 +157,13 @@ class Spring:
         offset = distance
         diff = 9999
         while diff > error:
-            force, matrix = stiffness_and_force(offset)
-            if force is None:
-                print('No force and stiffness matrix')
-                return
+            # force, matrix = stiffness_and_force(offset)
+            # if force is None:
+            #     print('No force and stiffness matrix')
+            #     return
+            matrix = stiff_matrix(600)
             print('diff', diff)
-            print(force, matrix)
+            # print(force, matrix)
             ans = input('Apply force?')
             if ans.upper() == 'N':
                 break
@@ -170,13 +171,13 @@ class Spring:
             current = current_pose['position'][-1]
             execute_pose = {'position': numpy.array(current_pose['position']),
                             'orientation': current_pose['orientation']}
-            execute_pose['position'][-1] -= 0.1
+            execute_pose['position'][-1] += offset
             self.arm.set_cart_impedance_pose(execute_pose, matrix)
             print(execute_pose)
             print('current', current)
             diff = current - goal
             print('diff', diff)
-            offset -= 0.1
+            offset = -0.1
         print('Position Reached!')
 
     def move_to_distance_force(self, distance, error=0.01):
