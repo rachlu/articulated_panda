@@ -150,18 +150,18 @@ class Spring:
         new_q = self.robot.arm.ComputeIKQ(end_effector, current_q)
         return get_cartesian(end_effector), new_q
 
-    def move_to_distance_offset(self, distance, error=0.01):
+    def move_to_distance_offset(self, distance, stiffness, error=0.01):
         cart, q = numpy.array(self.qp_from_distance(distance))
         goal = cart['position'][-1]
         print('goal', goal)
-        offset = -0.05
+        offset = -0.01
         diff = 9999
         while diff > error:
             # force, matrix = stiffness_and_force(offset)
             # if force is None:
             #     print('No force and stiffness matrix')
             #     return
-            matrix = stiff_matrix(600)
+            matrix = stiff_matrix(stiffness)
             print('diff', diff)
             # print(force, matrix)
             ans = input('Apply force?')
@@ -241,6 +241,9 @@ if __name__ == '__main__':
     hand_traj[1].execute()
     arm.hand.close()
     
+    collision = CollisionBehaviourInterface()
+    collision.set_collision_threshold(cartesian_forces=[5, 5, 5, 25, 25, 25])
+
     ans = input('move_to_touch')
     if ans.upper() != 'N':
         hand_traj[0].execute()

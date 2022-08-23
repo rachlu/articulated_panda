@@ -36,11 +36,13 @@ def pddlstream_from_tamp(robot, movable, tamp, panda=None):
         ('Openable', 'cabinet'),
         ('Open_Amount', 'door', math.pi/5),
         ('Open_Amount', 'cabinet', 0.1),
+        ('Open_Amount', 'cabinet', 0),
         ('Open_Amount', 'cabinet', 0.25),
         ('OpenAllAmount', 'door', math.pi/10),
         ('OpenAllAmount', 'cabinet', 0.25)
     ]
-    goal = (('Open', 'cabinet', 0.1))
+    goal = (('Open', 'cabinet', 0))
+    # goal = (('Holding', 'cabinet'))
     # goal = (('Open', 'cabinet', 0.25))
     # goal = ('and', ('OpenAll', 'cabinet'), ('Open', 'door', math.pi/5))
     # goal = ('and', ('OpenAll', 'door'), ('Open', 'cabinet', 0.05))

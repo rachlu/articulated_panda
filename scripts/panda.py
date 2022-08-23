@@ -59,7 +59,7 @@ if __name__ == '__main__':
     for obj in objects:
         init_conditions[obj] = objects[obj].get_transform()
 
-    tamp = TAMP_Functions(robot, objects, floor)
+    tamp = TAMP_Functions(robot, objects, floor, openable)
 
     pddlstream_problem = pddlstream_from_tamp(robot, objects, tamp, arm)
     _, _, _, stream_map, init, goal = pddlstream_problem
