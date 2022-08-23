@@ -101,24 +101,6 @@ class TAMP_Functions:
                 return (cmd1, )
         return (None,)
 
-    def execute_path(self, path):
-        for action in path:
-            if action.name == 'open_obj':
-                for cmd in action.args[-2]:
-                    cmd.execute()
-                    time.sleep(1)
-                increment = action.args[7]
-                if action.args[0] == 'door':
-                    action.args[-1][0].execute(self.objects[action.args[0]], None, increment)
-                else:
-                    action.args[-1][0].execute(self.objects[action.args[0]], 'top', increment)
-                for cmd in action.args[-1][1:]:
-                    cmd.execute()
-                continue
-            for cmd in action.args[-1]:
-                cmd.execute()
-                time.sleep(1)
-
     def computeIK(self, obj, obj_pose, grasp, knob='knob'):
         """
         :param obj: string of object name

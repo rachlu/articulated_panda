@@ -9,29 +9,6 @@ import vobj
 import util
 
 
-def execute_plan(plan, g=False):
-    """
-    Execute a plan. If g is True, sets the start poses of the objects.
-    :param plan: Sequence of actions
-    :param g: Dictate whether to pick and place or just set the start poses.
-    """
-    for action in plan:
-        for cmd in action.args[-1]:
-            cmd.execute()
-            ans = input('Redo? (Y/N)')
-            while ans.upper() == 'Y':
-                cmd.execute()
-                ans = input('Redo? (Y/N)')
-            if isinstance(cmd, vobj.TrajPath):
-                path = util.convert(arm, cmd.path)
-                arm.execute_position_path(path)
-            else:
-                if action.name == 'grab':
-                    arm.hand.grasp(0.02, 40, epsilon_inner=0.1, epsilon_outer=0.1)
-                elif action.name == 'place':
-                    arm.hand.open()
-            time.sleep(1)
-
 def reset():
     """
     Reset all objects to their initial conditions.

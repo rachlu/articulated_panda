@@ -3,6 +3,26 @@ import numpy
 import vobj
 import math
 import pb_robot
+import time
+
+
+def execute_path(path, objects, arm):
+    for action in path:
+        if action.name == 'open_obj':
+            for cmd in action.args[-2]:
+                cmd.execute(arm)
+                time.sleep(1)
+            increment = action.args[7]
+            if action.args[0] == 'door':
+                action.args[-1][0].execute(arm, objects[action.args[0]], None, increment)
+            else:
+                action.args[-1][0].execute(arm, objects[action.args[0]], 'top', increment)
+            for cmd in action.args[-1][1:]:
+                cmd.execute(arm)
+            continue
+        for cmd in action.args[-1]:
+            cmd.execute(arm)
+            time.sleep(1)
 
 
 def sampleTable(obj):
@@ -144,3 +164,5 @@ def adjointTransform(T):
 def wrenchFrameTransform(w, frame):
     new_w = numpy.dot(numpy.transpose(adjointTransform(frame)), w)
     return new_w
+
+

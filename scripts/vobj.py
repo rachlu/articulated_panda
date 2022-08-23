@@ -1,4 +1,5 @@
 import time
+import util
 
 
 class BodyConf:
@@ -18,26 +19,29 @@ class TrajPath:
     def __repr__(self):
         return 't{}'.format(id(self) % 1000)
 
-    def execute(self, *args):
+    def execute(self, arm, *args):
         holding = False
         if args:
             obj, location, increment = args
             position = obj.get_configuration()
             holding = True
-        for q in self.path:
-            self.robot.arm.SetJointValues(q)
-            if holding:
-                if location is None:
-                    obj.set_configuration(position)
-                elif location.upper() == 'TOP':
-                    obj.set_configuration(position)
-                else:
-                    obj.set_configuration(position)
-                position += increment
-            time.sleep(0.2)
-
-    # def __str__(self):
-    #    return str(self.path)
+        ans = 'Y'
+        while ans.upper() == 'Y':
+            for q in self.path:
+                self.robot.arm.SetJointValues(q)
+                if holding:
+                    if location is None:
+                        obj.set_configuration(position)
+                    elif location.upper() == 'TOP':
+                        obj.set_configuration(position)
+                    else:
+                        obj.set_configuration(position)
+                    position += increment
+                time.sleep(0.2)
+            ans = input('Redo?')
+        if arm:
+            path = util.convert(arm, self.path)
+            arm.execute_position_path(path)
 
 
 class HandCmd:
@@ -47,12 +51,16 @@ class HandCmd:
         self.grasp = grasp
         self.status = status
 
-    def execute(self):
+    def execute(self, arm):
         if self.status is not None:
             if self.status.upper() == 'OPEN':
                 self.robot.arm.hand.Open()
+                if arm:
+                    arm.hand.open()
             else:
                 self.robot.arm.hand.Close()
+                if arm:
+                    arm.hand.grasp(0.02, 40, epsilon_inner=0.1, epsilon_outer=0.1)
             return
         if len(self.robot.arm.grabbedObjects) != 0:
             self.robot.arm.hand.Open()
@@ -66,10 +74,6 @@ class HandCmd:
 
     def __repr__(self):
         return 't{}'.format(id(self) % 1000)
-
-    # def __str__(self):
-    #    result = 'Hand Cmd'
-    #    return result
 
 
 class Pose:

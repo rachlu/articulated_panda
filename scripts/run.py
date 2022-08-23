@@ -29,7 +29,7 @@ if __name__ == '__main__':
             pose = objects[obj].get_transform()
             print(obj, (pose[0][-1], pose[1][-1]))
         input('Execute?')
-        tamp.execute_path(plan)
+        util.execute_path(plan, objects, None)
 
     IPython.embed()
     pb_robot.utils.wait_for_user()
