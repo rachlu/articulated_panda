@@ -154,7 +154,8 @@ class Spring:
         cart, q = numpy.array(self.qp_from_distance(distance))
         goal = cart['position'][-1]
         print('goal', goal)
-        offset = -0.01
+        current_pose = self.arm.endpoint_pose()
+        offset = current_pose['position'][-1]
         diff = 9999
         while diff > error:
             # force, matrix = stiffness_and_force(offset)
@@ -162,21 +163,19 @@ class Spring:
             #     print('No force and stiffness matrix')
             #     return
             matrix = stiff_matrix(stiffness)
+            offset -= 0.01
             print('diff', diff)
             # print(force, matrix)
             ans = input('Apply force?')
             if ans.upper() == 'N':
                 break
-            current_pose = self.arm.endpoint_pose()
-            current = current_pose['position'][-1]
             execute_pose = {'position': numpy.array(current_pose['position']),
                             'orientation': current_pose['orientation']}
-            print('before')
-            print(execute_pose)
-            execute_pose['position'][-1] += offset
+            execute_pose['position'][-1] = offset
             print('parameters')
             print(execute_pose, matrix)
             self.arm.set_cart_impedance_pose(execute_pose, matrix)
+            current = self.arm.endpoint_pose()['position'][-1]
             print('current', current)
             diff = current - goal
             print('diff', diff)
@@ -242,7 +241,7 @@ if __name__ == '__main__':
     arm.hand.close()
     
     collision = CollisionBehaviourInterface()
-    collision.set_collision_threshold(cartesian_forces=[5, 5, 5, 25, 25, 25])
+    # collision.set_collision_threshold(cartesian_forces=[5, 5, 5, 25, 25, 25])
 
     ans = input('move_to_touch')
     if ans.upper() != 'N':
