@@ -73,14 +73,14 @@ def execute():
         random_pos = util.sampleTable('bowl')[0][0].pose
         bowl.set_transform(random_pos)
     """
-    door_file = os.path.join(objects_path, 'door.urdf')
-
-    door = pb_robot.body.createBody(door_file)
-    pos = numpy.array([[1, 0, 0, .6],
-                      [0, 1, 0, -0.5],
-                      [0, 0, 1, pb_robot.placements.stable_z(door, floor)],
-                      [0, 0, 0, 1]])
-    rotate = util.get_rotation_arr('Z', math.pi/2)
+    # door_file = os.path.join(objects_path, 'door.urdf')
+    #
+    # door = pb_robot.body.createBody(door_file)
+    # pos = numpy.array([[1, 0, 0, .6],
+    #                   [0, 1, 0, -0.5],
+    #                   [0, 0, 1, pb_robot.placements.stable_z(door, floor)],
+    #                   [0, 0, 0, 1]])
+    # rotate = util.get_rotation_arr('Z', math.pi/2)
 
     # rotate = util.get_rotation_arr('Z', 3*math.pi/2)
     # pos = numpy.array([[1, 0, 0, .4],
@@ -99,15 +99,15 @@ def execute():
     #                   [0, 1, 0, 0.4],
     #                   [0, 0, 1, pb_robot.placements.stable_z(door, floor)],
     #                   [0, 0, 0, 1]])
-    door.set_transform(numpy.dot(pos, rotate))
+    # door.set_transform(numpy.dot(pos, rotate))
 
     cabinet_file = os.path.join(objects_path, 'cabinet.urdf')
     cabinet = pb_robot.body.createBody(cabinet_file)
-    pos = numpy.array([[1, 0, 0, -0.4],
-                       [0, 1, 0, 0.4],
+    pos = numpy.array([[1, 0, 0, 0.7],
+                       [0, 1, 0, -0.3],
                        [0, 0, 1, pb_robot.placements.stable_z(cabinet, floor)],
                        [0, 0, 0, 1]])
-    rotate = util.get_rotation_arr('Z', math.pi)
+    rotate = util.get_rotation_arr('Z', 2*math.pi)
     cabinet.set_transform(numpy.dot(pos, rotate))
 
     spring_file = os.path.join(objects_path, 'block.urdf')
@@ -121,5 +121,6 @@ def execute():
 
     # objects = {'fork': fork, 'spoon': spoon, 'knife': knife, 'bowl': bowl}
 
-    objects = {'door': door, 'cabinet': cabinet, 'spring':spring}
+    # objects = {'door': door, 'cabinet': cabinet, 'spring':spring}
+    objects = {'cabinet': cabinet, 'spring':spring}
     return objects, openable, floor, robot

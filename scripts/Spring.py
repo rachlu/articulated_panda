@@ -1,7 +1,7 @@
-from franka_interface import ArmInterface
+# from franka_interface import ArmInterface
 from TAMP_Functions import TAMP_Functions
 
-from franka_tools import CollisionBehaviourInterface
+# from franka_tools import CollisionBehaviourInterface
 
 import rospy
 import IPython
@@ -207,25 +207,25 @@ class Spring:
 
 
 if __name__ == '__main__':
-    rospy.init_node('Spring')
-    arm = ArmInterface()
+    # rospy.init_node('Spring')
+    # arm = ArmInterface()
     objects, openable, floor, robot = table_env.execute()
-    spring = Spring(robot, arm)
-    # spring = Spring(robot, None)
+    # spring = Spring(robot, arm)
+    spring = Spring(robot, None)
 
-    start_q = arm.convertToList(arm.joint_angles())
-    robot.arm.SetJointValues(start_q)
+    # start_q = arm.convertToList(arm.joint_angles())
+    # robot.arm.SetJointValues(start_q)
     robot.arm.hand.Open()
-    arm.hand.open()
+    # arm.hand.open()
 
-    tamp = TAMP_Functions(robot, objects, floor, openable)
-    start_conf = vobj.BodyConf(robot, robot.arm.GetJointValues())
-    pose = vobj.Pose('spring', objects['spring'].get_transform())
-    relative_grasp = tamp.sampleGrabPose('spring', pose)[0][0]
-    q, hand_traj = tamp.computeIK('spring', pose, relative_grasp)[0]
-    hand_traj = hand_traj[:2]
-    traj = tamp.calculate_path(start_conf, q)[0][0][0]
-    traj.execute()
+    # tamp = TAMP_Functions(robot, objects, floor, openable)
+    # start_conf = vobj.BodyConf(robot, robot.arm.GetJointValues())
+    # pose = vobj.Pose('spring', objects['spring'].get_transform())
+    # relative_grasp = tamp.sampleGrabPose('spring', pose)[0][0]
+    # q, hand_traj = tamp.computeIK('spring', pose, relative_grasp)[0]
+    # hand_traj = hand_traj[:2]
+    # traj = tamp.calculate_path(start_conf, q)[0][0][0]
+    # traj.execute()
     # input('execute')
     # for q in traj.path:
     #     robot.arm.SetJointValues(q)
@@ -233,19 +233,19 @@ if __name__ == '__main__':
     #     pose = get_cartesian(pose)
     #     arm.set_cart_impedance_pose(pose, [200, 200, 200, 20, 20, 20])
     #     input('next')
-    traj = util.convert(arm, traj.path)
+    # traj = util.convert(arm, traj.path)
     #
-    input('execute')
-    arm.execute_position_path(traj)
-    hand_traj[1].execute()
-    arm.hand.close()
-    
-    collision = CollisionBehaviourInterface()
+    # input('execute')
+    # arm.execute_position_path(traj)
+    # hand_traj[1].execute()
+    # arm.hand.close()
+    #
+    # collision = CollisionBehaviourInterface()
     # collision.set_collision_threshold(cartesian_forces=[5, 5, 5, 25, 25, 25])
 
-    ans = input('move_to_touch')
-    if ans.upper() != 'N':
-        hand_traj[0].execute()
-        arm.move_to_touch(arm.convertToDict(hand_traj[0].path[1]))
+    # ans = input('move_to_touch')
+    # if ans.upper() != 'N':
+    #     hand_traj[0].execute()
+    #     arm.move_to_touch(arm.convertToDict(hand_traj[0].path[1]))
 
     IPython.embed()
