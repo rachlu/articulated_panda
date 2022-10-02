@@ -57,7 +57,7 @@ class TAMP_Functions:
         increment, sample = util.get_increment(obj, total)
         for _ in range(5):
             if obj == 'cabinet':
-                knob = 'top_drawer_knob'
+                knob = 'bottom_drawer_knob'
             else:
                 knob = 'knob'
             relative_grasp = self.sampleGrabPose(obj, obj_pose, knob)[0]
@@ -112,7 +112,7 @@ class TAMP_Functions:
             old_pos = self.objects[obj].get_configuration()
             self.objects[obj].set_configuration(obj_pose.pose)
             if obj == 'cabinet':
-                knob = 'top_drawer_knob'
+                knob = 'bottom_drawer_knob'
             obj_pose = vobj.Pose(obj, self.objects[obj].link_from_name(knob).get_link_tform(True))
             self.objects[obj].set_configuration(old_pos)
         grasp_in_world = numpy.dot(obj_pose.pose, grasp.pose)

@@ -29,7 +29,7 @@
 
     (:stream sampleGraspPose
         :inputs (?o ?p)
-        :domain (and (Placeable ?o) (ObjPose ?o ?p))
+        :domain (and (Graspable ?o) (ObjPose ?o ?p))
         :outputs (?g)
         :certified (Grasp ?o ?g)
     )

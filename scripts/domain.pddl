@@ -33,6 +33,7 @@
         (Open_Amount ?o ?a)
         (OpenAll ?o)
         (Placeable ?o)
+	(Graspable ?o)
     )
 
     (:action move_free
@@ -110,7 +111,7 @@
                           (ObjPose ?o ?p)
                           (AtPose ?o ?p)
                           (Grasp ?o ?g)
-                          (Placeable ?o)
+                          (Graspable ?o)
                           (not (UnSafeHolding ?t ?o ?g))
                           )
         :effect (and (Holding ?o) (not (HandEmpty)) (not (AtPose ?o ?p)) (AtGrasp ?o ?g) (CanMove))

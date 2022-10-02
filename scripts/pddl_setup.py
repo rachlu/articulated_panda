@@ -72,6 +72,7 @@ def pddlstream_from_tamp(robot, movable, tamp, panda=None):
                      ])
         if obj not in ['door', 'cabinet']:
             init.extend([('Placeable', obj)])
+        init.extend([('Graspable', obj)])
     # init += ('ObjPoses', objPoses)
     stream_map = {
         'get_trajectory': from_gen_fn(tamp.calculate_path),
