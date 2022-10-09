@@ -41,7 +41,7 @@ def pddlstream_from_tamp(robot, movable, tamp, panda=None):
         ('OpenAllAmount', 'door', math.pi/10),
         ('OpenAllAmount', 'cabinet', 0.25)
     ]
-    goal = (('Open', 'cabinet', 0))
+    goal = (('Open', 'cabinet', 0.1))
     # goal = (('Holding', 'cabinet'))
     # goal = (('Open', 'cabinet', 0.25))
     # goal = ('and', ('OpenAll', 'cabinet'), ('Open', 'door', math.pi/5))

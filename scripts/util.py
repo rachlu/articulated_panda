@@ -16,7 +16,7 @@ def execute_path(path, objects, arm):
             if action.args[0] == 'door':
                 action.args[-1][0].execute(arm, objects[action.args[0]], None, increment)
             else:
-                action.args[-1][0].execute(arm, objects[action.args[0]], 'top', increment)
+                action.args[-1][0].execute(arm, objects[action.args[0]], 'bottom', increment)
             for cmd in action.args[-1][1:]:
                 cmd.execute(arm)
             continue
@@ -83,7 +83,7 @@ def get_increment(obj, total):
         if not float(sample).is_integer():
             sample = math.ceil(sample)
             increment = total/sample
-    increment = (increment, ) if obj == 'door' else (increment, 0)
+    increment = (increment, ) if obj == 'door' else (0, increment)
     return increment, int(sample)
 
 

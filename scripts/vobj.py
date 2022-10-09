@@ -30,6 +30,7 @@ class TrajPath:
             for q in self.path:
                 self.robot.arm.SetJointValues(q)
                 if holding:
+                    print(position)
                     if location is None:
                         obj.set_configuration(position)
                     elif location.upper() == 'TOP':

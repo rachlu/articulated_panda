@@ -63,8 +63,8 @@ if __name__ == '__main__':
     #         break
     # input('execute')
     # traj[0][0].execute(objects[obj], None, math.pi/20)
-    a = numpy.array([[0, 1, 0], [1, 1, 1]])
-    b = numpy.array([[1, 1, 1], [2, 2, 2]])
+    #a = numpy.array([[0, 1, 0], [1, 1, 1]])
+    #b = numpy.array([[1, 1, 1], [2, 2, 2]])
     # print(numpy.dot(a, b))
     IPython.embed()
     pb_robot.utils.wait_for_user()
