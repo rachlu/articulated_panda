@@ -56,10 +56,12 @@ class HandCmd:
         if self.status is not None:
             if self.status.upper() == 'OPEN':
                 self.robot.arm.hand.Open()
+                input("Open")
                 if arm:
                     arm.hand.open()
             else:
                 self.robot.arm.hand.Close()
+                input("Close")
                 if arm:
                     arm.hand.grasp(0.02, 40, epsilon_inner=0.1, epsilon_outer=0.1)
             return
