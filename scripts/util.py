@@ -9,16 +9,12 @@ import time
 def execute_path(path, objects, arm):
     for action in path:
         if action.name == 'open_obj':
-            for cmd in action.args[-2]:
-                cmd.execute(arm)
-                time.sleep(1)
-            increment = action.args[7]
-            if action.args[0] == 'door':
-                action.args[-1][0].execute(arm, objects[action.args[0]], None, increment)
-            else:
-                action.args[-1][0].execute(arm, objects[action.args[0]], 'bottom', increment)
-            for cmd in action.args[-1][1:]:
-                cmd.execute(arm)
+            increment = action.args[-3]
+            for cmd in action.args[-1]:
+                if action.args[0] == 'door':
+                    cmd.execute(arm, objects[action.args[0]], None, increment)
+                else:
+                    cmd.execute(arm, objects[action.args[0]], action.args[4], increment)
             continue
         for cmd in action.args[-1]:
             cmd.execute(arm)

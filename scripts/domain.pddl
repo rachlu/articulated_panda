@@ -105,9 +105,9 @@
 
     (:action open_obj
         :parameters (?o ?p1 ?p2 ?g ?k ?q1 ?q2 ?a ?i ?s ?t)
-        :precondition (and (Holding_Openable ?o ?k)
-                                (Openable ?o ?k)
+        :precondition (and (Openable ?o ?k)
                                 (Grasp ?o ?g)
+				(AtGrasp ?o ?g)
                                 (ObjPose ?o ?p1)
                                 (ObjPose ?o ?p2)
                                 (AtPose ?o ?p1)
@@ -117,8 +117,9 @@
                                 (Open_Traj ?o ?g ?q1 ?q2 ?a ?i ?s ?t)
                                 (Traj ?t)
                                 (Traj_Holding ?t ?o ?g)
-                                (not (UnSafeHolding ?t ?o ?g))
-                                (not (InCollision ?o ?p2)))
+                                ;(not (UnSafeHolding ?t ?o ?g))
+                                ;(not (InCollision ?o ?p2))
+				)
         :effect (and (not (AtPose ?o ?p1)) (AtPose ?o ?p2) (not (AtConf ?q1)) (AtConf ?q2) (CanMove) (Open ?o ?a))
     )
 
@@ -135,6 +136,19 @@
                           (not (UnSafeHolding ?t ?o ?g))
                           )
         :effect (and (Holding ?o) (not (HandEmpty)) (not (AtPose ?o ?p)) (AtGrasp ?o ?g) (CanMove))
+    )
+
+    (:action hold
+	:parameters (?o ?p ?g ?q ?t)
+	:precondition (and (HandEmpty)
+			  (Conf ?q)
+			  (AtConf ?q)
+			  (Kin ?o ?p ?g ?q ?t)
+			  (ObjPose ?o ?p)
+			  (AtPose ?o ?p)
+			  (Grasp ?o ?g)
+			  (Openable ?o ?k))
+	:effect (and (Holding ?o) (not (HandEmpty)) (AtGrasp ?o ?g) (CanMove))
     )
 
     (:action place

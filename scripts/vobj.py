@@ -52,7 +52,7 @@ class HandCmd:
         self.grasp = grasp
         self.status = status
 
-    def execute(self, arm):
+    def execute(self, arm, *args):
         if self.status is not None:
             if self.status.upper() == 'OPEN':
                 self.robot.arm.hand.Open()
