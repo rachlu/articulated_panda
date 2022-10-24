@@ -20,16 +20,29 @@
         :certified (and (Trajectory_Holding_Upright ?o ?g ?q1 ?q2 ?t) (Traj_Holding ?t ?o ?g))
     )
 
-    (:stream open_traj
-        :inputs (?o ?q1 ?p1 ?a)
-        :domain (and (Conf ?q1) (Openable ?o) (ObjPose ?o ?p1) (Open_Amount ?o ?a))
-        :outputs (?t1 ?t2 ?q2 ?p2 ?g ?i ?s)
-        :certified (and (Open_Traj ?o ?g ?q1 ?q2 ?a ?i ?s ?t1 ?t2) (Traj_Holding ?t2 ?o ?g) (Traj ?t1) (ObjPose ?o ?p2) (Conf ?q2) (Grasp ?o ?g))
+    ;(:stream open_traj
+    ;    :inputs (?o ?q1 ?p1 ?a)
+    ;    :domain (and (Conf ?q1) (Openable ?o) (ObjPose ?o ?p1) (Open_Amount ?o ?a))
+    ;    :outputs (?t1 ?t2 ?q2 ?p2 ?g ?i ?s)
+    ;    :certified (and (Open_Traj ?o ?g ?q1 ?q2 ?a ?i ?s ?t1 ?t2) (Traj_Holding ?t2 ?o ?g) (Traj ?t1) (ObjPose ?o ?p2) (Conf ?q2) (Grasp ?o ?g))
+    ;)
+
+    ;(:stream open_traj
+    ;    :inputs (?o ?q1 ?p1 ?a)
+    ;    :domain (and (Conf ?q1) (Openable ?o) (ObjPose ?o ?p1) (Open_Amount ?o ?a))
+    ;    :outputs (and (?t1 ?q2))
+    ;)
+
+    (:stream sampleGraspOpenable
+        :inputs (?o ?p ?k)
+        :domain (and (Openable ?o ?k) (ObjPose ?o ?p))
+        :outputs (?g)
+        :certified (Grasp ?o ?g)
     )
 
     (:stream sampleGraspPose
         :inputs (?o ?p)
-        :domain (and (Graspable ?o) (ObjPose ?o ?p))
+        :domain (and (Placeable ?o) (ObjPose ?o ?p))
         :outputs (?g)
         :certified (Grasp ?o ?g)
     )
@@ -37,6 +50,13 @@
     (:stream inverse-kinematics
         :inputs (?o ?p ?g)
         :domain (and (ObjPose ?o ?p) (Placeable ?o) (Grasp ?o ?g))
+        :outputs (?q ?t)
+        :certified (and (Conf ?q) (Kin ?o ?p ?g ?q ?t) (Traj ?t))
+    )
+
+    (:stream inverse-nonplaceable-kinematics
+        :inputs (?o ?p ?g ?k)
+        :domain (and (ObjPose ?o ?p) (Openable ?o ?k) (Grasp ?o ?g))
         :outputs (?q ?t)
         :certified (and (Conf ?q) (Kin ?o ?p ?g ?q ?t) (Traj ?t))
     )

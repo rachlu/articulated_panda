@@ -10,14 +10,14 @@
       <!-- visual origin is defined w.r.t. link local coordinate system -->
       <origin xyz="0 0 0.25" rpy="0 0 0" />
       <geometry>
-        <box size="0.3 0.3 0.5" />
+        <box size="0.3 0.3 0.525" />
       </geometry>
     </visual>
     <collision>
       <!-- collision origin is defined w.r.t. link local coordinate system -->
       <origin xyz="0 0 0.25" rpy="0 0 0 " />
       <geometry>
-        <box size="0.3 0.3 0.5" />
+        <box size="0.3 0.3 0.525" />
       </geometry>
     </collision>
   </link>

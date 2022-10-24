@@ -32,8 +32,9 @@ def pddlstream_from_tamp(robot, movable, tamp, panda=None):
         ('Region', 'bowl_region'),
         ('Region', 'knife_region'),
         ('UprightObj', 'bowl'),
-        ('Openable', 'door'),
-        ('Openable', 'cabinet'),
+        ('Openable', 'door', 'knob'),
+        ('Openable', 'cabinet', 'top_drawer_knob'),
+        ('Openable', 'cabinet', 'bottom_drawer_knob'),
         ('Open_Amount', 'door', math.pi/5),
         ('Open_Amount', 'cabinet', 0.1),
         ('Open_Amount', 'cabinet', 0),
@@ -41,8 +42,8 @@ def pddlstream_from_tamp(robot, movable, tamp, panda=None):
         ('OpenAllAmount', 'door', math.pi/10),
         ('OpenAllAmount', 'cabinet', 0.25)
     ]
-    goal = (('Open', 'cabinet', 0.1))
-    # goal = (('Holding', 'cabinet'))
+    # goal = (('Open', 'cabinet', 0.1))
+    goal = (('Holding_Openable', 'cabinet', 'top_drawer_knob'))
     # goal = (('Open', 'cabinet', 0.25))
     # goal = ('and', ('OpenAll', 'cabinet'), ('Open', 'door', math.pi/5))
     # goal = ('and', ('OpenAll', 'door'), ('Open', 'cabinet', 0.05))
@@ -65,15 +66,12 @@ def pddlstream_from_tamp(robot, movable, tamp, panda=None):
         if obj in ['door', 'cabinet']:
             position = vobj.Pose(robot, movable[obj].get_configuration())
         else:
+            init.extend([('Placeable', obj)])
             position = vobj.Pose(robot, movable[obj].get_transform())
-        # objPoses[obj] = position
         init.extend([('AtPose', obj, position),
                      ('ObjPose', obj, position)
                      ])
-        if obj not in ['door', 'cabinet']:
-            init.extend([('Placeable', obj)])
         init.extend([('Graspable', obj)])
-    # init += ('ObjPoses', objPoses)
     stream_map = {
         'get_trajectory': from_gen_fn(tamp.calculate_path),
         'sampleGraspPose': from_gen_fn(tamp.sampleGrabPose),
@@ -85,7 +83,9 @@ def pddlstream_from_tamp(robot, movable, tamp, panda=None):
         'sampleTable': from_gen_fn(util.sampleTable),
         'cfree': from_test(tamp.cfreeTraj_Check),
         'cfreeholding': from_test(tamp.cfreeTrajHolding_Check),
-        'open_traj': from_gen_fn(tamp.get_open_traj)
+        #'open_traj': from_gen_fn(tamp.get_open_traj),
+        'inverse-nonplaceable-kinematics': from_gen_fn(tamp.compute_nonplaceable_IK),
+        'sampleGraspOpenable': from_gen_fn(tamp.sample_grasp_openable)
     }
 
     return domain_pddl, constant_map, stream_pddl, stream_map, init, goal
