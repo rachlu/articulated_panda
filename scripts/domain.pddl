@@ -31,7 +31,7 @@
         (Open_Traj ?o ?g ?q1 ?q2 ?a ?i ?s ?t1 ?t2)
         (OpenAllAmount ?o ?a)
         (Open_Amount ?o ?a)
-        (OpenAll ?o)
+        (OpenAll ?o ?k)
         (Placeable ?o)
 	    (Graspable ?o)
 	    (Holding_Openable ?o ?k)
@@ -150,7 +150,11 @@
         (exists (?o2 ?p) (and (Grasp ?o ?g) (ObjPose ?o2 ?p) (AtGrasp ?o ?g) (AtPose ?o2 ?p) (not (CFreeHolding ?t ?o ?g ?o2 ?p))))
     )
 
-    (:derived (OpenAll ?o)
-        (exists (?a) (and (Openable ?o) (Open ?o ?a) (OpenAllAmount ?o ?a)))
+    (:derived (OpenAll ?o ?k)
+        (exists (?a) (and (Openable ?o ?k) (Open ?o ?a) (OpenAllAmount ?o ?a)))
+    )
+    
+    (:derived (Holding_Openable ?o ?k)
+	(exists (?g) (and (Openable ?o ?k) (Grasp ?o ?g) (AtGrasp ?o ?g)))
     )
 )
