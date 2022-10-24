@@ -53,36 +53,16 @@ class TAMP_Functions:
         self.objects[obj].set_transform(original_position)
         return path
 
-    def get_open_traj(self, obj, start_q, obj_pose, total):
+    def get_open_traj(self, obj, obj_pose, start_q, relative_grasp, total, knob):
         increment, sample = util.get_increment(obj, total)
         for _ in range(5):
-            if obj == 'cabinet':
-                knob = 'bottom_drawer_knob'
-            else:
-                knob = 'knob'
-            relative_grasp = self.sampleGrabPose(obj, obj_pose, knob)[0]
-            if relative_grasp is None:
-                continue
-            relative_grasp = relative_grasp[0]
-            result = self.computeIK(obj, obj_pose, relative_grasp)[0]
-
-            if result is None:
-                print('result None')
-                continue
-            # end_q is up conf
-            end_q, hand_traj = result
-            t1 = self.calculate_path(start_q, end_q)[0]
-            # Change to grasp conf
-            end_q = vobj.BodyConf(self.robot, hand_traj[0].path[1])
-            hand_traj[1].set_status('Close')
-            t2 = self.open_class.open_obj(obj, end_q.conf, relative_grasp.pose, obj_pose.pose, increment, sample, knob)
-            if t1 is not None and t2 is not None:
-                t1 = t1[0]
-                t1.extend(hand_traj[:2])
-                cmds = [t1, t2[0], t2[1], t2[2], relative_grasp, increment, sample]
+            t2 = self.open_class.open_obj(obj, start_q.conf, relative_grasp.pose, obj_pose.pose, increment, sample, knob)
+            if t2 is not None:
+                # t2 = cmds, end_conf, end_pose
+                cmds = [t2[0], t2[1], t2[2], increment, sample]
                 return (cmds,)
         return (None,)
-
+    '''
     def get_open_traj(self, obj, start_q, obj_pose, total):
         increment, sample = util.get_increment(obj, total)
         for _ in range(5):
@@ -112,7 +92,7 @@ class TAMP_Functions:
                 cmds = [t1, t2[0], t2[1], t2[2], relative_grasp, increment, sample]
                 return (cmds, )
         return (None, )
-
+    '''
     def sample_grasp_openable(self, obj, obj_pose, knob):
         old_pos = self.objects[obj].get_configuration()
         self.objects[obj].set_configuration(obj_pose.pose)

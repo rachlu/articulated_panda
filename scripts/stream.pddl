@@ -27,11 +27,12 @@
     ;    :certified (and (Open_Traj ?o ?g ?q1 ?q2 ?a ?i ?s ?t1 ?t2) (Traj_Holding ?t2 ?o ?g) (Traj ?t1) (ObjPose ?o ?p2) (Conf ?q2) (Grasp ?o ?g))
     ;)
 
-    ;(:stream open_traj
-    ;    :inputs (?o ?q1 ?p1 ?a)
-    ;    :domain (and (Conf ?q1) (Openable ?o) (ObjPose ?o ?p1) (Open_Amount ?o ?a))
-    ;    :outputs (and (?t1 ?q2))
-    ;)
+    (:stream open_traj
+        :inputs (?o ?p1 ?q1 ?g ?a ?k)
+        :domain (and (Conf ?q1) (Openable ?o ?k) (Grasp ?o ?g) (ObjPose ?o ?p1) (Open_Amount ?o ?a))
+        :outputs (?t ?q2 ?p2 ?i ?s)
+        :certified (and (Open_Traj ?o ?g ?q1 ?q2 ?a ?i ?s ?t) (Traj_Holding ?t ?o ?g) (Traj ?t) (ObjPose ?o ?p2) (Conf ?q2))
+    )
 
     (:stream sampleGraspOpenable
         :inputs (?o ?p ?k)
