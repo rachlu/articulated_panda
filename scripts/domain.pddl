@@ -33,9 +33,12 @@
         (OpenAllAmount ?o ?a)
         (Open_Amount ?o ?a)
         (OpenAll ?o ?k)
+        (Graspopenable ?o ?g ?k)
+        (AtGraspOpenable ?o ?g ?k)
         (Placeable ?o)
 	    (Graspable ?o)
 	    (Holding_Openable ?o ?k)
+	    (OpenIncrement ?a ?i ?s)
     )
 
     (:action move_free
@@ -106,8 +109,9 @@
     (:action open_obj
         :parameters (?o ?p1 ?p2 ?g ?k ?q1 ?q2 ?a ?i ?s ?t)
         :precondition (and (Openable ?o ?k)
+                                ;(Holding_Openable ?o ?k)
                                 (Grasp ?o ?g)
-				(AtGrasp ?o ?g)
+				(AtGraspOpenable ?o ?g ?k)
                                 (ObjPose ?o ?p1)
                                 (ObjPose ?o ?p2)
                                 (AtPose ?o ?p1)
@@ -139,16 +143,16 @@
     )
 
     (:action hold
-	:parameters (?o ?p ?g ?q ?t)
+	:parameters (?o ?p ?g ?q ?k ?t)
 	:precondition (and (HandEmpty)
 			  (Conf ?q)
 			  (AtConf ?q)
 			  (Kin ?o ?p ?g ?q ?t)
 			  (ObjPose ?o ?p)
 			  (AtPose ?o ?p)
-			  (Grasp ?o ?g)
+			  (GraspOpenable ?o ?g ?k)
 			  (Openable ?o ?k))
-	:effect (and (Holding ?o) (not (HandEmpty)) (AtGrasp ?o ?g) (CanMove))
+	:effect (and (Holding ?o) (not (HandEmpty)) (AtGraspOpenable ?o ?g ?k) (CanMove))
     )
 
     (:action place
@@ -189,6 +193,6 @@
     )
     
     (:derived (Holding_Openable ?o ?k)
-	(exists (?g) (and (Openable ?o ?k) (Grasp ?o ?g) (AtGrasp ?o ?g)))
+	(exists (?g) (and (Openable ?o ?k) (GraspOpenable ?o ?g ?k) (AtGraspOpenable ?o ?g ?k)))
     )
 )

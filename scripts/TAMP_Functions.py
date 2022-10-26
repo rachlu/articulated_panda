@@ -53,8 +53,10 @@ class TAMP_Functions:
         self.objects[obj].set_transform(original_position)
         return path
 
-    def get_open_traj(self, obj, obj_pose, start_q, relative_grasp, total, knob):
-        increment, sample = util.get_increment(obj, total)
+    def increment(self, obj, total, knob):
+        return (util.get_increment(obj, total), )
+
+    def get_open_traj(self, obj, obj_pose, start_q, relative_grasp, total, knob, increment, sample):
         for _ in range(5):
             t2 = self.open_class.open_obj(obj, start_q.conf, relative_grasp.pose, obj_pose.pose, increment, sample, knob)
             if t2 is not None:
@@ -62,6 +64,8 @@ class TAMP_Functions:
                 cmds = [t2[0], t2[1], t2[2], increment, sample]
                 return (cmds,)
         return (None,)
+
+
     '''
     def get_open_traj(self, obj, start_q, obj_pose, total):
         increment, sample = util.get_increment(obj, total)

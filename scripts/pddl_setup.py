@@ -85,7 +85,8 @@ def pddlstream_from_tamp(robot, movable, tamp, panda=None):
         'cfreeholding': from_test(tamp.cfreeTrajHolding_Check),
         'open_traj': from_gen_fn(tamp.get_open_traj),
         'inverse-nonplaceable-kinematics': from_gen_fn(tamp.compute_nonplaceable_IK),
-        'sampleGraspOpenable': from_gen_fn(tamp.sample_grasp_openable)
+        'sampleGraspOpenable': from_gen_fn(tamp.sample_grasp_openable),
+        'sampleOpenableConf': from_gen_fn(tamp.increment)
     }
 
     return domain_pddl, constant_map, stream_pddl, stream_map, init, goal
