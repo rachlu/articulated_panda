@@ -29,8 +29,8 @@
 
     (:stream open_traj
         :inputs (?o ?p1 ?q1 ?g ?a ?k ?i ?s)
-        :domain (and (OpenIncrement ?a ?i ?s) (Conf ?q1) (Openable ?o ?k) (Grasp ?o ?g) (ObjPose ?o ?p1) (Open_Amount ?o ?a))
-        :outputs (?t ?q2 ?p2 ?i ?s)
+        :domain (and (OpenIncrement ?a ?i ?s) (Conf ?q1) (Openable ?o ?k) (GraspOpenable ?o ?g ?k) (ObjPose ?o ?p1) (Open_Amount ?o ?a))
+        :outputs (?t ?q2 ?p2)
         :certified (and (Open_Traj ?o ?g ?q1 ?q2 ?a ?i ?s ?t) (Traj_Holding ?t ?o ?g) (Traj ?t) (ObjPose ?o ?p2) (Conf ?q2))
     )
 
@@ -57,9 +57,9 @@
 
     (:stream inverse-nonplaceable-kinematics
         :inputs (?o ?p ?g ?k)
-        :domain (and (ObjPose ?o ?p) (Openable ?o ?k) (Grasp ?o ?g))
-        :outputs (?q ?t)
-        :certified (and (Conf ?q) (Kin ?o ?p ?g ?q ?t) (Traj ?t))
+        :domain (and (ObjPose ?o ?p) (Openable ?o ?k) (GraspOpenable ?o ?g ?k))
+        :outputs (?q1 ?q2 ?t)
+        :certified (and (Conf ?q1) (Conf ?q2) (KinOpen ?o ?p ?g ?q1 ?q2 ?t) (Traj ?t))
     )
 
     (:stream samplePlacePose

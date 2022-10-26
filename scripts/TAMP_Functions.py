@@ -54,14 +54,18 @@ class TAMP_Functions:
         return path
 
     def increment(self, obj, total, knob):
-        return (util.get_increment(obj, total), )
+        if 'top' in knob:
+            pose = vobj.Pose(obj, (total, 0))
+        else:
+            pose = vobj.Pose(obj, (0, total))
+        return ([*util.get_increment(obj, total), pose], )
 
     def get_open_traj(self, obj, obj_pose, start_q, relative_grasp, total, knob, increment, sample):
         for _ in range(5):
             t2 = self.open_class.open_obj(obj, start_q.conf, relative_grasp.pose, obj_pose.pose, increment, sample, knob)
             if t2 is not None:
                 # t2 = cmds, end_conf, end_pose
-                cmds = [t2[0], t2[1], t2[2], increment, sample]
+                cmds = [t2[0], t2[1], t2[2]]
                 return (cmds,)
         return (None,)
 
@@ -145,10 +149,11 @@ class TAMP_Functions:
             return (None,)
         translated_q = numpy.array(translated_q)
         q_g = numpy.array(q_g)
-        q = vobj.BodyConf(self.robot, translated_q)
+        q1 = vobj.BodyConf(self.robot, translated_q)
+        q2 = vobj.BodyConf(self.robot, q_g)
         traj = vobj.TrajPath(self.robot, [translated_q, q_g])
         hand_cmd = vobj.HandCmd(self.robot, self.objects[obj], grasp.pose)
-        cmd = [q, [traj, hand_cmd]]
+        cmd = [q1, q2, [traj, hand_cmd]]
         return (cmd,)
 
     def computeIK(self, obj, obj_pose, grasp):

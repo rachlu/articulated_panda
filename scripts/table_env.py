@@ -122,5 +122,5 @@ def execute():
     # objects = {'fork': fork, 'spoon': spoon, 'knife': knife, 'bowl': bowl}
 
     # objects = {'door': door, 'cabinet': cabinet, 'spring':spring}
-    objects = {'cabinet': cabinet, 'spring':spring}
+    objects = {'cabinet': cabinet}
     return objects, openable, floor, robot
