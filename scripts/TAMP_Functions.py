@@ -54,7 +54,7 @@ class TAMP_Functions:
         return path
 
     def increment(self, obj, knob):
-        random_conf = random.range()
+        random_conf = random.uniform(0, 1)
         if knob == 'knob':
             random_conf *= 180
             pose = vobj.Pose((random_conf,))
@@ -70,7 +70,7 @@ class TAMP_Functions:
             t2 = self.open_class.open_obj(obj, start_q.conf, relative_grasp.pose, obj_pose.pose, increment, sample, knob)
             if t2 is not None:
                 # t2 = cmds, end_conf, end_pose
-                cmds = [t2[0], t2[1], t2[2]]
+                cmds = [t2[0], t2[1], t2[2], increment, sample]
                 return (cmds,)
         return (None,)
 
