@@ -39,7 +39,6 @@
         (Placeable ?o)
 	    (Graspable ?o)
 	    (Holding_Openable ?o ?k)
-	    (OpenIncrement ?a ?i ?s)
     )
 
     (:action move_free
@@ -110,9 +109,8 @@
     (:action open_obj
         :parameters (?o ?p1 ?p2 ?g ?k ?q1 ?q2 ?a ?i ?s ?t)
         :precondition (and (Openable ?o ?k)
-                            (Holding_Openable ?o ?k)
-                            (OpenIncrement ?a ?i ?s)
-				            (GraspOpenable ?o ?g ?k)
+			    (GraspOpenable ?o ?g ?k)
+			    (AtGraspOpenable ?o ?g ?k)
                             (ObjPose ?o ?p1)
                             (ObjPose ?o ?p2)
                             (AtPose ?o ?p1)

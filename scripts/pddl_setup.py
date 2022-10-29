@@ -40,7 +40,8 @@ def pddlstream_from_tamp(robot, movable, tamp, panda=None):
         ('Open_Amount', 'cabinet', 0),
         ('Open_Amount', 'cabinet', 0.25),
         ('OpenAllAmount', 'door', math.pi/10),
-        ('OpenAllAmount', 'cabinet', 0.25)
+        ('OpenAllAmount', 'cabinet', 0.25),
+        ('OpenIncrement', 0.1, 0.02, 5)
     ]
     goal = (('Open', 'cabinet', 0.1))
     # goal = ('and', ('Holding_Openable', 'cabinet', 'top_drawer_knob'), ('AtConf', conf))
