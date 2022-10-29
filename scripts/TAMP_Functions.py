@@ -53,14 +53,19 @@ class TAMP_Functions:
         self.objects[obj].set_transform(original_position)
         return path
 
-    def increment(self, obj, total, knob):
-        if 'top' in knob:
-            pose = vobj.Pose(obj, (total, 0))
+    def increment(self, obj, knob):
+        random_conf = random.range()
+        if knob == 'knob':
+            random_conf *= 180
+            pose = vobj.Pose((random_conf,))
+        elif 'top' in knob:
+            pose = vobj.Pose(obj, (random_conf, 0))
         else:
-            pose = vobj.Pose(obj, (0, total))
-        return ([*util.get_increment(obj, total), pose], )
+            pose = vobj.Pose(obj, (0, random_conf))
+        return ([random_conf, pose], )
 
-    def get_open_traj(self, obj, obj_pose, start_q, relative_grasp, total, knob, increment, sample):
+    def get_open_traj(self, obj, obj_pose, start_q, relative_grasp, total, knob):
+        increment, sample = util.get_increment(obj, total)
         for _ in range(5):
             t2 = self.open_class.open_obj(obj, start_q.conf, relative_grasp.pose, obj_pose.pose, increment, sample, knob)
             if t2 is not None:
