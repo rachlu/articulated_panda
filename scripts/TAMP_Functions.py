@@ -74,7 +74,10 @@ class TAMP_Functions:
         end_effector = self.robot.arm.GetEETransform()
         self.robot.arm.SetJointValues(robot_old_conf)
         self.objects[obj].set_configuration(old_conf)
-        if util.getDistance(knob_pose, end_effector) > 0.2:
+        distance = 0
+        for i in range(len(knob_pose)):
+            distance += util.getDistance(knob_pose[i], end_effector[i])
+        if distance > 0.2:
             return (None, )
 
         increment, sample = util.get_increment(obj, total)

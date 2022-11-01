@@ -10,8 +10,8 @@ if __name__ == '__main__':
     objects, openable, floor, robot = table_env.execute()
     robot.arm.hand.Open()
     grasp = Grasp(robot, objects)
-    rrt = RRT(robot, constraint=rotation_constraint)
-    place = Place(robot, objects, floor)
+    rrt = RRT(robot, objects, constraint=rotation_constraint)
+    #place = Place(robot, objects, floor)
 
     IPython.embed()
     pb_robot.utils.wait_for_user()
