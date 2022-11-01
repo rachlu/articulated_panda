@@ -109,6 +109,15 @@
         :effect (and (not (AtObjConf ?o ?p1)) (not (Holding ?o)) (HandEmpty) (AtObjConf ?o ?p2) (not (AtConf ?q1)) (AtConf ?q2) (CanMove) (Open ?o ?k ?a) (not (AtGraspOpenable ?o ?g ?k)))
     )
 
+    (:action open_obj
+        :parameters(?o ?p1 ?p2 ?g ?k)
+        :precondition (and (Openable ?o ?k)
+                            (GraspOpenable ?o ?g ?k)
+                            (AtGraspOpenable ?o ?g ?k)
+                            (not (HandEmpty)))
+        :effect (and (not (Holding ?o)) (Open ?o ?k ?a))
+    )
+
     (:action grab
         :parameters (?o ?p ?g ?q ?t)
         :precondition (and (HandEmpty)
