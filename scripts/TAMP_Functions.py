@@ -65,15 +65,26 @@ class TAMP_Functions:
         return ([random_conf, pose], )
 
     def get_open_traj(self, obj, obj_pose, start_q, relative_grasp, total, knob):
-        # Add check to see if start_q is valid
+        # Check is start_q is a valid robot start configuration for opening the cabinet.
+        old_conf = self.objects[obj].get_configuration()
+        self.objects[obj].set_configuration(obj_pose.pose)
+        knob_pose = self.objects[obj].link_from_name(knob).get_link_tform(True)
+        robot_old_conf = self.robot.arm.GetJointValues()
+        self.robot.arm.SetJointValues(start_q.conf)
+        end_effector = self.robot.arm.GetEETransform()
+        self.robot.arm.SetJointValues(robot_old_conf)
+        self.objects[obj].set_configuration(old_conf)
+        if util.getDistance(knob_pose, end_effector) > 0.2:
+            return (None, )
+
         increment, sample = util.get_increment(obj, total)
         for _ in range(5):
             t2 = self.open_class.open_obj(obj, start_q.conf, relative_grasp.pose, obj_pose.pose, increment, sample, knob)
             if t2 is not None:
                 # t2 = cmds, end_conf, end_pose
                 cmds = [t2[0], t2[1], t2[2], increment, sample]
-                return (cmds,)
-        return (None,)
+                return (cmds, )
+        return (None, )
 
 
     '''
