@@ -65,6 +65,7 @@ class TAMP_Functions:
         return ([random_conf, pose], )
 
     def get_open_traj(self, obj, obj_pose, start_q, relative_grasp, total, knob):
+        # Add check to see if start_q is valid
         increment, sample = util.get_increment(obj, total)
         for _ in range(5):
             t2 = self.open_class.open_obj(obj, start_q.conf, relative_grasp.pose, obj_pose.pose, increment, sample, knob)

@@ -43,9 +43,9 @@ def pddlstream_from_tamp(robot, movable, tamp, panda=None):
         ('OpenAllAmount', 'cabinet', 0.25),
         ('OpenIncrement', 0.1, 0.02, 5)
     ]
-    goal = (('Open', 'cabinet', 0.1))
+    #goal = (('Open', 'cabinet', 'top_drawer_knob', 0.1))
     # goal = ('and', ('Holding_Openable', 'cabinet', 'top_drawer_knob'), ('AtConf', conf))
-    #goal = (('Holding_Openable', 'cabinet', 'bottom_drawer_knob'))
+    goal = (('Holding_Openable', 'cabinet', 'bottom_drawer_knob'))
     # goal = (('Open', 'cabinet', 0.25))
     # goal = ('and', ('OpenAll', 'cabinet'), ('Open', 'door', math.pi/5))
     # goal = ('and', ('OpenAll', 'door'), ('Open', 'cabinet', 0.05))
@@ -67,12 +67,15 @@ def pddlstream_from_tamp(robot, movable, tamp, panda=None):
     for obj in movable:
         if obj in ['door', 'cabinet']:
             position = vobj.Pose(robot, movable[obj].get_configuration())
+            init.extend([('AtObjConf', obj, position),
+                         ('ObjConf', obj, position)
+                         ])
         else:
             init.extend([('Placeable', obj)])
             position = vobj.Pose(robot, movable[obj].get_transform())
-        init.extend([('AtPose', obj, position),
-                     ('ObjPose', obj, position)
-                     ])
+            init.extend([('AtPose', obj, position),
+                         ('ObjPose', obj, position)
+                         ])
         init.extend([('Graspable', obj)])
     stream_map = {
         'get_trajectory': from_gen_fn(tamp.calculate_path),

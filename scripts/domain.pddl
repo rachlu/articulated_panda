@@ -5,6 +5,8 @@
         (AtConf ?q)
         (ObjPose ?o ?p)
         (AtPose ?o ?p)
+        (ObjConf ?o ?p)
+        (AtObjConf ?o ?p)
         (Grasp ?o ?g)
         (On ?o ?r)
         (Kin ?o ?p ?g ?q ?t)
@@ -28,7 +30,7 @@
         (Safe ?o ?p ?o2 ?p2)
         (CanMove)
         (Openable ?o ?k)
-        (Open ?o ?a)
+        (Open ?o ?k ?a)
         ;(Open_Traj ?o ?g ?q1 ?q2 ?a ?i ?s ?t1 ?t2)
         (Open_Traj ?o ?g ?q1 ?q2 ?a ?i ?s ?t)
         (OpenAllAmount ?o ?a)
@@ -113,9 +115,9 @@
 			    (AtGraspOpenable ?o ?g ?k)
 		     	    (Holding ?o)
 			    (not (HandEmpty))
-                            (ObjPose ?o ?p1)
-                            (ObjPose ?o ?p2)
-                            (AtPose ?o ?p1)
+                            (ObjConf ?o ?p1)
+                            (ObjConf ?o ?p2)
+                            (AtObjConf ?o ?p1)
                             (Conf ?q1)
                             (Conf ?q2)
                             (AtConf ?q1)
@@ -125,7 +127,7 @@
                             ;(not (UnSafeHolding ?t ?o ?g))
                             ;(not (InCollision ?o ?p2))
 				)
-        :effect (and (not (AtPose ?o ?p1)) (not (Holding ?o)) (HandEmpty) (AtPose ?o ?p2) (not (AtConf ?q1)) (AtConf ?q2) (CanMove) (Open ?o ?a) (not (AtGraspOpenable ?o ?g ?k)))
+        :effect (and (not (AtObjConf ?o ?p1)) (not (Holding ?o)) (HandEmpty) (AtObjConf ?o ?p2) (not (AtConf ?q1)) (AtConf ?q2) (CanMove) (Open ?o ?k ?a) (not (AtGraspOpenable ?o ?g ?k)))
     )
 
     (:action grab
@@ -150,11 +152,11 @@
 			  (Conf ?q2)	
 			  (AtConf ?q1)
 			  (KinOpen ?o ?p ?g ?q1 ?q2 ?t)
-			  (ObjPose ?o ?p)
-			  (AtPose ?o ?p)
+			  (ObjConf ?o ?p)
+			  (AtObjConf ?o ?p)
 			  (GraspOpenable ?o ?g ?k)
 			  (Openable ?o ?k))
-	:effect (and (not (AtConf ?q1)) (AtConf ?q2) (Holding ?o) (not (HandEmpty)) (AtGraspOpenable ?o ?g ?k) (CanMove))
+	:effect (and (not (AtConf ?q1)) (AtConf ?q2) (Holding ?o) (not (HandEmpty)) (AtGraspOpenable ?o ?g ?k))
     )
 
     (:action place
@@ -191,7 +193,7 @@
     )
 
     (:derived (OpenAll ?o ?k)
-        (exists (?a) (and (Openable ?o ?k) (Open ?o ?a) (OpenAllAmount ?o ?a)))
+        (exists (?a) (and (Openable ?o ?k) (Open ?o ?k ?a) (OpenAllAmount ?o ?a)))
     )
     
     (:derived (Holding_Openable ?o ?k)
