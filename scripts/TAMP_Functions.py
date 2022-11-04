@@ -92,7 +92,7 @@ class TAMP_Functions:
             total = end_conf.pose[0]
         else:
             total = end_conf.pose[1]
-        increment, sample = util.get_increment(obj, total)
+        increment, sample = util.get_increment(obj, total, knob)
         for _ in range(5):
             t2 = self.open_class.open_obj(obj, start_q.conf, relative_grasp.pose, obj_conf.pose, increment, sample, knob)
             if t2 is not None:

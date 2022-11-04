@@ -62,7 +62,7 @@ def getDistance(q1, q2):
     return numpy.sqrt(x.dot(x))
 
 
-def get_increment(obj, total):
+def get_increment(obj, total, knob):
     """
     Given a total return the increment and number of samples to get to the specified total. Sample is an integer.
     Total = increment * sample.
@@ -82,8 +82,10 @@ def get_increment(obj, total):
     if obj == 'door':
         increment = (increment, )
     else:
-        if 
-    increment = (increment, ) if obj == 'door' else (0, increment)
+        if 'top' in knob:
+            increment = (increment, 0)
+        else:
+            increment = (0, increment)
     return increment, int(sample)
 
 
