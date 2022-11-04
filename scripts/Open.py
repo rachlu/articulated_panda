@@ -14,6 +14,8 @@ class Open:
         self.floor = floor
 
     def open_obj(self, obj, start_q, relative_grasp, obj_conf, increment, sample, knob):
+        print('=========================')
+        print('Open', obj, knob, increment, obj_conf)
         old_pos = self.objects[obj].get_configuration()
         self.objects[obj].set_configuration(obj_conf)
         q = numpy.array(start_q)
@@ -25,25 +27,28 @@ class Open:
             knob_pose = self.objects[obj].link_from_name(knob).get_link_tform(True)
             new_grasp = numpy.dot(knob_pose, relative_grasp)
             q = self.robot.arm.ComputeIKQ(new_grasp, q)
-
+            
+            '''
             for o in set(self.objects.keys()) - {obj}:
                 if pb_robot.collisions.body_collision(self.objects[obj], self.objects[o]):
                     self.objects[obj].set_configuration(old_pos)
+                    print('Open Collision')
                     return None
-
-            if q is not None and self.robot.arm.IsCollisionFree(q, obstacles=[self.floor, self.objects[obj]]):
+            '''
+            if q is not None and self.robot.arm.IsCollisionFree(q, obstacles=[self.floor]):
                 path.append(numpy.array(q))
             else:
+                print('first q None or collision')
                 self.objects[obj].set_configuration(old_pos)
                 return None
-
         back = numpy.array([[1, 0, 0, 0],
                             [0, 1, 0, 0],
-                            [0, 0, 1, -.15],
+                            [0, 0, 1, -.1],
                             [0., 0., 0., 1.]])
         back_grasp = numpy.dot(new_grasp, back)
         q = self.robot.arm.ComputeIKQ(back_grasp, path[-1])
         if q is None:
+            print('q None')
             self.robot.arm.Release(self.objects[obj])
             self.objects[obj].set_configuration(old_pos)
             return None

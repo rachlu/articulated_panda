@@ -61,10 +61,17 @@ def pddlstream_from_tamp(robot, movable, tamp, panda=None):
     #        ('On', 'bowl', 'bowl_region'), ('Open', 'door'), ('AtConf', conf))
     # objPoses = {}
     for obj in movable:
-        if obj in ['door', 'cabinet']:
+        if obj == 'cabinet':
             position = vobj.Pose(robot, movable[obj].get_configuration())
-            init.extend([('AtObjConf', obj, position),
-                         ('ObjConf', obj, position)
+            init.extend([('AtObjConf', obj, 'top_drawer_knob', position),
+                         ('ObjConf', obj, 'top_drawer_knob', position),
+                         ('AtObjConf', obj, 'bottom_drawer_knob', position),
+                         ('ObjConf', obj, 'bottom_drawer_knob', position)
+                         ])
+        elif obj == 'door':
+            position = vobj.Pose(robot, movable[obj].get_configuration())
+            init.extend([('AtObjConf', obj, 'knob', position),
+                         ('ObjConf', obj, 'knob', position)
                          ])
         else:
             init.extend([('Placeable', obj)])
@@ -87,7 +94,7 @@ def pddlstream_from_tamp(robot, movable, tamp, panda=None):
         'open_traj': from_gen_fn(tamp.get_open_traj),
         'inverse-nonplaceable-kinematics': from_gen_fn(tamp.compute_nonplaceable_IK),
         'sampleGraspOpenable': from_gen_fn(tamp.sample_grasp_openable),
-        'sampleOpenableConf': from_gen_fn(tamp.increment)
+        'sampleOpenableConf': from_gen_fn(tamp.sample_openableconf)
     }
 
     return domain_pddl, constant_map, stream_pddl, stream_map, init, goal

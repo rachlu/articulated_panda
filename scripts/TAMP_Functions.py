@@ -53,19 +53,25 @@ class TAMP_Functions:
         self.objects[obj].set_transform(original_position)
         return path
 
-    def increment(self, obj, knob):
-        random_conf = random.uniform(0, 1)
+    def sample_openableconf(self, obj, knob):
+        random_conf = random.uniform(0, 0.5)
+        random_open = random.uniform(0.8, 1)
         if knob == 'knob':
             random_conf *= 180
+            random_open *= 180
             pose = vobj.Pose((random_conf,))
+            open_pose = vobj.Pose((random_open,))
         elif 'top' in knob:
             pose = vobj.Pose(obj, (random_conf, 0))
+            open_pose = vobj.Pose(obj, (random_open, 0))
         else:
             pose = vobj.Pose(obj, (0, random_conf))
-        return (pose, )
+            open_pose = vobj.Pose(obj, (0, random_open))
+        return ([pose, open_pose], )
 
-    def get_open_traj(self, obj, obj_conf, start_q, relative_grasp, end_conf, knob):
+    def get_open_traj(self, obj, obj_conf, end_conf,  start_q, relative_grasp, knob):
         # Check is start_q is a valid robot start configuration for opening the cabinet.
+        '''
         old_conf = self.objects[obj].get_configuration()
         self.objects[obj].set_configuration(obj_conf.pose)
         knob_pose = self.objects[obj].link_from_name(knob).get_link_tform(True)
@@ -79,7 +85,7 @@ class TAMP_Functions:
             distance += util.getDistance(knob_pose[i], end_effector[i])
         if distance > 0.2:
             return (None, )
-
+        '''
         if knob == 'knob':
             total = end_conf.pose[0]
         elif 'top' in knob:
@@ -88,10 +94,10 @@ class TAMP_Functions:
             total = end_conf.pose[1]
         increment, sample = util.get_increment(obj, total)
         for _ in range(5):
-            t2 = self.open_class.open_obj(obj, start_q.conf, relative_grasp.pose, obj_pose.pose, increment, sample, knob)
+            t2 = self.open_class.open_obj(obj, start_q.conf, relative_grasp.pose, obj_conf.pose, increment, sample, knob)
             if t2 is not None:
-                # t2 = cmds, end_conf, end_pose
-                cmds = [t2[0], t2[1], t2[2], increment, sample]
+                # t2 = cmds, end_conf, end_conf
+                cmds = [t2[0], t2[1], increment, sample]
                 return (cmds, )
         return (None, )
 

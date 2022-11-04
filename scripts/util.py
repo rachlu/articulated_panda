@@ -79,6 +79,10 @@ def get_increment(obj, total):
         if not float(sample).is_integer():
             sample = math.ceil(sample)
             increment = total/sample
+    if obj == 'door':
+        increment = (increment, )
+    else:
+        if 
     increment = (increment, ) if obj == 'door' else (0, increment)
     return increment, int(sample)
 

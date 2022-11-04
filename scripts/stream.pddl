@@ -29,14 +29,14 @@
 
     (:stream open_traj
         :inputs (?o ?p1 ?p2 ?q1 ?g ?k)
-        :domain (and (Conf ?q1) (Openable ?o ?k) (GraspOpenable ?o ?g ?k) (ObjConf ?o ?p1) (ObjConf ?o ?p2))
+        :domain (and (Conf ?q1) (Openable ?o ?k) (GraspOpenable ?o ?g ?k) (ObjConf ?o ?k ?p1) (ObjConf ?o ?k ?p2))
         :outputs (?t ?q2 ?i ?s)
         :certified (and (Open_Traj ?o ?g ?q1 ?q2 ?p2 ?i ?s ?t) (Conf ?q2) (Traj_Holding ?t ?o ?g) (Traj ?t))
     )
 
     (:stream sampleGraspOpenable
         :inputs (?o ?p ?k)
-        :domain (and (Openable ?o ?k) (ObjConf ?o ?p))
+        :domain (and (Openable ?o ?k) (ObjConf ?o ?k ?p))
         :outputs (?g)
         :certified (GraspOpenable ?o ?g ?k)
     )
@@ -57,7 +57,7 @@
 
     (:stream inverse-nonplaceable-kinematics
         :inputs (?o ?p ?g ?k)
-        :domain (and (ObjConf ?o ?p) (Openable ?o ?k) (GraspOpenable ?o ?g ?k))
+        :domain (and (ObjConf ?o ?k ?p) (Openable ?o ?k) (GraspOpenable ?o ?g ?k))
         :outputs (?q1 ?q2 ?t)
         :certified (and (Conf ?q1) (Conf ?q2) (KinOpen ?o ?p ?g ?q1 ?q2 ?t) (Traj ?t))
     )
@@ -79,8 +79,8 @@
     (:stream sampleOpenableConf
         :inputs (?o ?k)
         :domain (Openable ?o ?k)
-        :outputs (?p)
-        :certified (ObjConf ?o ?p)
+        :outputs (?p1 ?p2)
+        :certified (and (ObjConf ?o ?k ?p1) (ObjConf ?o ?k ?p2) (OpenEnough ?o ?k ?p2))
     )
 
     (:stream collisionCheck
