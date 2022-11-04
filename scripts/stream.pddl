@@ -28,10 +28,10 @@
     ;)
 
     (:stream open_traj
-        :inputs (?o ?p1 ?q1 ?g ?a ?k)
-        :domain (and (Conf ?q1) (Openable ?o ?k) (GraspOpenable ?o ?g ?k) (ObjConf ?o ?p1) (Open_Amount ?o ?a))
-        :outputs (?t ?q2 ?p2 ?i ?s)
-        :certified (and (Open_Traj ?o ?g ?q1 ?q2 ?a ?i ?s ?t) (Traj_Holding ?t ?o ?g) (Traj ?t) (ObjConf ?o ?p2) (Conf ?q2))
+        :inputs (?o ?p1 ?p2 ?q1 ?g ?k)
+        :domain (and (Conf ?q1) (Openable ?o ?k) (GraspOpenable ?o ?g ?k) (ObjConf ?o ?p1) (ObjConf ?o ?p2))
+        :outputs (?t ?q2 ?i ?s)
+        :certified (and (Open_Traj ?o ?g ?q1 ?q2 ?p2 ?i ?s ?t) (Conf ?q2) (Traj_Holding ?t ?o ?g) (Traj ?t))
     )
 
     (:stream sampleGraspOpenable
@@ -79,8 +79,8 @@
     (:stream sampleOpenableConf
         :inputs (?o ?k)
         :domain (Openable ?o ?k)
-        :outputs (?a ?p)
-        :certified (and (ObjConf ?o ?p) (Open_Amount ?o ?a))
+        :outputs (?p)
+        :certified (ObjConf ?o ?p)
     )
 
     (:stream collisionCheck
