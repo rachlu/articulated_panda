@@ -110,14 +110,14 @@
     ;)
 
     (:action open_obj
-        :parameters (?o ?g ?k ?a ?p1 ?p2 ?q1 ?q2)
+        :parameters (?o ?g ?k ?a ?q1)
         :precondition (and (Openable ?o ?k)
                             (GraspOpenable ?o ?g ?k)
                             (AtGraspOpenable ?o ?g ?k)
                             (not (HandEmpty))
 			    (Open_Amount ?o ?a)
 			    (Conf ?q1)
-			    (Conf ?q2)
+			    ;(Conf ?q2)
 			    (AtConf ?q1)
 			    ;(Open_Traj ?o ?g ?q1 ?q2 ?a ?i ?s ?t)
 			    )
