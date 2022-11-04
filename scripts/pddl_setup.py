@@ -35,10 +35,6 @@ def pddlstream_from_tamp(robot, movable, tamp, panda=None):
         ('Openable', 'door', 'knob'),
         ('Openable', 'cabinet', 'top_drawer_knob'),
         ('Openable', 'cabinet', 'bottom_drawer_knob'),
-        ('Open_Amount', 'door', math.pi/5),
-        ('Open_Amount', 'cabinet', 0.1),
-        ('Open_Amount', 'cabinet', 0),
-        ('Open_Amount', 'cabinet', 0.25),
         ('OpenAllAmount', 'door', math.pi/10),
         ('OpenAllAmount', 'cabinet', 0.25),
         ('OpenIncrement', 0.1, 0.02, 5)
