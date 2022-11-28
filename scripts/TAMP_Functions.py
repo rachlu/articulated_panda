@@ -54,95 +54,49 @@ class TAMP_Functions:
         return path
 
     def sample_openableconf(self, obj, knob):
-        random_conf = random.uniform(0, 0.5)
-        random_open = random.uniform(0.8, 1)
-        if knob == 'knob':
-            random_conf *= 180
-            random_open *= 180
-            pose = vobj.Pose((random_conf,))
-            open_pose = vobj.Pose((random_open,))
-        elif 'top' in knob:
-            pose = vobj.Pose(obj, (random_conf, 0))
-            open_pose = vobj.Pose(obj, (random_open, 0))
+        if obj == 'door':
+            random_conf = random.uniform(0, 80)
+            random_open = random.uniform(45, 80)
+            pose = vobj.BodyConf(obj, (random_conf,))
+            open_pose = vobj.BodyConf(obj, (random_open,))
         else:
-            pose = vobj.Pose(obj, (0, random_conf))
-            open_pose = vobj.Pose(obj, (0, random_open))
+            # Cabinet open all the way is 0.3
+            random_conf = random.uniform(0, 0.25)
+            random_open = random.uniform(0.2, 0.25)
+            if 'top' in knob:
+                pose = vobj.BodyConf(obj, (random_conf, 0))
+                open_pose = vobj.BodyConf(obj, (random_open, 0))
+            else:
+                pose = vobj.BodyConf(obj, (0, random_conf))
+                open_pose = vobj.BodyConf(obj, (0, random_open))
         return ([pose, open_pose], )
 
     def get_open_traj(self, obj, obj_conf, end_conf,  start_q, relative_grasp, knob):
-        # Check is start_q is a valid robot start configuration for opening the cabinet.
-        '''
-        old_conf = self.objects[obj].get_configuration()
-        self.objects[obj].set_configuration(obj_conf.pose)
-        knob_pose = self.objects[obj].link_from_name(knob).get_link_tform(True)
-        robot_old_conf = self.robot.arm.GetJointValues()
-        self.robot.arm.SetJointValues(start_q.conf)
-        end_effector = self.robot.arm.GetEETransform()
-        self.robot.arm.SetJointValues(robot_old_conf)
-        self.objects[obj].set_configuration(old_conf)
-        distance = 0
-        for i in range(len(knob_pose)):
-            distance += util.getDistance(knob_pose[i], end_effector[i])
-        if distance > 0.2:
-            return (None, )
-        '''
-        if knob == 'knob':
-            total = end_conf.pose[0]
-        elif 'top' in knob:
-            total = end_conf.pose[0]
+        print('start_conf', obj_conf.conf)
+        print('end_conf', end_conf.conf)
+        if knob == 'knob' or 'top' in knob:
+            total = end_conf.conf[0]
         else:
-            total = end_conf.pose[1]
-        increment, sample = util.get_increment(obj, total, knob)
+            total = end_conf.conf[1]
         for _ in range(5):
-            t2 = self.open_class.open_obj(obj, start_q.conf, relative_grasp.pose, obj_conf.pose, increment, sample, knob)
+            increment, sample = util.get_increment(obj, obj_conf.conf, total, knob)
+            t2 = self.open_class.open_obj(obj, start_q.conf, relative_grasp.pose, obj_conf.conf, increment, sample, knob)
             if t2 is not None:
-                # t2 = cmds, end_conf, end_conf
+                # t2 = cmds, end_conf
                 cmds = [t2[0], t2[1], increment, sample]
                 return (cmds, )
         return (None, )
 
-
-    '''
-    def get_open_traj(self, obj, start_q, obj_pose, total):
-        increment, sample = util.get_increment(obj, total)
-        for _ in range(5):
-            if obj == 'cabinet':
-                knob = 'bottom_drawer_knob'
-            else:
-                knob = 'knob'
-            relative_grasp = self.sampleGrabPose(obj, obj_pose, knob)[0]
-            if relative_grasp is None:
-                continue
-            relative_grasp = relative_grasp[0]
-            result = self.computeIK(obj, obj_pose, relative_grasp)[0]
-
-            if result is None:
-                print('result None')
-                continue
-            # end_q is up conf
-            end_q, hand_traj = result
-            t1 = self.calculate_path(start_q, end_q)[0]
-            # Change to grasp conf
-            end_q = vobj.BodyConf(self.robot, hand_traj[0].path[1])
-            hand_traj[1].set_status('Close')
-            t2 = self.open_class.open_obj(obj, end_q.conf, relative_grasp.pose, obj_pose.pose, increment, sample, knob)
-            if t1 is not None and t2 is not None:
-                t1 = t1[0]
-                t1.extend(hand_traj[:2])
-                cmds = [t1, t2[0], t2[1], t2[2], relative_grasp, increment, sample]
-                return (cmds, )
-        return (None, )
-    '''
-    def sample_grasp_openable(self, obj, obj_pose, knob):
+    def sample_grasp_openable(self, obj, obj_conf, knob):
         old_pos = self.objects[obj].get_configuration()
-        self.objects[obj].set_configuration(obj_pose.pose)
-        new_obj_pose = vobj.Pose(obj, self.objects[obj].link_from_name(knob).get_link_tform(True))
+        self.objects[obj].set_configuration(obj_conf.conf)
+        new_obj_pose = self.objects[obj].link_from_name(knob).get_link_tform(True)
         self.objects[obj].set_configuration(old_pos)
         for _ in range(20):
-            grasp_pose, q = self.grasp.grasp(obj, new_obj_pose.pose)
+            grasp_pose, q = self.grasp.grasp(obj, new_obj_pose)
             if q is not None and self.robot.arm.IsCollisionFree(q, obstacles=[self.floor, self.objects[obj]]):
                 # Grasp in object frame
-                relative_grasp = numpy.dot(numpy.linalg.inv(new_obj_pose.pose), grasp_pose)
+                relative_grasp = numpy.dot(numpy.linalg.inv(new_obj_pose), grasp_pose)
                 cmd1 = [vobj.Pose(obj, relative_grasp)]
                 return (cmd1,)
 
@@ -160,15 +114,14 @@ class TAMP_Functions:
                 return (cmd1, )
         return (None,)
 
-    def compute_nonplaceable_IK(self, obj, obj_pose, grasp, knob):
+    def compute_nonplaceable_IK(self, obj, obj_conf, grasp, knob):
         old_pos = self.objects[obj].get_configuration()
-        self.objects[obj].set_configuration(obj_pose.pose)
-        obj_pose = vobj.Pose(obj, self.objects[obj].link_from_name(knob).get_link_tform(True))
+        self.objects[obj].set_configuration(obj_conf.conf)
+        obj_pose = self.objects[obj].link_from_name(knob).get_link_tform(True)
         self.objects[obj].set_configuration(old_pos)
-        grasp_in_world = numpy.dot(obj_pose.pose, grasp.pose)
+        grasp_in_world = numpy.dot(obj_pose, grasp.pose)
         q_g = self.robot.arm.ComputeIK(grasp_in_world)
         if q_g is None or not self.robot.arm.IsCollisionFree(q_g, obstacles=[self.floor]):
-            print('q_g None')
             return (None,)
         up = numpy.array([[1, 0, 0, 0],
                           [0, 1, 0, 0],
@@ -177,14 +130,13 @@ class TAMP_Functions:
         new_g = numpy.dot(grasp_in_world, up)
         translated_q = self.robot.arm.ComputeIK(new_g, seed_q=q_g)
         if translated_q is None:
-            print('translated none')
             return (None,)
         translated_q = numpy.array(translated_q)
         q_g = numpy.array(q_g)
         q1 = vobj.BodyConf(self.robot, translated_q)
         q2 = vobj.BodyConf(self.robot, q_g)
         traj = vobj.TrajPath(self.robot, [translated_q, q_g])
-        hand_cmd = vobj.HandCmd(self.robot, self.objects[obj], grasp.pose)
+        hand_cmd = vobj.HandCmd(self.robot, self.objects[obj], grasp.pose, status='Close')
         cmd = [q1, q2, [traj, hand_cmd]]
         return (cmd,)
 
@@ -233,8 +185,8 @@ class TAMP_Functions:
         :param other_pos: other object position
         :return: True or False
         """
-        print(obj, pos.pose)
-        print(other, other_pos.pose)
+        print(obj, pos)
+        print(other, other_pos)
         if obj in self.openable:
             obj_oldpos = self.objects[obj].get_configuration()
         else:
@@ -247,12 +199,12 @@ class TAMP_Functions:
         
         if other != obj:
             if obj in self.openable:
-                self.objects[obj].set_configuration(pos.pose)
+                self.objects[obj].set_configuration(pos.conf)
             else:
                 self.objects[obj].set_transform(pos.pose)
             
             if other in self.openable:
-                self.objects[other].set_configuration(other_pos.pose)
+                self.objects[other].set_configuration(other_pos.conf)
             else:
                 self.objects[other].set_transform(other_pos.pose)
             
@@ -289,9 +241,9 @@ class TAMP_Functions:
         :return: True if traj is collision free
         """
         conf = False
-        if obj in ['door', 'cabinet']:
+        if obj in self.openable:
             obj_oldpos = self.objects[obj].get_configuration()
-            self.objects[obj].set_configuration(pose.pose)
+            self.objects[obj].set_configuration(pose.conf)
             conf = True
         else:
             obj_oldpos = self.objects[obj].get_transform()
@@ -317,5 +269,6 @@ class TAMP_Functions:
         result = self.cfreeTraj_Check(traj, obj2, pose)
         self.robot.arm.Release(self.objects[obj])
         self.objects[obj].set_transform(old_pos)
+        print('cfreeHolding', obj, obj2, result)
         return result
 

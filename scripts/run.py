@@ -17,7 +17,9 @@ if __name__ == '__main__':
     print('stream', stream_map)
     print('init', init)
     print('goal', goal)
-    solution = solve_focused(pddlstream_problem, planner='ff-astar')
+    # TODO: Add stream info
+    stream_info = {}
+    solution = solve_focused(pddlstream_problem, stream_info=stream_info, planner='ff-astar')
     print_solution(solution)
     plan, cost, evaluations = solution
     print('plan', plan)

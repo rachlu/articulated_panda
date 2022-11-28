@@ -25,6 +25,35 @@ def collision_free(objects, obj):
     return True
 
 
+def cabinetIK(obj):
+    def func(pose_worldF):
+        z = pose_worldF[2][-1]
+        name = None
+        link = None
+        for l in obj.links:
+            if 'knob' not in l.get_link_name():
+                continue
+            position = l.get_link_tform(True)
+            if abs(z - position[2][-1]) < 0.01:
+                name = l.get_link_name()
+                link = l
+                break
+        current = obj.get_configuration()
+        position = link.get_link_tform(True)
+        x = position[0][-1] - pose_worldF[0][-1]
+        y = position[1][-1] - pose_worldF[1][-1]
+        if abs(x) > abs(y):
+            diff = x
+        else:
+            diff = y
+        if 'top' in name:
+            conf = current + numpy.array((diff, 0))
+        elif 'bottom' in name:
+            conf = current + numpy.array((0, diff))
+        return conf
+    return func
+
+
 def execute():
     # Launch pybullet
     pb_robot.utils.connect(use_gui=True)
@@ -109,6 +138,7 @@ def execute():
                        [0, 0, 0, 1]])
     rotate = util.get_rotation_arr('Z', 2*math.pi)
     cabinet.set_transform(numpy.dot(pos, rotate))
+    cabinet.set_IKfunc(cabinetIK(cabinet))
 
     spring_file = os.path.join(objects_path, 'block.urdf')
     spring = pb_robot.body.createBody(spring_file)

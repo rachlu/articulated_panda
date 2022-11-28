@@ -8,14 +8,16 @@ import time
 
 def execute_path(path, objects, arm):
     for action in path:
-        if action.name == 'open_obj':
-            increment = action.args[-3]
-            for cmd in action.args[-1]:
-                if action.args[0] == 'door':
-                    cmd.execute(arm, objects[action.args[0]], None, increment)
-                else:
-                    cmd.execute(arm, objects[action.args[0]], action.args[4], increment)
-            continue
+        # if action.name == 'open_obj':
+        #     increment = action.args[-3]
+        #     for cmd in action.args[-1][:-1]:
+        #         print(cmd)
+        #         if action.args[0] == 'knob':
+        #             cmd.execute(arm)
+        #         else:
+        #             cmd.execute(arm)
+        #     action.args[-1][-1].execute(arm)
+        #     continue
         for cmd in action.args[-1]:
             cmd.execute(arm)
             time.sleep(1)
@@ -62,7 +64,7 @@ def getDistance(q1, q2):
     return numpy.sqrt(x.dot(x))
 
 
-def get_increment(obj, total, knob):
+def get_increment(obj, start_conf, total, knob):
     """
     Given a total return the increment and number of samples to get to the specified total. Sample is an integer.
     Total = increment * sample.
@@ -70,7 +72,9 @@ def get_increment(obj, total, knob):
     :param total: Total distance or radians the object is moved
     :return: Increment and sample (integer)
     """
+    print('get_increment', start_conf, total)
     increment = math.pi/18 if obj == 'door' else 0.05
+    total = total - start_conf[0] if obj == 'door' or 'top' in knob else total - start_conf[1]
     if total < increment:
         sample = 1
         increment = total

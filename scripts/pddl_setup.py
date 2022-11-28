@@ -32,14 +32,16 @@ def pddlstream_from_tamp(robot, movable, tamp, panda=None):
         ('Region', 'bowl_region'),
         ('Region', 'knife_region'),
         ('UprightObj', 'bowl'),
-        ('Openable', 'door', 'knob'),
-        ('Openable', 'cabinet', 'top_drawer_knob'),
-        ('Openable', 'cabinet', 'bottom_drawer_knob'),
-        ('OpenAllAmount', 'door', math.pi/10),
-        ('OpenAllAmount', 'cabinet', 0.25),
-        ('OpenIncrement', 0.1, 0.02, 5)
+        ('Openable', 'door'),
+        ('Openable', 'cabinet'),
+        ('Handle', 'door', 'knob'),
+        ('Handle', 'cabinet', 'top_drawer_knob'),
+        ('Handle', 'cabinet', 'bottom_drawer_knob'),
     ]
-    goal = (('Open', 'cabinet', 'top_drawer_knob'))
+    # goal = ('and', ('Open', 'bottom_drawer_knob'), ('AtConf', conf))
+    # goal = ('and', ('Open', 'top_drawer_knob'), ('Open', 'bottom_drawer_knob'))
+    # goal = (('Open', 'cabinet', 'bottom_drawer_knob'))
+    goal = ('and', ('Holding_Openable', 'cabinet', 'bottom_drawer_knob'))
     # goal = ('and', ('Holding_Openable', 'cabinet', 'top_drawer_knob'), ('AtConf', conf))
     #goal = (('Holding_Openable', 'cabinet', 'bottom_drawer_knob'))
     # goal = (('Open', 'cabinet', 0.25))
@@ -61,23 +63,16 @@ def pddlstream_from_tamp(robot, movable, tamp, panda=None):
     #        ('On', 'bowl', 'bowl_region'), ('Open', 'door'), ('AtConf', conf))
     # objPoses = {}
     for obj in movable:
-        if obj == 'cabinet':
-            position = vobj.Pose(robot, movable[obj].get_configuration())
-            init.extend([('AtObjConf', obj, 'top_drawer_knob', position),
-                         ('ObjConf', obj, 'top_drawer_knob', position),
-                         ('AtObjConf', obj, 'bottom_drawer_knob', position),
-                         ('ObjConf', obj, 'bottom_drawer_knob', position)
-                         ])
-        elif obj == 'door':
-            position = vobj.Pose(robot, movable[obj].get_configuration())
-            init.extend([('AtObjConf', obj, 'knob', position),
-                         ('ObjConf', obj, 'knob', position)
+        if obj in ['door', 'cabinet']:
+            position = vobj.BodyConf(obj, movable[obj].get_configuration())
+            init.extend([('AtObjState', obj, position),
+                         ('ObjState', obj, position),
                          ])
         else:
             init.extend([('Placeable', obj)])
             position = vobj.Pose(robot, movable[obj].get_transform())
-            init.extend([('AtPose', obj, position),
-                         ('ObjPose', obj, position)
+            init.extend([('AtObjState', obj, position),
+                         ('ObjState', obj, position)
                          ])
         init.extend([('Graspable', obj)])
     stream_map = {
