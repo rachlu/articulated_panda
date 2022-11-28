@@ -41,8 +41,8 @@ def pddlstream_from_tamp(robot, movable, tamp, panda=None):
     ]
     # goal = ('and', ('Open', 'bottom_drawer_knob'), ('AtConf', conf))
     # goal = ('and', ('Open', 'top_drawer_knob'), ('Open', 'bottom_drawer_knob'))
-    # goal = (('Open', 'cabinet', 'bottom_drawer_knob'))
-    goal = ('and', ('Holding_Openable', 'cabinet', 'bottom_drawer_knob'))
+    goal = ('and', ('Open', 'cabinet', 'top_drawer_knob'), ('Open', 'cabinet', 'bottom_drawer_knob'))
+    # goal = (('Holding_Openable', 'cabinet', 'bottom_drawer_knob'))
     # goal = ('and', ('Holding_Openable', 'cabinet', 'top_drawer_knob'), ('AtConf', conf))
     #goal = (('Holding_Openable', 'cabinet', 'bottom_drawer_knob'))
     # goal = (('Open', 'cabinet', 0.25))

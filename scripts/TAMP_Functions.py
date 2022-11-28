@@ -83,7 +83,7 @@ class TAMP_Functions:
             t2 = self.open_class.open_obj(obj, start_q.conf, relative_grasp.pose, obj_conf.conf, increment, sample, knob)
             if t2 is not None:
                 # t2 = cmds, end_conf
-                cmds = [t2[0], t2[1], increment, sample]
+                cmds = [t2[0], t2[1]]
                 return (cmds, )
         return (None, )
 

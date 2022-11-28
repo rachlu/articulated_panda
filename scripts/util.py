@@ -74,7 +74,7 @@ def get_increment(obj, start_conf, total, knob):
     """
     print('get_increment', start_conf, total)
     increment = math.pi/18 if obj == 'door' else 0.05
-    total = total - start_conf[0] if obj == 'door' or 'top' in knob else total - start_conf[1]
+    total = total - start_conf[0] if knob  == 'knob' or 'top' in knob else total - start_conf[1]
     if total < increment:
         sample = 1
         increment = total

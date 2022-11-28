@@ -22,9 +22,9 @@
 
     (:stream open_traj
         :inputs (?o ?p1 ?p2 ?q1 ?g ?h)
-        :domain (and (Conf ?q1) (Openable ?o) (GraspOpenable ?o ?g ?h) (ObjState ?o ?p1) (ObjState ?o ?p2))
-        :outputs (?t ?q2 ?i ?s)
-        :certified (and (Open_Traj ?o ?g ?q1 ?q2 ?p2 ?i ?s ?t) (Conf ?q2) (Traj_Holding ?t ?o ?g))
+        :domain (and (Conf ?q1) (Handle ?o ?h) (Openable ?o) (GraspOpenable ?o ?g ?h) (ObjState ?o ?p1) (ObjState ?o ?p2))
+        :outputs (?t ?q2)
+        :certified (and (Open_Traj ?o ?g ?q1 ?q2 ?p2 ?h ?t) (Conf ?q2) (Traj_Holding ?t ?o ?g))
     )
 
     (:stream sampleGraspOpenable
@@ -70,8 +70,8 @@
     )
 
     (:stream sampleOpenableConf
-        :inputs (?o)
-        :domain (Openable ?o)
+        :inputs (?o ?h)
+        :domain (and (Openable ?o) (Handle ?o ?h))
         :outputs (?p1 ?p2)
         :certified (and (ObjState ?o ?p1) (ObjState ?o ?p2) (OpenEnough ?o ?p2))
     )

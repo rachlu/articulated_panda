@@ -8,7 +8,7 @@
         (Grasp ?o ?g)
         (On ?o ?r)
         (Kin ?o ?p ?g ?q ?t)
-	    (KinOpen ?o ?p ?g ?q1 ?q2 ?t)
+	(KinOpen ?o ?p ?g ?q1 ?q2 ?t)
         (Holding ?o)
         (HandEmpty)
         (UprightObj ?o)
@@ -29,7 +29,7 @@
         (CanMove)
         (Openable ?o)
         (Open ?o ?h)
-        (Open_Traj ?o ?g ?q1 ?q2 ?p2 ?i ?s ?t)
+        (Open_Traj ?o ?g ?q1 ?q2 ?p2 ?h ?t)
         (OpenEnough ?o ?p)
         (Graspopenable ?o ?g ?h)
         (AtGraspOpenable ?o ?g ?h)
@@ -84,7 +84,7 @@
     )
 
     (:action open_obj
-        :parameters (?o ?p1 ?p2 ?g ?q1 ?q2 ?i ?s ?t)
+        :parameters (?o ?p1 ?p2 ?g ?q1 ?q2 ?h ?t)
         :precondition (and (Openable ?o)
                             (GraspOpenable ?o ?g ?h)
                             (AtGraspOpenable ?o ?g ?h)
@@ -95,7 +95,7 @@
                             (ObjState ?o ?p1)
                             (AtObjState ?o ?p1)
                             (ObjState ?o ?p2)
-                            (Open_Traj ?o ?g ?q1 ?q2 ?p2 ?i ?s ?t)
+                            (Open_Traj ?o ?g ?q1 ?q2 ?p2 ?h ?t)
                             (not (UnSafeHolding ?t ?o ?g))
 			    )
         :effect (and (not (Holding ?o)) (HandEmpty) (AtObjState ?o ?p2)
@@ -118,7 +118,7 @@
     )
 
     (:action hold
-        :parameters (?o ?p ?g ?q1 ?q2 ?t)
+        :parameters (?o ?p ?g ?q1 ?q2 ?h ?t)
         :precondition (and (HandEmpty)
                             (Conf ?q1)
                             (Conf ?q2)
@@ -128,7 +128,8 @@
                             (AtObjState ?o ?p)
                             (GraspOpenable ?o ?g ?h)
                             (Handle ?o ?h)
-                            (Openable ?o))
+                            (Openable ?o)
+				)
 	:effect (and (not (AtConf ?q1)) (AtConf ?q2) (Holding ?o) (not (HandEmpty)) (AtGraspOpenable ?o ?g ?h))
     )
 
