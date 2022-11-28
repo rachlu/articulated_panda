@@ -43,7 +43,9 @@ if __name__ == '__main__':
     print('stream', stream_map)
     print('init', init)
     print('goal', goal)
-    solution = solve_focused(pddlstream_problem, planner='ff-astar')
+    stream_info = {'cfree': StreamInfo(negate=True), 'cfreeholding': StreamInfo(negate=True),
+                   'collisionCheck': StreamInfo(negate=True)}
+    solution = solve_focused(pddlstream_problem, stream_info=stream_info, planner='ff-astar')
     print_solution(solution)
     plan, cost, evaluations = solution
     print('plan', plan)

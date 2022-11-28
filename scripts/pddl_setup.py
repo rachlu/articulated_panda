@@ -4,6 +4,7 @@ from pddlstream.language.generator import from_gen_fn, from_fn, from_test
 from pddlstream.utils import user_input, read, INF
 from pddlstream.algorithms.focused import solve_focused
 from pddlstream.language.constants import And, Equal, TOTAL_COST, print_solution, PDDLProblem
+from pddlstream.language.stream import StreamInfo
 
 import vobj
 import util
