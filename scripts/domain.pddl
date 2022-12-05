@@ -29,8 +29,8 @@
         (CanMove)
         (Openable ?o)
         (Open ?o ?h)
-        (Open_Traj ?o ?g ?q1 ?q2 ?p2 ?h ?t)
-        (OpenEnough ?o ?p)
+        (Open_Traj ?o ?g ?q1 ?q2 ?p1 ?p2 ?h ?t)
+        (OpenEnough ?o ?p ?h)
         (Graspopenable ?o ?g ?h)
         (AtGraspOpenable ?o ?g ?h)
         (Placeable ?o)
@@ -95,7 +95,7 @@
                             (ObjState ?o ?p1)
                             (AtObjState ?o ?p1)
                             (ObjState ?o ?p2)
-                            (Open_Traj ?o ?g ?q1 ?q2 ?p2 ?h ?t)
+                            (Open_Traj ?o ?g ?q1 ?q2 ?p1 ?p2 ?h ?t)
                             (not (UnSafeHolding ?t ?o ?g))
 			    )
         :effect (and (not (Holding ?o)) (HandEmpty) (AtObjState ?o ?p2)
@@ -166,7 +166,7 @@
     )
 
     (:derived (Open ?o ?h)
-        (exists (?p) (and (Openable ?o) (Handle ?o ?h) (AtObjState ?o ?p) (OpenEnough ?o ?p)))
+        (exists (?p) (and (Openable ?o) (Handle ?o ?h) (AtObjState ?o ?p) (OpenEnough ?o ?p ?h)))
     )
     
     (:derived (Holding_Openable ?o ?h)

@@ -72,7 +72,8 @@ def get_increment(obj, start_conf, total, knob):
     :param total: Total distance or radians the object is moved
     :return: Increment and sample (integer)
     """
-    print('get_increment', start_conf, total)
+    print('============ GET_INCREMENT ==============')
+    print('START', start_conf, 'TOTAL', total)
     increment = math.pi/18 if obj == 'door' else 0.05
     total = total - start_conf[0] if knob  == 'knob' or 'top' in knob else total - start_conf[1]
     if total < increment:

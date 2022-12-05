@@ -14,9 +14,6 @@ class Open:
         self.floor = floor
 
     def open_obj(self, obj, start_q, relative_grasp, obj_conf, increment, sample, knob):
-        print('start_q', start_q)
-        print('relative_grasp', relative_grasp)
-        print('obj_conf', obj_conf)
         print(increment, sample)
         old_pos = self.objects[obj].get_configuration()
         self.objects[obj].set_configuration(obj_conf)

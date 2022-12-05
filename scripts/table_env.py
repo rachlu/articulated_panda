@@ -138,7 +138,7 @@ def execute():
                        [0, 0, 0, 1]])
     rotate = util.get_rotation_arr('Z', 2*math.pi)
     cabinet.set_transform(numpy.dot(pos, rotate))
-    cabinet.set_IKfunc(cabinetIK(cabinet))
+    cabinet.setIK(cabinetIK(cabinet))
 
     spring_file = os.path.join(objects_path, 'block.urdf')
     spring = pb_robot.body.createBody(spring_file)

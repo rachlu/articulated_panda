@@ -72,14 +72,24 @@ class TAMP_Functions:
         return ([pose, open_pose], )
 
     def get_open_traj(self, obj, obj_conf, end_conf,  start_q, relative_grasp, knob):
+        print('================= Open Traj =================')
         print('start_conf', obj_conf.conf)
         print('end_conf', end_conf.conf)
+
+        diff = end_conf.conf - obj_conf.conf
         if knob == 'knob' or 'top' in knob:
-            total = end_conf.conf[0]
+            if 'top' in knob and diff[1] != 0:
+                print('diff', diff[1])
+                return (None, )
+            total = diff[0]
         else:
-            total = end_conf.conf[1]
+            if diff[0] != 0:
+                print('diff', diff[0])
+                return (None, )
+            total = diff[1]
         for _ in range(5):
             increment, sample = util.get_increment(obj, obj_conf.conf, total, knob)
+            print('INCREMENT', increment, 'SAMPLE', sample)
             t2 = self.open_class.open_obj(obj, start_q.conf, relative_grasp.pose, obj_conf.conf, increment, sample, knob)
             if t2 is not None:
                 # t2 = cmds, end_conf
