@@ -91,7 +91,8 @@ def pddlstream_from_tamp(robot, movable, tamp, panda=None):
         'inverse-nonplaceable-kinematics': from_gen_fn(tamp.compute_nonplaceable_IK),
         'sampleGraspOpenable': from_gen_fn(tamp.sample_grasp_openable),
         'sampleOpenableConf': from_gen_fn(tamp.sample_openableconf),
-        'testOpenConf': from_test(tamp.test_open_conf)
+        'testOpenConf': from_test(tamp.test_open_conf),
+        'testOpenEnough': from_test(tamp.test_open_enough)
     }
 
     return domain_pddl, constant_map, stream_pddl, stream_map, init, goal

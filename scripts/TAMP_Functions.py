@@ -56,20 +56,26 @@ class TAMP_Functions:
     def sample_openableconf(self, obj, knob):
         if obj == 'door':
             random_conf = random.uniform(0, 60)
-            random_open = random.uniform(45, 60)
             pose = vobj.BodyConf(obj, (random_conf,))
-            open_pose = vobj.BodyConf(obj, (random_open,))
         else:
             # Cabinet open all the way is 0.3
             random_conf = random.uniform(0, 0.2)
-            random_open = random.uniform(0.15, 0.2)
             if 'top' in knob:
                 pose = vobj.BodyConf(obj, (random_conf, 0))
-                open_pose = vobj.BodyConf(obj, (random_open, 0))
             else:
                 pose = vobj.BodyConf(obj, (0, random_conf))
-                open_pose = vobj.BodyConf(obj, (0, random_open))
-        return ([pose, open_pose], )
+        return (pose, )
+
+    def test_open_enough(self, obj, obj_conf, knob):
+        if obj == 'door':
+            if 45 < obj_conf.conf[0] < 60:
+                return True
+
+        current = obj_conf.conf[0] if 'top' in knob else obj_conf.conf[1]
+        if 0.15 < current < 0.2:
+            return True
+
+        return False
 
     def test_open_conf(self, obj, start_conf, end_conf, knob):
         diff = end_conf.conf - start_conf.conf
