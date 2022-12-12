@@ -61,8 +61,8 @@ class TAMP_Functions:
             open_pose = vobj.BodyConf(obj, (random_open,))
         else:
             # Cabinet open all the way is 0.3
-            random_conf = random.uniform(0, 0.15)
-            random_open = random.uniform(0.10, 0.15)
+            random_conf = random.uniform(0, 0.2)
+            random_open = random.uniform(0.15, 0.2)
             if 'top' in knob:
                 pose = vobj.BodyConf(obj, (random_conf, 0))
                 open_pose = vobj.BodyConf(obj, (random_open, 0))
@@ -113,7 +113,6 @@ class TAMP_Functions:
             grasp_pose, q = self.grasp.grasp(obj, new_obj_pose)
             print('grasp collision', self.robot.arm.IsCollisionFree(q, obstacles=[self.floor]))
             print('grasp collision cabinet', self.robot.arm.IsCollisionFree(q, obstacles=[self.floor, self.objects[obj]]))
-            input()
             if q is not None and self.robot.arm.IsCollisionFree(q, obstacles=[self.floor, self.objects[obj]]):
                 # Grasp in object frame
                 relative_grasp = numpy.dot(numpy.linalg.inv(new_obj_pose), grasp_pose)
