@@ -37,6 +37,7 @@
 	    (Graspable ?o)
 	    (Holding_Openable ?o ?h)
 	    (Handle ?o ?h)
+	    (ValidStateTransition ?o ?p1 ?p2 ?k)
     )
 
     (:action move_free
@@ -92,6 +93,7 @@
                             (Conf ?q1)
                             (Conf ?q2)
                             (AtConf ?q1)
+                            (ValidStateTransition ?o ?p1 ?p2 ?h)
                             (ObjState ?o ?p1)
                             (AtObjState ?o ?p1)
                             (ObjState ?o ?p2)

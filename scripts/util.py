@@ -74,16 +74,8 @@ def get_increment(obj, start_conf, total, knob):
     """
     print('============ GET_INCREMENT ==============')
     print('START', start_conf, 'TOTAL', total)
-    increment = math.pi/18 if obj == 'door' else 0.05
-    total = total - start_conf[0] if knob  == 'knob' or 'top' in knob else total - start_conf[1]
-    if total < increment:
-        sample = 1
-        increment = total
-    else:
-        sample = total/increment
-        if not float(sample).is_integer():
-            sample = math.ceil(sample)
-            increment = total/sample
+    sample = 5
+    increment = total/sample
     if obj == 'door':
         increment = (increment, )
     else:
@@ -91,7 +83,7 @@ def get_increment(obj, start_conf, total, knob):
             increment = (increment, 0)
         else:
             increment = (0, increment)
-    return increment, int(sample)
+    return increment, sample
 
 
 def get_rotation_arr(axis, angle):

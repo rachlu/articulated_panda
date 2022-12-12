@@ -25,6 +25,7 @@ class Open:
             self.objects[obj].set_configuration(t)
             knob_pose = self.objects[obj].link_from_name(knob).get_link_tform(True)
             new_grasp = numpy.dot(knob_pose, relative_grasp)
+            print('new_grasp', new_grasp)
             q = self.robot.arm.ComputeIKQ(new_grasp, q)
             
             '''

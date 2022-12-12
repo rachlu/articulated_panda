@@ -55,14 +55,14 @@ class TAMP_Functions:
 
     def sample_openableconf(self, obj, knob):
         if obj == 'door':
-            random_conf = random.uniform(0, 80)
-            random_open = random.uniform(45, 80)
+            random_conf = random.uniform(0, 60)
+            random_open = random.uniform(45, 60)
             pose = vobj.BodyConf(obj, (random_conf,))
             open_pose = vobj.BodyConf(obj, (random_open,))
         else:
             # Cabinet open all the way is 0.3
-            random_conf = random.uniform(0, 0.25)
-            random_open = random.uniform(0.2, 0.25)
+            random_conf = random.uniform(0, 0.15)
+            random_open = random.uniform(0.10, 0.15)
             if 'top' in knob:
                 pose = vobj.BodyConf(obj, (random_conf, 0))
                 open_pose = vobj.BodyConf(obj, (random_open, 0))
@@ -71,6 +71,18 @@ class TAMP_Functions:
                 open_pose = vobj.BodyConf(obj, (0, random_open))
         return ([pose, open_pose], )
 
+    def test_open_conf(self, obj, start_conf, end_conf, knob):
+        diff = end_conf.conf - start_conf.conf
+        if knob == 'knob' or 'top' in knob:
+            if 'top' in knob and diff[1] != 0:
+                print('diff', diff[1])
+                return False
+        else:
+            if diff[0] != 0:
+                print('diff', diff[0])
+                return False
+        return True
+
     def get_open_traj(self, obj, obj_conf, end_conf,  start_q, relative_grasp, knob):
         print('================= Open Traj =================')
         print('start_conf', obj_conf.conf)
@@ -78,15 +90,10 @@ class TAMP_Functions:
 
         diff = end_conf.conf - obj_conf.conf
         if knob == 'knob' or 'top' in knob:
-            if 'top' in knob and diff[1] != 0:
-                print('diff', diff[1])
-                return (None, )
             total = diff[0]
         else:
-            if diff[0] != 0:
-                print('diff', diff[0])
-                return (None, )
             total = diff[1]
+
         for _ in range(5):
             increment, sample = util.get_increment(obj, obj_conf.conf, total, knob)
             print('INCREMENT', increment, 'SAMPLE', sample)
@@ -104,6 +111,9 @@ class TAMP_Functions:
         self.objects[obj].set_configuration(old_pos)
         for _ in range(20):
             grasp_pose, q = self.grasp.grasp(obj, new_obj_pose)
+            print('grasp collision', self.robot.arm.IsCollisionFree(q, obstacles=[self.floor]))
+            print('grasp collision cabinet', self.robot.arm.IsCollisionFree(q, obstacles=[self.floor, self.objects[obj]]))
+            input()
             if q is not None and self.robot.arm.IsCollisionFree(q, obstacles=[self.floor, self.objects[obj]]):
                 # Grasp in object frame
                 relative_grasp = numpy.dot(numpy.linalg.inv(new_obj_pose), grasp_pose)
@@ -146,7 +156,7 @@ class TAMP_Functions:
         q1 = vobj.BodyConf(self.robot, translated_q)
         q2 = vobj.BodyConf(self.robot, q_g)
         traj = vobj.TrajPath(self.robot, [translated_q, q_g])
-        hand_cmd = vobj.HandCmd(self.robot, self.objects[obj], grasp.pose, status='Close')
+        hand_cmd = vobj.HandCmd(self.robot, self.objects[obj], grasp.pose, status='M')
         cmd = [q1, q2, [traj, hand_cmd]]
         return (cmd,)
 

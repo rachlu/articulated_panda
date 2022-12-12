@@ -57,7 +57,7 @@ class HandCmd:
         else:
             print('grabbed')
             self.robot.arm.hand.Close()
-            self.robot.arm.Grab(self.obj, self.grasp, 'M')
+            self.robot.arm.Grab(self.obj, self.grasp, self.status)
 
     def set_status(self, status):
         self.status = status

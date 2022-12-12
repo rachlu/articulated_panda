@@ -18,7 +18,7 @@ if __name__ == '__main__':
     print('init', init)
     print('goal', goal)
     stream_info = {'cfree': StreamInfo(negate=True), 'cfreeholding': StreamInfo(negate=True),
-                   'collisionCheck': StreamInfo(negate=True)}
+                   'collisionCheck': StreamInfo(negate=True), 'testOpenConf': StreamInfo(negate=True)}
     solution = solve_focused(pddlstream_problem, stream_info=stream_info, planner='ff-astar')
     print_solution(solution)
     plan, cost, evaluations = solution

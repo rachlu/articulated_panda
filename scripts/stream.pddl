@@ -76,6 +76,12 @@
         :certified (and (ObjState ?o ?p1) (ObjState ?o ?p2) (OpenEnough ?o ?p2 ?h))
     )
 
+    (:stream testOpenConf
+        :inputs (?o ?p1 ?p2 ?h)
+        :domain (and (Openable ?o) (Handle ?o ?h) (ObjState ?o ?p1) (ObjState ?o ?p2))
+        :certified (ValidStateTransition ?o ?p1 ?p2 ?h)
+    )
+
     (:stream collisionCheck
         :inputs (?o ?p ?o2 ?p2)
         :domain (and (ObjState ?o ?p) (ObjState ?o2 ?p2))
