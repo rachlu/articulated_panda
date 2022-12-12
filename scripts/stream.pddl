@@ -72,8 +72,8 @@
     (:stream sampleOpenableConf
         :inputs (?o ?h)
         :domain (and (Openable ?o) (Handle ?o ?h))
-        :outputs (?p1)
-        :certified (and (ObjState ?o ?p1) (ObjState ?o ?p2))
+        :outputs (?p)
+        :certified (ObjState ?o ?p)
     )
 
     (:stream testOpenConf
