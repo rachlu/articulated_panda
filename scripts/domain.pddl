@@ -131,7 +131,7 @@
                             (GraspOpenable ?o ?g ?h)
                             (Handle ?o ?h)
                             (Openable ?o)
-				)
+		)
 	:effect (and (not (AtConf ?q1)) (AtConf ?q2) (Holding ?o) (not (HandEmpty)) (AtGraspOpenable ?o ?g ?h))
     )
 

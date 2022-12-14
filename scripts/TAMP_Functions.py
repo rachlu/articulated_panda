@@ -53,18 +53,21 @@ class TAMP_Functions:
         self.objects[obj].set_transform(original_position)
         return path
 
-    def sample_openableconf(self, obj, knob):
+    def sample_delta_openableconf(self, obj, knob):
         if obj == 'door':
             random_conf = random.uniform(0, 60)
-            pose = vobj.BodyConf(obj, (random_conf,))
+            delta_pose = numpy.array((random_conf, ))
         else:
             # Cabinet open all the way is 0.3
             random_conf = random.uniform(0, 0.2)
             if 'top' in knob:
-                pose = vobj.BodyConf(obj, (random_conf, 0))
+                delta_pose = numpy.array((random_conf, 0))
             else:
-                pose = vobj.BodyConf(obj, (0, random_conf))
-        return (pose, )
+                delta_pose = numpy.array((0, random_conf))
+        return (delta_pose, )
+
+    def sample_openableconf(self, obj, conf, delta, knob):
+        return conf.conf + delta
 
     def test_open_enough(self, obj, obj_conf, knob):
         if obj == 'door':

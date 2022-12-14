@@ -69,11 +69,18 @@
         :certified (ObjState ?o ?p)
     )
 
-    (:stream sampleOpenableConf
+    (:stream sampleDeltaOpenableConf
         :inputs (?o ?h)
         :domain (and (Openable ?o) (Handle ?o ?h))
-        :outputs (?p)
-        :certified (ObjState ?o ?p)
+        :outputs (?d)
+        :certified (DeltaObjState ?o ?d ?h)
+    )
+
+    (:stream sampleOpenableConf
+        :inputs (?o ?p ?d ?h)
+        :domain (and (Openable ?o) (Handle ?o ?h) (ObjState ?o ?p) (DeltaObjState ?o ?d ?h))
+        :outputs (?p1)
+        :certified (ObjState ?o ?p1)
     )
 
     (:stream testOpenConf
