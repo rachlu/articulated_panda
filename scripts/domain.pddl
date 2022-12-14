@@ -38,7 +38,8 @@
 	    (Holding_Openable ?o ?h)
 	    (Handle ?o ?h)
 	    (ValidStateTransition ?o ?p1 ?p2 ?k)
-    )
+    	(DeltaObjState ?o ?d ?h)
+	)
 
     (:action move_free
         :parameters (?q1 ?q2 ?t)
@@ -98,7 +99,7 @@
                             (AtObjState ?o ?p1)
                             (ObjState ?o ?p2)
                             (Open_Traj ?o ?g ?q1 ?q2 ?p1 ?p2 ?h ?t)
-                            (not (UnSafeHolding ?t ?o ?g))
+                            ;(not (UnSafeHolding ?t ?o ?g))
 			    )
         :effect (and (not (Holding ?o)) (HandEmpty) (AtObjState ?o ?p2) (not (AtGraspOpenable ?o ?g ?h))
                     (not (AtObjState ?o ?p1)) (AtConf ?q2) (not (AtConf ?q1)) (CanMove))
