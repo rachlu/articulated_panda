@@ -39,9 +39,9 @@ def pddlstream_from_tamp(robot, movable, tamp, panda=None):
         ('Handle', 'cabinet', 'top_drawer_knob'),
         ('Handle', 'cabinet', 'bottom_drawer_knob'),
     ]
-    goal = ('and', ('Open', 'cabinet', 'bottom_drawer_knob'), ('AtConf', conf))
+    # goal = ('and', ('Open', 'cabinet', 'bottom_drawer_knob'), ('AtConf', conf))
     # goal = (('Open', 'cabinet', 'top_drawer_knob'))
-    # goal = ('and', ('Open', 'cabinet', 'top_drawer_knob'), ('Open', 'cabinet', 'bottom_drawer_knob'))
+    goal = ('and', ('Open', 'cabinet', 'top_drawer_knob'), ('Open', 'cabinet', 'bottom_drawer_knob'))
     # goal = (('Holding_Openable', 'cabinet', 'bottom_drawer_knob'))
     # goal = ('and', ('Holding_Openable', 'cabinet', 'top_drawer_knob'), ('AtConf', conf))
     #goal = (('Holding_Openable', 'cabinet', 'bottom_drawer_knob'))
@@ -77,21 +77,21 @@ def pddlstream_from_tamp(robot, movable, tamp, panda=None):
                          ])
         init.extend([('Graspable', obj)])
     stream_map = {
-        'get_trajectory': from_gen_fn(tamp.calculate_path),
-        'sampleGraspPose': from_gen_fn(tamp.sampleGrabPose),
-        'inverse-kinematics': from_gen_fn(tamp.computeIK),
-        'samplePlacePose': from_gen_fn(tamp.samplePlacePose),
-        'get_trajectory_holding': from_gen_fn(tamp.calculate_path_holding),
-        'get_trajectory_holding_upright': from_gen_fn(tamp.calculate_path_holding_upright),
+        'get_trajectory': from_fn(tamp.calculate_path),
+        'sampleGraspPose': from_fn(tamp.sampleGrabPose),
+        'inverse-kinematics': from_fn(tamp.computeIK),
+        'samplePlacePose': from_fn(tamp.samplePlacePose),
+        'get_trajectory_holding': from_fn(tamp.calculate_path_holding),
+        'get_trajectory_holding_upright': from_fn(tamp.calculate_path_holding_upright),
         'collisionCheck': from_test(tamp.collisionCheck),
-        'sampleTable': from_gen_fn(util.sampleTable),
+        'sampleTable': from_fn(util.sampleTable),
         'cfree': from_test(tamp.cfreeTraj_Check),
         'cfreeholding': from_test(tamp.cfreeTrajHolding_Check),
-        'open_traj': from_gen_fn(tamp.get_open_traj),
-        'inverse-nonplaceable-kinematics': from_gen_fn(tamp.compute_nonplaceable_IK),
-        'sampleGraspOpenable': from_gen_fn(tamp.sample_grasp_openable),
-        'sampleDeltaOpenableConf': from_gen_fn(tamp.sample_delta_openableconf),
-        'sampleOpenableConf': from_gen_fn(tamp.sample_openableconf),
+        'open_traj': from_fn(tamp.get_open_traj),
+        'inverse-nonplaceable-kinematics': from_fn(tamp.compute_nonplaceable_IK),
+        'sampleGraspOpenable': from_fn(tamp.sample_grasp_openable),
+        'sampleDeltaOpenableConf': from_fn(tamp.sample_delta_openableconf),
+        'sampleOpenableConf': from_fn(tamp.sample_openableconf),
         'testOpenConf': from_test(tamp.test_open_conf),
         'testOpenEnough': from_test(tamp.test_open_enough)
     }

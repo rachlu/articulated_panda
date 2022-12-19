@@ -54,12 +54,15 @@ class TAMP_Functions:
         return path
 
     def sample_delta_openableconf(self, obj, knob):
+        # Assuming that we only want the door or cabinet to open all the way
         if obj == 'door':
-            random_conf = random.uniform(45, 60)
-            delta_pose = numpy.array((random_conf, ))
+            # random_conf = random.uniform(45, 60)
+            # delta_pose = numpy.array((random_conf, ))
+            delta_pose = numpy.array((50, ))
         else:
             # Cabinet open all the way is 0.3
             random_conf = random.uniform(0.15, 0.2)
+            random_conf = 0.17
             if 'top' in knob:
                 delta_pose = numpy.array((random_conf, 0))
             else:
