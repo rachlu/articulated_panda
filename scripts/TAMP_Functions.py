@@ -22,14 +22,14 @@ class TAMP_Functions:
     def calculate_path(self, q1, q2, constraint=None):
         print(q1, q2)
         if not self.robot.arm.IsCollisionFree(q2.conf, obstacles=[self.floor]):
-            return (None,)
+            return None
         rrt = RRT(self.robot, self.objects, nonmovable=[self.floor], constraint=constraint)
         for _ in range(3):
             path = rrt.motion(q1.conf, q2.conf)
             if path is not None:
                 cmd = [[vobj.TrajPath(self.robot, path)]]
-                return (cmd,)
-        return (None, )
+                return cmd
+        return None
 
     def calculate_path_holding(self, q1, q2, obj, grasp):
         original_position = self.objects[obj].get_transform()
@@ -68,11 +68,12 @@ class TAMP_Functions:
             else:
                 delta_pose = numpy.array((0, random_conf))
         delta_pose = [vobj.BodyConf(obj, delta_pose)]
-        return (delta_pose, )
+        return delta_pose
 
     def sample_openableconf(self, obj, conf, delta, knob):
+        print('sample_openable', conf, delta)
         new_conf = [vobj.BodyConf(obj, conf.conf + delta.conf)]
-        return (new_conf, )
+        return new_conf
 
     def test_open_enough(self, obj, obj_conf, knob):
         print('test_open_enough', obj_conf.conf)
@@ -85,18 +86,6 @@ class TAMP_Functions:
             return True
 
         return False
-
-    def test_open_conf(self, obj, start_conf, end_conf, knob):
-        print('====== test open_conf ============')
-        print(start_conf.conf, end_conf.conf)
-        diff = end_conf.conf - start_conf.conf
-        if knob == 'knob' or 'top' in knob:
-            if 'top' in knob and diff[1] != 0:
-                return False
-        else:
-            if diff[0] != 0:
-                return False
-        return True
 
     def get_open_traj(self, obj, obj_conf, end_conf,  start_q, relative_grasp, knob):
         print('================= Open Traj =================')
@@ -116,8 +105,8 @@ class TAMP_Functions:
             if t2 is not None:
                 # t2 = cmds, end_conf
                 cmds = [t2[0], t2[1]]
-                return (cmds, )
-        return (None, )
+                return cmds
+        return None
 
     def sample_grasp_openable(self, obj, obj_conf, knob):
         old_pos = self.objects[obj].get_configuration()
@@ -132,9 +121,9 @@ class TAMP_Functions:
                 # Grasp in object frame
                 relative_grasp = numpy.dot(numpy.linalg.inv(new_obj_pose), grasp_pose)
                 cmd1 = [vobj.Pose(obj, relative_grasp)]
-                return (cmd1,)
+                return cmd1
 
-        return (None,)
+        return None
 
     def sampleGrabPose(self, obj, obj_pose):
         # grasp_pose is grasp in world frame
@@ -145,8 +134,8 @@ class TAMP_Functions:
                 # Grasp in object frame
                 relative_grasp = numpy.dot(numpy.linalg.inv(new_obj_pose.pose), grasp_pose)
                 cmd1 = [vobj.Pose(obj, relative_grasp)]
-                return (cmd1, )
-        return (None,)
+                return cmd1
+        return None
 
     def compute_nonplaceable_IK(self, obj, obj_conf, grasp, knob):
         old_pos = self.objects[obj].get_configuration()
@@ -156,7 +145,7 @@ class TAMP_Functions:
         grasp_in_world = numpy.dot(obj_pose, grasp.pose)
         q_g = self.robot.arm.ComputeIK(grasp_in_world)
         if q_g is None or not self.robot.arm.IsCollisionFree(q_g, obstacles=[self.floor]):
-            return (None,)
+            return None
         up = numpy.array([[1, 0, 0, 0],
                           [0, 1, 0, 0],
                           [0, 0, 1, -.08],
@@ -164,7 +153,7 @@ class TAMP_Functions:
         new_g = numpy.dot(grasp_in_world, up)
         translated_q = self.robot.arm.ComputeIK(new_g, seed_q=q_g)
         if translated_q is None:
-            return (None,)
+            return None
         translated_q = numpy.array(translated_q)
         q_g = numpy.array(q_g)
         q1 = vobj.BodyConf(self.robot, translated_q)
@@ -172,7 +161,7 @@ class TAMP_Functions:
         traj = vobj.TrajPath(self.robot, [translated_q, q_g])
         hand_cmd = vobj.HandCmd(self.robot, self.objects[obj], grasp.pose, status='M')
         cmd = [q1, q2, [traj, hand_cmd]]
-        return (cmd,)
+        return cmd
 
     def computeIK(self, obj, obj_pose, grasp):
         """
@@ -185,7 +174,7 @@ class TAMP_Functions:
         q_g = self.robot.arm.ComputeIK(grasp_in_world)
         if q_g is None or not self.robot.arm.IsCollisionFree(q_g, obstacles=[self.floor]):
             print('q_g None')
-            return (None,)
+            return None
         up = numpy.array([[1, 0, 0, 0],
                           [0, 1, 0, 0],
                           [0, 0, 1, -.08],
@@ -194,7 +183,7 @@ class TAMP_Functions:
         translated_q = self.robot.arm.ComputeIK(new_g, seed_q=q_g)
         if translated_q is None:
             print('translated none')
-            return (None,)
+            return None
         translated_q = numpy.array(translated_q)
         q_g = numpy.array(q_g)
         q = vobj.BodyConf(self.robot, translated_q)
@@ -202,13 +191,13 @@ class TAMP_Functions:
         hand_cmd = vobj.HandCmd(self.robot, self.objects[obj], grasp.pose)
         traj2 = vobj.TrajPath(self.robot, [q_g, translated_q])
         cmd = [q, [traj, hand_cmd, traj2]]
-        return (cmd,)
+        return cmd
 
     def samplePlacePose(self, obj, region):
         # Obj pose in world frame
         place_pose = self.place.place_tsr[obj].sample()
         cmd = [vobj.Pose(obj, place_pose)]
-        return (cmd,)
+        return cmd
 
     def collisionCheck(self, obj, pos, other, other_pos):
         """
@@ -279,6 +268,7 @@ class TAMP_Functions:
             obj_oldpos = self.objects[obj].get_configuration()
             self.objects[obj].set_configuration(pose.conf)
             conf = True
+            print('cfree', pose.conf)
         else:
             obj_oldpos = self.objects[obj].get_transform()
             self.objects[obj].set_transform(pose.pose)

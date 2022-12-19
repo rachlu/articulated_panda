@@ -48,7 +48,7 @@
                             (Conf ?q2)
                             (AtConf ?q1)
                             (HandEmpty)
-                            ;(not (UnSafeTraj ?t))
+                            (not (UnSafeTraj ?t))
                       	    (CanMove))
         :effect (and (AtConf ?q2) (not (AtConf ?q1)) (not (CanMove)))
     )
@@ -99,7 +99,7 @@
                             (AtObjState ?o ?p1)
                             (ObjState ?o ?p2)
                             (Open_Traj ?o ?g ?q1 ?q2 ?p1 ?p2 ?h ?t)
-                            ;(not (UnSafeHolding ?t ?o ?g))
+                            (not (UnSafeHolding ?t ?o ?g))
 			    )
         :effect (and (not (Holding ?o)) (HandEmpty) (AtObjState ?o ?p2) (not (AtGraspOpenable ?o ?g ?h))
                     (not (AtObjState ?o ?p1)) (AtConf ?q2) (not (AtConf ?q1)) (CanMove))
@@ -169,7 +169,7 @@
     )
 
     (:derived (Open ?o ?h)
-        (exists (?p) (and (Openable ?o) (Handle ?o ?h) (AtObjState ?o ?p) (OpenEnough ?o ?p ?h)))
+        (exists (?p) (and (Openable ?o) (Handle ?o ?h) (ObjState ?o ?p) (AtObjState ?o ?p) (OpenEnough ?o ?p ?h)))
     )
     
     (:derived (Holding_Openable ?o ?h)

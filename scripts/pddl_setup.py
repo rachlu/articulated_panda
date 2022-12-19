@@ -39,9 +39,9 @@ def pddlstream_from_tamp(robot, movable, tamp, panda=None):
         ('Handle', 'cabinet', 'top_drawer_knob'),
         ('Handle', 'cabinet', 'bottom_drawer_knob'),
     ]
-    # goal = ('and', ('Open', 'cabinet', 'bottom_drawer_knob'), ('AtConf', conf))
+    goal = ('and', ('Open', 'cabinet', 'bottom_drawer_knob'), ('Open', 'cabinet', 'top_drawer_knob'), ('AtConf', conf))
     # goal = (('Open', 'cabinet', 'top_drawer_knob'))
-    goal = ('and', ('Open', 'cabinet', 'top_drawer_knob'), ('Open', 'cabinet', 'bottom_drawer_knob'))
+    # goal = ('and', ('Open', 'cabinet', 'top_drawer_knob'), ('Open', 'cabinet', 'bottom_drawer_knob'))
     # goal = (('Holding_Openable', 'cabinet', 'bottom_drawer_knob'))
     # goal = ('and', ('Holding_Openable', 'cabinet', 'top_drawer_knob'), ('AtConf', conf))
     #goal = (('Holding_Openable', 'cabinet', 'bottom_drawer_knob'))
@@ -92,7 +92,6 @@ def pddlstream_from_tamp(robot, movable, tamp, panda=None):
         'sampleGraspOpenable': from_fn(tamp.sample_grasp_openable),
         'sampleDeltaOpenableConf': from_fn(tamp.sample_delta_openableconf),
         'sampleOpenableConf': from_fn(tamp.sample_openableconf),
-        'testOpenConf': from_test(tamp.test_open_conf),
         'testOpenEnough': from_test(tamp.test_open_enough)
     }
 
