@@ -1,12 +1,10 @@
-#!/usr/bin/env python
+from scipy.spatial.transform import Rotation as R
 
 import numpy as np
 import random
 import networkx as nx
 import time
 import util
-import math
-from scipy.spatial.transform import Rotation as R
 
 
 def filter(arraylist):

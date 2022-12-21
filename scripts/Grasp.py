@@ -1,10 +1,10 @@
-#!/usr/bin/env python
+from tsr.tsr import TSR
 
 import numpy
 import random
 import math
-from tsr.tsr import TSR
 import util
+
 
 class Grasp:
     def __init__(self, robot, objects):
@@ -57,10 +57,6 @@ class Grasp:
 
         z = util.get_rotation_arr('Z', math.pi)
         rotation = numpy.dot(z, rotation)
-        translation = numpy.array([[1, 0, 0, 0],
-                                   [0, 1, 0, 0],
-                                   [0, 0, 1, -.125],
-                                   [0., 0., 0., 1.]])
         rel = numpy.dot(rotation, translation)
 
         self.relative[self.utensils].append(rel)
@@ -70,47 +66,27 @@ class Grasp:
 
         # Cabinet
         translation = numpy.array([[1, 0, 0, 0],
-                                   [0, 1, 0, -0.125],
-                                   [0, 0, 1, -0.275],
-                                   [0., 0., 0., 1.]])
-        t1 = util.get_rotation_arr('X', math.pi / 2)
+                                   [0, 1, 0, 0],
+                                   [0, 0, 1, -0.13],
+                                   [0, 0, 0, 1]])
+        t1 = util.get_rotation_arr('X', 3 * math.pi / 2)
         t2 = util.get_rotation_arr('Y', math.pi / 2)
         rotation = numpy.dot(t1, t2)
         rel = numpy.dot(rotation, translation)
-        self.relative['cabinet_bottom'] = [rel]
+        self.relative['cabinet'] = [rel]
 
-        translation = numpy.array([[1, 0, 0, 0],
-                                   [0, 1, 0, 0.125],
-                                   [0, 0, 1, -0.275],
-                                   [0., 0., 0., 1.]])
-        rel = numpy.dot(rotation, translation)
-        self.relative['cabinet_top'] = [rel]
-
-        t1 = util.get_rotation_arr('X', 3*math.pi/2)
-        #y, z, x
-        translation = numpy.array([[1, 0, 0, 0],
-                                   [0, 1, 0, 0.125],
-                                   [0, 0, 1, -0.275],
-                                   [0., 0., 0., 1.]])
+        t1 = util.get_rotation_arr('X', math.pi / 2)
         rotation = numpy.dot(t1, t2)
         rel = numpy.dot(rotation, translation)
-        self.relative['cabinet_bottom'].append(rel)
-
-        translation = numpy.array([[1, 0, 0, 0],
-                                   [0, 1, 0, -0.125],
-                                   [0, 0, 1, -0.275],
-                                   [0., 0., 0., 1.]])
-        rel = numpy.dot(rotation, translation)
-        self.relative['cabinet_top'].append(rel)
+        self.relative['cabinet'].append(rel)
 
         bw = numpy.array([[0, 0], [0, 0], [-0.018, 0.018], [0, 0], [0, 0], [0, 0]])
-        self.bw_range['cabinet_bottom'] = bw
-        self.bw_range['cabinet_top'] = bw
+        self.bw_range['cabinet'] = bw
 
         # Door
-        translation = numpy.array([[1, 0, 0, 0.8],
-                                   [0, 1, 0, 0.087],
-                                   [0, 0, 1, 0.65],
+        translation = numpy.array([[1, 0, 0, 0],
+                                   [0, 1, 0, 0],
+                                   [0, 0, 1, 0.11],
                                    [0, 0, 0, 1]])
         t1 = util.get_rotation_arr('X', math.pi)
         t2 = util.get_rotation_arr('Z', math.pi / 2)
@@ -122,8 +98,27 @@ class Grasp:
         rotation = numpy.dot(t1, t2)
         rel = numpy.dot(translation, rotation)
         self.relative['door'].append(rel)
-        bw = numpy.array([[0, 0], [-0.02, 0.02], [0, 0], [0, 0], [0, 0], [0, 0]])
+        bw = numpy.array([[0, 0], [-0.11, 0.11], [-0.018, 0.018], [0, 0], [0, 0], [0, 0]])
         self.bw_range['door'] = bw
+
+        # Spring
+        rotation = util.get_rotation_arr('Y', math.pi)
+        translation = numpy.array([[1, 0, 0, 0],
+                                   [0, 1, 0, 0],
+                                   [0, 0, 1, -.13],
+                                   [0., 0., 0., 1.]])
+        z = util.get_rotation_arr('Z', math.pi)
+        rotation = numpy.dot(z, rotation)
+        rel = numpy.dot(rotation, translation)
+        self.relative['spring'] = [rel]
+
+        z = util.get_rotation_arr('Z', math.pi)
+        rotation = numpy.dot(z, rotation)
+        rel = numpy.dot(rotation, translation)
+        self.relative['spring'].append(rel)
+
+        bw = numpy.array([[0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]])
+        self.bw_range['spring'] = bw
 
     def set_tsr(self, obj, pose):
         if obj in self.utensils:
@@ -138,16 +133,12 @@ class Grasp:
         # Sample grasp of obj
         # r,g,b = x,y,z
         self.set_tsr(obj, pose)
-        computed_q = None
-        for _ in range(15):
-            if computed_q is not None and self.robot.arm.IsCollisionFree(computed_q):
-                return grasp_world, computed_q
-            grasp_idx = random.randint(0, 1)
-            # Grasp in world frame
-            grasp_world = self.grasp_tsr[obj][grasp_idx].sample()
-            computed_q = self.robot.arm.ComputeIK(grasp_world)
-        return None, None
-        
+        grasp_idx = random.randint(0, 1)
+        # Grasp in world frame
+        grasp_world = self.grasp_tsr[obj][grasp_idx].sample()
+        computed_q = self.robot.arm.ComputeIK(grasp_world)
+        return grasp_world, computed_q
+
     
         
     

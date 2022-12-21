@@ -1,19 +1,9 @@
-#!/usr/bin/env python
-
-# from __future__ import print_function
-
 import os
-import IPython
 import pb_robot
 import numpy
 import math
 import util
-import vobj
 
-from Plan import Plan
-from Grasp import Grasp
-from RRT import RRT
-from Place import Place
 
 def collision_free(objects, obj):
     """
@@ -35,6 +25,35 @@ def collision_free(objects, obj):
     return True
 
 
+def cabinetIK(obj):
+    def func(pose_worldF):
+        z = pose_worldF[2][-1]
+        name = None
+        link = None
+        for l in obj.links:
+            if 'knob' not in l.get_link_name():
+                continue
+            position = l.get_link_tform(True)
+            if abs(z - position[2][-1]) < 0.01:
+                name = l.get_link_name()
+                link = l
+                break
+        current = obj.get_configuration()
+        position = link.get_link_tform(True)
+        x = position[0][-1] - pose_worldF[0][-1]
+        y = position[1][-1] - pose_worldF[1][-1]
+        if abs(x) > abs(y):
+            diff = x
+        else:
+            diff = y
+        if 'top' in name:
+            conf = current + numpy.array((diff, 0))
+        elif 'bottom' in name:
+            conf = current + numpy.array((0, diff))
+        return conf
+    return func
+
+
 def execute():
     # Launch pybullet
     pb_robot.utils.connect(use_gui=True)
@@ -52,6 +71,7 @@ def execute():
     floor_pose = floor.get_transform()
     floor_pose[0][3] += 0.16764
     floor.set_transform(floor_pose)
+    openable = ['door', 'cabinet']
     """
     # Add fork object
     fork_file = os.path.join(objects_path, 'fork.urdf')
@@ -82,27 +102,55 @@ def execute():
         random_pos = util.sampleTable('bowl')[0][0].pose
         bowl.set_transform(random_pos)
     """
-    door_file = os.path.join(objects_path, 'door.urdf')
+    # door_file = os.path.join(objects_path, 'door.urdf')
+    #
+    # door = pb_robot.body.createBody(door_file)
+    # pos = numpy.array([[1, 0, 0, .6],
+    #                   [0, 1, 0, -0.5],
+    #                   [0, 0, 1, pb_robot.placements.stable_z(door, floor)],
+    #                   [0, 0, 0, 1]])
+    # rotate = util.get_rotation_arr('Z', math.pi/2)
 
-    door = pb_robot.body.createBody(door_file)
-    pos = numpy.array([[1, 0, 0, .7],
-                      [0, 1, 0, -0.5],
-                      [0, 0, 1, pb_robot.placements.stable_z(door, floor)],
-                      [0, 0, 0, 1]])
-    rotate = util.get_rotation_arr('Z', math.pi/2)
-    door.set_transform(numpy.dot(pos, rotate))
+    # rotate = util.get_rotation_arr('Z', 3*math.pi/2)
+    # pos = numpy.array([[1, 0, 0, .4],
+    #                   [0, 1, 0, 0.5],
+    #                   [0, 0, 1, pb_robot.placements.stable_z(door, floor)],
+    #                   [0, 0, 0, 1]])
+
+    # rotate = util.get_rotation_arr('Z', math.pi)
+    # pos = numpy.array([[1, 0, 0, .8],
+    #                   [0, 1, 0, 0.5],
+    #                   [0, 0, 1, pb_robot.placements.stable_z(door, floor)],
+    #                   [0, 0, 0, 1]])
+
+    # rotate = util.get_rotation_arr('Z', 0)
+    # pos = numpy.array([[1, 0, 0, -0.4],
+    #                   [0, 1, 0, 0.4],
+    #                   [0, 0, 1, pb_robot.placements.stable_z(door, floor)],
+    #                   [0, 0, 0, 1]])
+    # door.set_transform(numpy.dot(pos, rotate))
 
     cabinet_file = os.path.join(objects_path, 'cabinet.urdf')
     cabinet = pb_robot.body.createBody(cabinet_file)
-    pos = numpy.array([[1, 0, 0, -0.4],
-                       [0, 1, 0, 0.4],
+    pos = numpy.array([[1, 0, 0, 0.8],
+                       [0, 1, 0, -0.3],
                        [0, 0, 1, pb_robot.placements.stable_z(cabinet, floor)],
                        [0, 0, 0, 1]])
-    rotate = util.get_rotation_arr('Z', math.pi)
+    rotate = util.get_rotation_arr('Z', 2*math.pi)
     cabinet.set_transform(numpy.dot(pos, rotate))
+    cabinet.setIK(cabinetIK(cabinet))
+
+    spring_file = os.path.join(objects_path, 'block.urdf')
+    spring = pb_robot.body.createBody(spring_file)
+    pos = numpy.array([[1, 0, 0, 0.4],
+                       [0, 1, 0, 0.4],
+                       [0, 0, 1, pb_robot.placements.stable_z(spring, floor)],
+                       [0, 0, 0, 1]])
+    spring.set_transform(pos)
     # objects = {'fork': fork, 'spoon': spoon, 'knife': knife, 'bowl': bowl, 'door': door}
 
     # objects = {'fork': fork, 'spoon': spoon, 'knife': knife, 'bowl': bowl}
 
-    objects = {'door': door, 'cabinet': cabinet}
-    return objects, floor, robot
+    # objects = {'door': door, 'cabinet': cabinet, 'spring':spring}
+    objects = {'cabinet': cabinet}
+    return objects, openable, floor, robot
