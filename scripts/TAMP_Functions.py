@@ -33,7 +33,7 @@ class TAMP_Functions:
 
     def calculate_path_holding(self, q1, q2, obj, grasp):
         original_position = self.objects[obj].get_transform()
-        self.robot.arm.Grab(self.objects[obj], grasp.pose)
+        self.robot.arm.Grab(self.objects[obj], grasp.pose, 'RB')
         self.robot.arm.hand.Close()
 
         path = self.calculate_path(q1, q2)
@@ -44,7 +44,7 @@ class TAMP_Functions:
 
     def calculate_path_holding_upright(self, q1, q2, obj, grasp):
         original_position = self.objects[obj].get_transform()
-        self.robot.arm.Grab(self.objects[obj], grasp.pose)
+        self.robot.arm.Grab(self.objects[obj], grasp.pose, 'RB')
         self.robot.arm.hand.Close()
 
         path = self.calculate_path(q1, q2, (rotation_constraint, obj))
@@ -56,12 +56,12 @@ class TAMP_Functions:
     def sample_delta_openableconf(self, obj, knob):
         # Assuming that we only want the door or cabinet to open all the way
         if obj == 'door':
-            random_conf = random.uniform(45, 60)
+            random_conf = random.uniform(40, 50)
             delta_pose = numpy.array((random_conf, ))
             # delta_pose = numpy.array((50, ))
         else:
             # Cabinet open all the way is 0.3
-            random_conf = random.uniform(0.15, 0.2)
+            random_conf = random.uniform(0.13, 0.17)
             # random_conf = 0.17
             if 'top' in knob:
                 delta_pose = numpy.array((random_conf, 0))
@@ -78,11 +78,11 @@ class TAMP_Functions:
     def test_open_enough(self, obj, obj_conf, knob):
         print('test_open_enough', obj_conf.conf)
         if obj == 'door':
-            if 45 < obj_conf.conf[0] < 60:
+            if 40 < obj_conf.conf[0] < 50:
                 return True
 
         current = obj_conf.conf[0] if 'top' in knob else obj_conf.conf[1]
-        if 0.15 < current < 0.2:
+        if 0.13 < current < 0.17:
             return True
 
         return False
@@ -188,7 +188,7 @@ class TAMP_Functions:
         q_g = numpy.array(q_g)
         q = vobj.BodyConf(self.robot, translated_q)
         traj = vobj.TrajPath(self.robot, [translated_q, q_g])
-        hand_cmd = vobj.HandCmd(self.robot, self.objects[obj], grasp.pose)
+        hand_cmd = vobj.HandCmd(self.robot, self.objects[obj], grasp.pose, 'RB')
         traj2 = vobj.TrajPath(self.robot, [q_g, translated_q])
         cmd = [q, [traj, hand_cmd, traj2]]
         return cmd
@@ -289,7 +289,7 @@ class TAMP_Functions:
 
     def cfreeTrajHolding_Check(self, traj, obj, grasp, obj2, pose):
         old_pos = self.objects[obj].get_transform()
-        self.robot.arm.Grab(self.objects[obj], grasp.pose)
+        self.robot.arm.Grab(self.objects[obj], grasp.pose, 'RB')
         result = self.cfreeTraj_Check(traj, obj2, pose)
         self.robot.arm.Release(self.objects[obj])
         self.objects[obj].set_transform(old_pos)

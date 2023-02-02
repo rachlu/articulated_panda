@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<robot name="fork">
+<robot name="knife">
   <link name="base_link">
     <visual>
       <origin xyz="0 0 0.0126" rpy="0 0 0"/>

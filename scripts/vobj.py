@@ -38,26 +38,21 @@ class HandCmd:
         self.grasp = grasp
         self.status = status
 
-    def execute(self, arm, *args):
-        # if self.status is not None:
-        #     if self.status.upper() == 'OPEN':
-        #         self.robot.arm.hand.Open()
-        #         input("Open")
-        #         if arm:
-        #             arm.hand.open()
-        #     else:
-        #         self.robot.arm.hand.Close()
-        #         input("Close")
-        #         if arm:
-        #             arm.hand.grasp(0.02, 40, epsilon_inner=0.1, epsilon_outer=0.1)
-        #     return
+    def execute(self, arm):
         if len(self.robot.arm.grabbedObjects) != 0:
             self.robot.arm.hand.Open()
             self.robot.arm.Release(self.obj)
+            if arm:
+                input('Open')
+                arm.hand.open()
         else:
             print('grabbed')
             self.robot.arm.hand.Close()
             self.robot.arm.Grab(self.obj, self.grasp, self.status)
+            print(self.robot.arm.grabbedObjects)
+            if arm:
+                input('Close')
+                arm.hand.grasp(0.02, 40, epsilon_inner=0.1, epsilon_outer=0.1)
 
     def set_status(self, status):
         self.status = status
