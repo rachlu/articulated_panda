@@ -40,7 +40,7 @@ def sampleTable(obj):
 
     pose = numpy.dot(translation, rotate)
     cmd = [vobj.Pose(obj, pose)]
-    return (cmd,)
+    return cmd
 
 
 def collision_Test(robot, objects, nonmovable, q1, q2, sample, constraint=None):

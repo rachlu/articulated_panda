@@ -88,28 +88,28 @@ def execute():
     fork = pb_robot.body.createBody(fork_file)
 
     while not collision_free([robot, cabinet], fork):
-        random_pos = util.sampleTable('fork')[0][0].pose
+        random_pos = util.sampleTable('fork')[0].pose
         fork.set_transform(random_pos)
     
     # Add knife object
     knife_file = os.path.join(objects_path, 'knife.urdf')
     knife = pb_robot.body.createBody(knife_file)
     while not collision_free([fork, robot, cabinet], knife):
-        random_pos = util.sampleTable('knife')[0][0].pose
+        random_pos = util.sampleTable('knife')[0].pose
         knife.set_transform(random_pos)
 
     # Add spoon object
     spoon_file = os.path.join(objects_path, 'spoon.urdf')
     spoon = pb_robot.body.createBody(spoon_file)
     while not collision_free([fork, knife, robot, cabinet], spoon):
-        random_pos = util.sampleTable('spoon')[0][0].pose
+        random_pos = util.sampleTable('spoon')[0].pose
         spoon.set_transform(random_pos)
 
     # Add bowl object
     bowl_file = os.path.join(objects_path, 'bowl.urdf')
     bowl = pb_robot.body.createBody(bowl_file)
     while not collision_free([knife, spoon, fork, robot, cabinet], bowl):
-        random_pos = util.sampleTable('bowl')[0][0].pose
+        random_pos = util.sampleTable('bowl')[0].pose
         bowl.set_transform(random_pos)
 
     # door_file = os.path.join(objects_path, 'door.urdf')
