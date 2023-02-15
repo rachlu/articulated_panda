@@ -72,36 +72,46 @@ def execute():
     floor_pose[0][3] += 0.16764
     floor.set_transform(floor_pose)
     openable = ['door', 'cabinet']
-    """
+
+    cabinet_file = os.path.join(objects_path, 'cabinet.urdf')
+    cabinet = pb_robot.body.createBody(cabinet_file)
+    pos = numpy.array([[1, 0, 0, 0.8],
+                       [0, 1, 0, -0.3],
+                       [0, 0, 1, pb_robot.placements.stable_z(cabinet, floor)],
+                       [0, 0, 0, 1]])
+    rotate = util.get_rotation_arr('Z', 2 * math.pi)
+    cabinet.set_transform(numpy.dot(pos, rotate))
+    cabinet.setIK(cabinetIK(cabinet))
+
     # Add fork object
     fork_file = os.path.join(objects_path, 'fork.urdf')
     fork = pb_robot.body.createBody(fork_file)
 
-    while not collision_free([robot], fork):
+    while not collision_free([robot, cabinet], fork):
         random_pos = util.sampleTable('fork')[0][0].pose
         fork.set_transform(random_pos)
     
     # Add knife object
     knife_file = os.path.join(objects_path, 'knife.urdf')
     knife = pb_robot.body.createBody(knife_file)
-    while not collision_free([fork, robot], knife):
+    while not collision_free([fork, robot, cabinet], knife):
         random_pos = util.sampleTable('knife')[0][0].pose
         knife.set_transform(random_pos)
 
     # Add spoon object
     spoon_file = os.path.join(objects_path, 'spoon.urdf')
     spoon = pb_robot.body.createBody(spoon_file)
-    while not collision_free([fork, knife, robot], spoon):
+    while not collision_free([fork, knife, robot, cabinet], spoon):
         random_pos = util.sampleTable('spoon')[0][0].pose
         spoon.set_transform(random_pos)
 
     # Add bowl object
     bowl_file = os.path.join(objects_path, 'bowl.urdf')
     bowl = pb_robot.body.createBody(bowl_file)
-    while not collision_free([knife, spoon, fork, robot], bowl):
+    while not collision_free([knife, spoon, fork, robot, cabinet], bowl):
         random_pos = util.sampleTable('bowl')[0][0].pose
         bowl.set_transform(random_pos)
-    """
+
     # door_file = os.path.join(objects_path, 'door.urdf')
     #
     # door = pb_robot.body.createBody(door_file)
@@ -130,27 +140,17 @@ def execute():
     #                   [0, 0, 0, 1]])
     # door.set_transform(numpy.dot(pos, rotate))
 
-    cabinet_file = os.path.join(objects_path, 'cabinet.urdf')
-    cabinet = pb_robot.body.createBody(cabinet_file)
-    pos = numpy.array([[1, 0, 0, 0.8],
-                       [0, 1, 0, -0.3],
-                       [0, 0, 1, pb_robot.placements.stable_z(cabinet, floor)],
-                       [0, 0, 0, 1]])
-    rotate = util.get_rotation_arr('Z', 2*math.pi)
-    cabinet.set_transform(numpy.dot(pos, rotate))
-    cabinet.setIK(cabinetIK(cabinet))
-
-    spring_file = os.path.join(objects_path, 'block.urdf')
-    spring = pb_robot.body.createBody(spring_file)
-    pos = numpy.array([[1, 0, 0, 0.4],
-                       [0, 1, 0, 0.4],
-                       [0, 0, 1, pb_robot.placements.stable_z(spring, floor)],
-                       [0, 0, 0, 1]])
-    spring.set_transform(pos)
+    # spring_file = os.path.join(objects_path, 'block.urdf')
+    # spring = pb_robot.body.createBody(spring_file)
+    # pos = numpy.array([[1, 0, 0, 0.4],
+    #                    [0, 1, 0, 0.4],
+    #                    [0, 0, 1, pb_robot.placements.stable_z(spring, floor)],
+    #                    [0, 0, 0, 1]])
+    # spring.set_transform(pos)
     # objects = {'fork': fork, 'spoon': spoon, 'knife': knife, 'bowl': bowl, 'door': door}
 
-    # objects = {'fork': fork, 'spoon': spoon, 'knife': knife, 'bowl': bowl}
+    objects = {'fork': fork, 'spoon': spoon, 'knife': knife, 'bowl': bowl, 'cabinet': cabinet}
 
     # objects = {'door': door, 'cabinet': cabinet, 'spring':spring}
-    objects = {'cabinet': cabinet}
+    # objects = {'cabinet': cabinet}
     return objects, openable, floor, robot

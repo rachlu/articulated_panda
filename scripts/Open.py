@@ -44,11 +44,12 @@ class Open:
                 return None
         back = numpy.array([[1, 0, 0, 0],
                             [0, 1, 0, 0],
-                            [0, 0, 1, -.07],
+                            [0, 0, 1, -.05],
                             [0., 0., 0., 1.]])
         back_grasp = numpy.dot(new_grasp, back)
         q = self.robot.arm.ComputeIKQ(back_grasp, path[-1])
         if q is None:
+            print('back None')
             self.robot.arm.Release(self.objects[obj])
             self.objects[obj].set_configuration(old_pos)
             return None
