@@ -12,9 +12,10 @@ class BodyConf:
 
 
 class TrajPath:
-    def __init__(self, robot, path):
+    def __init__(self, robot, path, impedance=False):
         self.robot = robot
         self.path = path
+        self.impedance = impedance
 
     def __repr__(self):
         return 't{}'.format(id(self) % 1000)
@@ -27,8 +28,11 @@ class TrajPath:
                 time.sleep(0.2)
             ans = input('Redo?')
         if arm:
-            path = util.convert(arm, self.path)
-            arm.execute_position_path(path)
+            # path = util.convert(arm, self.path)
+            if not self.impedance: 
+                arm.execute_position_path(util.convert(arm, self.path)) 
+            else: 
+                arm.execute_joint_impedance_traj(self.path)
 
 
 class HandCmd:

@@ -21,7 +21,6 @@ def pddlstream_from_tamp(robot, movable, tamp, panda=None):
     else:
         robot.arm.SetJointValues(panda.convertToList(panda.joint_angles()))
         conf = vobj.BodyConf(robot, panda.convertToList(panda.joint_angles()))
-    # ('Pose', obj, obj.GetTransform()),
 
     init = [
         ('Conf', conf),
@@ -40,7 +39,7 @@ def pddlstream_from_tamp(robot, movable, tamp, panda=None):
         ('Handle', 'cabinet', 'bottom_drawer_knob'),
     ]
     # goal = ('and', ('Open', 'cabinet', 'bottom_drawer_knob'), ('Open', 'cabinet', 'top_drawer_knob'), ('AtConf', conf))
-    goal = (('Open', 'cabinet', 'top_drawer_knob'))
+    goal = ('and', ('Open', 'cabinet', 'bottom_drawer_knob'), ('AtConf', conf))
     # goal = ('and', ('Open', 'cabinet', 'top_drawer_knob'), ('Open', 'cabinet', 'bottom_drawer_knob'))
     # goal = (('Holding_Openable', 'cabinet', 'bottom_drawer_knob'))
     # goal = ('and', ('Holding_Openable', 'cabinet', 'top_drawer_knob'), ('AtConf', conf))
@@ -76,6 +75,7 @@ def pddlstream_from_tamp(robot, movable, tamp, panda=None):
                          ('ObjState', obj, position)
                          ])
         init.extend([('Graspable', obj)])
+        
     stream_map = {
         'get_trajectory': from_fn(tamp.calculate_path),
         'sampleGraspPose': from_fn(tamp.sampleGrabPose),
