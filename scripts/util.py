@@ -118,7 +118,7 @@ def collision_link_body(body1, link, body2):
 
 def convert(arm, path):
     """
-    :param path: list of robot configurations
+    :param path: list of lists of robot configurations
     :return: list of dictionaries of robot configurations
     """
     final_path = []

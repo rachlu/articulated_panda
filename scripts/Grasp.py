@@ -67,7 +67,7 @@ class Grasp:
         # Cabinet
         translation = numpy.array([[1, 0, 0, 0],
                                    [0, 1, 0, 0],
-                                   [0, 0, 1, -0.13],
+                                   [0, 0, 1, -0.12],
                                    [0, 0, 0, 1]])
         t1 = util.get_rotation_arr('X', 3 * math.pi / 2)
         t2 = util.get_rotation_arr('Y', math.pi / 2)

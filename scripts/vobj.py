@@ -28,11 +28,16 @@ class TrajPath:
                 time.sleep(0.2)
             ans = input('Redo?')
         if arm:
-            # path = util.convert(arm, self.path)
             if not self.impedance: 
                 arm.execute_position_path(util.convert(arm, self.path)) 
             else: 
-                arm.execute_joint_impedance_traj(self.path)
+                self.impedance_control(arm)
+    
+    def impedance_control(self, arm):
+        arm.execute_joint_impedance_traj(self.path)
+        current_conf =  arm.convertToList(arm.joint_angles())
+        if util.getDistance(current_conf, self.path[-1]) > 0.02:
+            arm.execute_position_path(util.convert(arm, [current_conf, self.path[-1]]))
 
 
 class HandCmd:
