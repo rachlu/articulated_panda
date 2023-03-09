@@ -22,16 +22,30 @@
 
     (:stream open_traj
         :inputs (?o ?p1 ?p2 ?q1 ?g ?h)
-        :domain (and (Conf ?q1) (Handle ?o ?h) (Openable ?o) (GraspOpenable ?o ?g ?h) (ObjState ?o ?p1) (ObjState ?o ?p2))
+        :domain (and (Conf ?q1) (Handle ?o ?h) (Openable ?o) (GraspOpenable ?o ?g ?h) (OpenGrasp ?o ?g ?h) (ObjState ?o ?p1) (ObjState ?o ?p2))
         :outputs (?t ?q2)
         :certified (and (Open_Traj ?o ?g ?q1 ?q2 ?p1 ?p2 ?h ?t) (Conf ?q2) (Traj_Holding ?t ?o ?g))
+    )
+
+   (:stream close_traj
+        :inputs (?o ?p1 ?p2 ?q1 ?g ?h)
+        :domain (and (Conf ?q1) (Handle ?o ?h) (Openable ?o) (GraspOpenable ?o ?g ?h) (CloseGrasp ?o ?g ?h) (ObjState ?o ?p1) (ObjState ?o ?p2))
+        :outputs (?t ?q2)
+        :certified (and (Close_Traj ?o ?g ?q1 ?q2 ?p1 ?p2 ?h ?t) (Conf ?q2) (Traj_Holding ?t ?o ?g))
     )
 
     (:stream sampleGraspOpenable
         :inputs (?o ?p ?h)
         :domain (and (Openable ?o) (ObjState ?o ?p) (Handle ?o ?h))
         :outputs (?g)
-        :certified (GraspOpenable ?o ?g ?h)
+        :certified (and (GraspOpenable ?o ?g ?h) (OpenGrasp ?o ?g ?h))
+    )
+
+    (:stream sampleGraspCloseable
+        :inputs (?o ?p ?h)
+        :domain (and (Openable ?o) (ObjState ?o ?p) (Handle ?o ?h))
+        :outputs (?g)
+        :certified (and (GraspOpenable ?o ?g ?h) (CloseGrasp ?o ?g ?h))
     )
 
     (:stream sampleGraspPose

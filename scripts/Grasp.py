@@ -73,15 +73,15 @@ class Grasp:
         t2 = util.get_rotation_arr('Y', math.pi / 2)
         rotation = numpy.dot(t1, t2)
         rel = numpy.dot(rotation, translation)
-        self.relative['cabinet'] = [rel]
+        self.relative['cabinetClose'] = [rel]
 
         t1 = util.get_rotation_arr('X', math.pi / 2)
         rotation = numpy.dot(t1, t2)
         rel = numpy.dot(rotation, translation)
-        self.relative['cabinet'].append(rel)
+        self.relative['cabinetClose'].append(rel)
 
         bw = numpy.array([[0, 0], [0, 0], [-0.018, 0.018], [0, 0], [0, 0], [0, 0]])
-        self.bw_range['cabinet'] = bw
+        self.bw_range['cabinetClose'] = bw
 
         # Cabinet
         translation = numpy.array([[1, 0, 0, 0],
@@ -92,15 +92,15 @@ class Grasp:
         t2 = util.get_rotation_arr('Y', math.pi / 2)
         rotation = numpy.dot(t1, t2)
         rel = numpy.dot(rotation, translation)
-        self.relative['cabinet'] = [rel]
+        self.relative['cabinetOpen'] = [rel]
 
         t1 = util.get_rotation_arr('X', math.pi / 2)
         rotation = numpy.dot(t1, t2)
         rel = numpy.dot(rotation, translation)
-        self.relative['cabinet'].append(rel)
+        self.relative['cabinetOpen'].append(rel)
 
         bw = numpy.array([[0, 0], [0, 0], [-0.018, 0.018], [0, 0], [0, 0], [0, 0]])
-        self.bw_range['cabinet'] = bw
+        self.bw_range['cabinetOpen'] = bw
 
         # Door
         translation = numpy.array([[1, 0, 0, 0],
@@ -111,14 +111,14 @@ class Grasp:
         t2 = util.get_rotation_arr('Z', math.pi / 2)
         rotation = numpy.dot(t1, t2)
         rel = numpy.dot(translation, rotation)
-        self.relative['door'] = [rel]
+        self.relative['doorOpen'] = [rel]
 
         t2 = util.get_rotation_arr('Z', -math.pi / 2)
         rotation = numpy.dot(t1, t2)
         rel = numpy.dot(translation, rotation)
-        self.relative['door'].append(rel)
+        self.relative['doorOpen'].append(rel)
         bw = numpy.array([[0, 0], [-0.11, 0.11], [-0.018, 0.018], [0, 0], [0, 0], [0, 0]])
-        self.bw_range['door'] = bw
+        self.bw_range['doorOpen'] = bw
 
         # Spring
         rotation = util.get_rotation_arr('Y', math.pi)

@@ -87,8 +87,8 @@ class TAMP_Functions:
 
         return False
 
-    def get_open_traj(self, obj, obj_conf, end_conf,  start_q, relative_grasp, knob):
-        print('================= Open Traj =================')
+    def get_openable_traj(self, obj, obj_conf, end_conf,  start_q, relative_grasp, knob):
+        print('================= Openable Traj =================')
         print('start_conf', obj_conf.conf)
         print('end_conf', end_conf.conf)
 
@@ -107,14 +107,20 @@ class TAMP_Functions:
                 cmds = [t2[0], t2[1]]
                 return cmds
         return None
+    
+    def get_open_traj(self, obj, obj_conf, end_conf,  start_q, relative_grasp, knob):
+        return self.get_openable_traj(obj, obj_conf, end_conf, start_q, relative_grasp, knob)
+    
+    def get_close_traj(self, obj, obj_conf, end_conf,  start_q, relative_grasp, knob):
+        return self.get_openable_traj(obj, obj_conf, end_conf, start_q, relative_grasp, knob)
 
-    def sample_grasp_openable(self, obj, obj_conf, knob):
+    def sample_grasp_openable(self, obj, obj_conf, knob, status):
         old_pos = self.objects[obj].get_configuration()
         self.objects[obj].set_configuration(obj_conf.conf)
         new_obj_pose = self.objects[obj].link_from_name(knob).get_link_tform(True)
         self.objects[obj].set_configuration(old_pos)
         for _ in range(20):
-            grasp_pose, q = self.grasp.grasp(obj, new_obj_pose)
+            grasp_pose, q = self.grasp.grasp(obj+status, new_obj_pose)
             print('grasp collision', self.robot.arm.IsCollisionFree(q, obstacles=[self.floor]))
             print('grasp collision cabinet', self.robot.arm.IsCollisionFree(q, obstacles=[self.floor, self.objects[obj]]))
             if q is not None and self.robot.arm.IsCollisionFree(q, obstacles=[self.floor, self.objects[obj]]):
@@ -124,6 +130,12 @@ class TAMP_Functions:
                 return cmd1
 
         return None
+
+    def sample_grasp_open(self, obj, obj_conf, knob):
+        return self.sample_grasp_openable(obj, obj_conf, knob, 'Open')
+    
+    def sample_grasp_close(self, obj, obj_conf, knob):
+        return self.sample_grasp_openable(obj, obj_conf, knob, 'Close')
 
     def sampleGrabPose(self, obj, obj_pose):
         # grasp_pose is grasp in world frame

@@ -37,9 +37,13 @@ def pddlstream_from_tamp(robot, movable, tamp, panda=None):
         ('Handle', 'door', 'knob'),
         ('Handle', 'cabinet', 'top_drawer_knob'),
         ('Handle', 'cabinet', 'bottom_drawer_knob'),
+        ('Close', 'cabinet', 'top_drawer_knob'),
+        #('Close', 'cabinet', 'bottom_drawer_knob'),
+        ('Close', 'door', 'knob')
     ]
     # goal = ('and', ('Open', 'cabinet', 'bottom_drawer_knob'), ('Open', 'cabinet', 'top_drawer_knob'), ('AtConf', conf))
-    goal = ('and', ('Open', 'cabinet', 'bottom_drawer_knob'), ('AtConf', conf))
+    # goal = ('and', ('Open', 'cabinet', 'bottom_drawer_knob'), ('AtConf', conf))
+    goal = ('and', ('Close', 'cabinet', 'bottom_drawer_knob'), ('AtConf', conf))
     # goal = ('and', ('Open', 'cabinet', 'top_drawer_knob'), ('Open', 'cabinet', 'bottom_drawer_knob'))
     # goal = (('Holding_Openable', 'cabinet', 'bottom_drawer_knob'))
     # goal = ('and', ('Holding_Openable', 'cabinet', 'top_drawer_knob'), ('AtConf', conf))
@@ -65,7 +69,7 @@ def pddlstream_from_tamp(robot, movable, tamp, panda=None):
     for obj in movable:
         if obj in ['door', 'cabinet']:
             position = vobj.BodyConf(obj, movable[obj].get_configuration())
-            init.extend([('AtObjState', obj, position),
+            init.extend([
                          ('ObjState', obj, position),
                          ])
         else:
@@ -75,6 +79,12 @@ def pddlstream_from_tamp(robot, movable, tamp, panda=None):
                          ('ObjState', obj, position)
                          ])
         init.extend([('Graspable', obj)])
+    
+    position = vobj.BodyConf(obj, movable['cabinet'].get_configuration())
+    init.extend([('ObjState', 'cabinet', position)])
+    movable['cabinet'].set_configuration((0, 0.15))
+    position = vobj.BodyConf(obj, movable['cabinet'].get_configuration())
+    init.extend([('AtObjState', 'cabinet', position), ('ObjState', 'cabinet', position)])
         
     stream_map = {
         'get_trajectory': from_fn(tamp.calculate_path),
@@ -88,11 +98,13 @@ def pddlstream_from_tamp(robot, movable, tamp, panda=None):
         'cfree': from_test(tamp.cfreeTraj_Check),
         'cfreeholding': from_test(tamp.cfreeTrajHolding_Check),
         'open_traj': from_fn(tamp.get_open_traj),
+        'close_traj': from_fn(tamp.get_close_traj),
         'inverse-nonplaceable-kinematics': from_fn(tamp.compute_nonplaceable_IK),
-        'sampleGraspOpenable': from_fn(tamp.sample_grasp_openable),
+        'sampleGraspOpenable': from_fn(tamp.sample_grasp_open),
         'sampleDeltaOpenableConf': from_fn(tamp.sample_delta_openableconf),
         'sampleOpenableConf': from_fn(tamp.sample_openableconf),
-        'testOpenEnough': from_test(tamp.test_open_enough)
+        'testOpenEnough': from_test(tamp.test_open_enough),
+        'sampleGraspCloseable': from_fn(tamp.sample_grasp_close)
     }
 
     return domain_pddl, constant_map, stream_pddl, stream_map, init, goal

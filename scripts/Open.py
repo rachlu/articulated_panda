@@ -13,7 +13,7 @@ class Open:
         self.objects = objects
         self.floor = floor
 
-    def open_obj(self, obj, start_q, relative_grasp, obj_conf, increment, sample, knob, close = False):
+    def open_obj(self, obj, start_q, relative_grasp, obj_conf, increment, sample, knob):
         print(increment, sample)
         old_pos = self.objects[obj].get_configuration()
         self.objects[obj].set_configuration(obj_conf)
@@ -28,8 +28,11 @@ class Open:
             print('new_grasp', new_grasp)
             q = self.robot.arm.ComputeIKQ(new_grasp, q)
             if q is not None and self.robot.arm.IsCollisionFree(q, obstacles=[self.floor]):
-                if close and self.robot.arm.InsideTorqueLimits(q, [-0.1, 0, 0, 0, 0, 0]):
+                if self.robot.arm.InsideTorqueLimits(q, [-0.1, 0, 0, 0, 0, 0]):
                     path.append(numpy.array(q))
+                else:
+                    print('Not within torque limits')
+                    return None
             else:
                 print('grasp', new_grasp)
                 print('q', q)

@@ -32,7 +32,9 @@ class TrajPath:
             if not self.impedance: 
                 arm.execute_position_path(util.convert(arm, self.path)) 
             else: 
+                # try:
                 arm.execute_joint_impedance_traj(self.path)
+                # except 
 
 
 class HandCmd:

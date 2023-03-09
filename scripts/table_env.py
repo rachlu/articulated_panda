@@ -20,7 +20,7 @@ def collision_free(objects, obj):
             y = obj.get_transform()[1][-1]
             x2 = obj2.get_transform()[0][-1]
             y2 = obj2.get_transform()[1][-1]
-            if math.sqrt((x-x2)**2+(y-y2)**2) < 0.15:
+            if math.sqrt((x-x2)**2+(y-y2)**2) < 0.2:
                 return False
     return True
 
@@ -64,7 +64,7 @@ def execute():
     # Create robot object
     robot = pb_robot.panda.Panda()
 
-    pb_robot.viz.draw_pose(robot.arm.GetEETransform())
+    pb_robot.viz.draw_tform(robot.arm.GetEETransform())
 
     # Add floor object 
     objects_path = pb_robot.helper.getDirectory("YCB_Robot")
