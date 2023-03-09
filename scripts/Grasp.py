@@ -64,6 +64,25 @@ class Grasp:
         bw = numpy.array([[-0.03, 0.03], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]])
         self.bw_range[self.utensils] = bw
 
+        # Close Cabinet
+        translation = numpy.array([[1, 0, 0, 0],
+                                   [0, 1, 0, 0],
+                                   [0, 0, 1, -0.02],
+                                   [0, 0, 0, 1]])
+        t1 = util.get_rotation_arr('X', 3 * math.pi / 2)
+        t2 = util.get_rotation_arr('Y', math.pi / 2)
+        rotation = numpy.dot(t1, t2)
+        rel = numpy.dot(rotation, translation)
+        self.relative['cabinet'] = [rel]
+
+        t1 = util.get_rotation_arr('X', math.pi / 2)
+        rotation = numpy.dot(t1, t2)
+        rel = numpy.dot(rotation, translation)
+        self.relative['cabinet'].append(rel)
+
+        bw = numpy.array([[0, 0], [0, 0], [-0.018, 0.018], [0, 0], [0, 0], [0, 0]])
+        self.bw_range['cabinet'] = bw
+
         # Cabinet
         translation = numpy.array([[1, 0, 0, 0],
                                    [0, 1, 0, 0],

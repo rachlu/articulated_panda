@@ -64,6 +64,8 @@ def execute():
     # Create robot object
     robot = pb_robot.panda.Panda()
 
+    pb_robot.viz.draw_pose(robot.arm.GetEETransform())
+
     # Add floor object 
     objects_path = pb_robot.helper.getDirectory("YCB_Robot")
     floor_file = os.path.join(objects_path, 'short_floor.urdf')

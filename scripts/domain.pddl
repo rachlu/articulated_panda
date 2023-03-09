@@ -105,6 +105,25 @@
                     (not (AtObjState ?o ?p1)) (AtConf ?q2) (not (AtConf ?q1)) (CanMove))
     )
 
+    (:action close_obj
+        :parameters (?o ?p1 ?p2 ?g ?q1 ?q2 ?h ?t)
+        :precondition (and (Openable ?o)
+                            (GraspOpenable ?o ?g ?h)
+                            (AtGraspOpenable ?o ?g ?h)
+                            (Conf ?q1)
+                            (Conf ?q2)
+                            (AtConf ?q1)
+                            (ValidStateTransition ?o ?p1 ?p2 ?h)
+                            (ObjState ?o ?p1)
+                            (ObjState ?o ?p2)
+                            (AtObjState ?o ?p1)
+                            (Close_Traj ?o ?g ?q1 ?q2 ?p1 ?p2 ?h ?t)
+                            (not (UnSafeHolding ?t ?o ?g))
+        )
+        :effect (and (AtObjState ?o ?p2) (not (AtObjState ?o ?p1)) (AtConf ?q2) (not (AtConf ?q1)) (CanMove)
+                    (not (AtGraspOpenable ?o ?g ?h)))
+    )
+
     (:action grab
         :parameters (?o ?p ?g ?q ?t)
         :precondition (and (HandEmpty)
