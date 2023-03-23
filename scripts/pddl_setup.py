@@ -42,12 +42,12 @@ def pddlstream_from_tamp(robot, movable, tamp, panda=None):
         ('Close', 'door', 'knob')
     ]
     # goal = ('and', ('Open', 'cabinet', 'bottom_drawer_knob'), ('Open', 'cabinet', 'top_drawer_knob'), ('AtConf', conf))
-    # goal = ('and', ('Open', 'cabinet', 'bottom_drawer_knob'), ('AtConf', conf))
-    goal = ('and', ('Close', 'cabinet', 'bottom_drawer_knob'), ('AtConf', conf))
+    # goal = (('Open', 'cabinet', 'bottom_drawer_knob'))
+    goal = (('Close', 'cabinet', 'bottom_drawer_knob'))
     # goal = ('and', ('Open', 'cabinet', 'top_drawer_knob'), ('Open', 'cabinet', 'bottom_drawer_knob'))
     # goal = (('Holding_Openable', 'cabinet', 'bottom_drawer_knob'))
     # goal = ('and', ('Holding_Openable', 'cabinet', 'top_drawer_knob'), ('AtConf', conf))
-    #goal = (('Holding_Openable', 'cabinet', 'bottom_drawer_knob'))
+    # goal = (('Holding_Openable', 'cabinet', 'bottom_drawer_knob'))
     # goal = (('Open', 'cabinet', 0.25))
     # goal = ('and', ('OpenAll', 'cabinet'), ('Open', 'door', math.pi/5))
     # goal = ('and', ('OpenAll', 'door'), ('Open', 'cabinet', 0.05))
@@ -80,8 +80,6 @@ def pddlstream_from_tamp(robot, movable, tamp, panda=None):
                          ])
         init.extend([('Graspable', obj)])
     
-    position = vobj.BodyConf(obj, movable['cabinet'].get_configuration())
-    init.extend([('ObjState', 'cabinet', position)])
     movable['cabinet'].set_configuration((0, 0.15))
     position = vobj.BodyConf(obj, movable['cabinet'].get_configuration())
     init.extend([('AtObjState', 'cabinet', position), ('ObjState', 'cabinet', position)])
@@ -97,14 +95,14 @@ def pddlstream_from_tamp(robot, movable, tamp, panda=None):
         'sampleTable': from_fn(util.sampleTable),
         'cfree': from_test(tamp.cfreeTraj_Check),
         'cfreeholding': from_test(tamp.cfreeTrajHolding_Check),
-        'open_traj': from_fn(tamp.get_open_traj),
-        'close_traj': from_fn(tamp.get_close_traj),
+        'open_traj': from_fn(tamp.get_openable_traj),
+        'close_traj': from_fn(tamp.get_openable_traj),
         'inverse-nonplaceable-kinematics': from_fn(tamp.compute_nonplaceable_IK),
-        'sampleGraspOpenable': from_fn(tamp.sample_grasp_open),
+        'sampleGraspOpenable': from_fn(tamp.sample_grasp_openable('Open')),
         'sampleDeltaOpenableConf': from_fn(tamp.sample_delta_openableconf),
         'sampleOpenableConf': from_fn(tamp.sample_openableconf),
         'testOpenEnough': from_test(tamp.test_open_enough),
-        'sampleGraspCloseable': from_fn(tamp.sample_grasp_close)
+        'sampleGraspCloseable': from_fn(tamp.sample_grasp_openable('Close'))
     }
 
     return domain_pddl, constant_map, stream_pddl, stream_map, init, goal

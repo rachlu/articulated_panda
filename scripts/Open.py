@@ -26,6 +26,7 @@ class Open:
             knob_pose = self.objects[obj].link_from_name(knob).get_link_tform(True)
             new_grasp = numpy.dot(knob_pose, relative_grasp)
             print('new_grasp', new_grasp)
+            print('q', q)
             q = self.robot.arm.ComputeIKQ(new_grasp, q)
             if q is not None and self.robot.arm.IsCollisionFree(q, obstacles=[self.floor]):
                 if self.robot.arm.InsideTorqueLimits(q, [-0.1, 0, 0, 0, 0, 0]):
@@ -51,7 +52,7 @@ class Open:
             self.objects[obj].set_configuration(old_pos)
             return None
 
-        cmd = [vobj.TrajPath(self.robot, path, impedance=True), vobj.HandCmd(self.robot, self.objects[obj], status='Open'),
+        cmd = [vobj.TrajPath(self.robot, path, impedance=True), vobj.HandCmd(self.robot, self.objects[obj], status='M'),
                vobj.TrajPath(self.robot, [path[-1], q])]
         end_pose = self.objects[obj].get_configuration()
         self.objects[obj].set_configuration(old_pos)

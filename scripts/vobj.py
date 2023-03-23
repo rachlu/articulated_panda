@@ -32,9 +32,7 @@ class TrajPath:
             if not self.impedance: 
                 arm.execute_position_path(util.convert(arm, self.path)) 
             else: 
-                # try:
-                arm.execute_joint_impedance_traj(self.path)
-                # except 
+                arm.execute_cart_impedance_traj_recover(self.path)
 
 
 class HandCmd:
@@ -55,7 +53,6 @@ class HandCmd:
             print('grabbed')
             self.robot.arm.hand.Close()
             self.robot.arm.Grab(self.obj, self.grasp, self.status)
-            print(self.robot.arm.grabbedObjects)
             if arm:
                 input('Close')
                 arm.hand.grasp(0.02, 40, epsilon_inner=0.1, epsilon_outer=0.1)

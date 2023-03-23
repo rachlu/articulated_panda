@@ -19,6 +19,7 @@ def execute_path(path, objects, arm):
         #     action.args[-1][-1].execute(arm)
         #     continue
         for cmd in action.args[-1]:
+            print(cmd.path)
             cmd.execute(arm)
             time.sleep(1)
 

@@ -108,34 +108,30 @@ class TAMP_Functions:
                 return cmds
         return None
     
-    def get_open_traj(self, obj, obj_conf, end_conf,  start_q, relative_grasp, knob):
-        return self.get_openable_traj(obj, obj_conf, end_conf, start_q, relative_grasp, knob)
+    def sample_grasp_openable(self, status):
+        def func(obj, obj_conf, knob):
+            old_pos = self.objects[obj].get_configuration()
+            self.objects[obj].set_configuration(obj_conf.conf)
+            new_obj_pose = self.objects[obj].link_from_name(knob).get_link_tform(True)
+            self.objects[obj].set_configuration(old_pos)
+            for _ in range(20):
+                grasp_pose, q = self.grasp.grasp(obj+status, new_obj_pose)
+                print('grasp collision', status, self.robot.arm.IsCollisionFree(q, obstacles=[self.floor]))
+                print('grasp collision cabinet', self.robot.arm.IsCollisionFree(q, obstacles=[self.floor, self.objects[obj]]))
+                if q is not None and self.robot.arm.IsCollisionFree(q, obstacles=[self.floor, self.objects[obj]]):
+                    # Grasp in object frame
+                    relative_grasp = numpy.dot(numpy.linalg.inv(new_obj_pose), grasp_pose)
+                    cmd1 = [vobj.Pose(obj, relative_grasp)]
+                    return cmd1
+            return None
+
+        return func
+
+    # def sample_grasp_open(self, obj, obj_conf, knob):
+    #     return self.sample_grasp_openable(obj, obj_conf, knob, 'Open')
     
-    def get_close_traj(self, obj, obj_conf, end_conf,  start_q, relative_grasp, knob):
-        return self.get_openable_traj(obj, obj_conf, end_conf, start_q, relative_grasp, knob)
-
-    def sample_grasp_openable(self, obj, obj_conf, knob, status):
-        old_pos = self.objects[obj].get_configuration()
-        self.objects[obj].set_configuration(obj_conf.conf)
-        new_obj_pose = self.objects[obj].link_from_name(knob).get_link_tform(True)
-        self.objects[obj].set_configuration(old_pos)
-        for _ in range(20):
-            grasp_pose, q = self.grasp.grasp(obj+status, new_obj_pose)
-            print('grasp collision', self.robot.arm.IsCollisionFree(q, obstacles=[self.floor]))
-            print('grasp collision cabinet', self.robot.arm.IsCollisionFree(q, obstacles=[self.floor, self.objects[obj]]))
-            if q is not None and self.robot.arm.IsCollisionFree(q, obstacles=[self.floor, self.objects[obj]]):
-                # Grasp in object frame
-                relative_grasp = numpy.dot(numpy.linalg.inv(new_obj_pose), grasp_pose)
-                cmd1 = [vobj.Pose(obj, relative_grasp)]
-                return cmd1
-
-        return None
-
-    def sample_grasp_open(self, obj, obj_conf, knob):
-        return self.sample_grasp_openable(obj, obj_conf, knob, 'Open')
-    
-    def sample_grasp_close(self, obj, obj_conf, knob):
-        return self.sample_grasp_openable(obj, obj_conf, knob, 'Close')
+    # def sample_grasp_close(self, obj, obj_conf, knob):
+    #     return self.sample_grasp_openable(obj, obj_conf, knob, 'Close')
 
     def sampleGrabPose(self, obj, obj_pose):
         # grasp_pose is grasp in world frame
