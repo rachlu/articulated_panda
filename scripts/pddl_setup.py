@@ -102,7 +102,8 @@ def pddlstream_from_tamp(robot, movable, tamp, panda=None):
         'sampleDeltaOpenableConf': from_fn(tamp.sample_delta_openableconf),
         'sampleOpenableConf': from_fn(tamp.sample_openableconf),
         'testOpenEnough': from_test(tamp.test_open_enough),
-        'sampleGraspCloseable': from_fn(tamp.sample_grasp_openable('Close'))
+        'sampleGraspCloseable': from_fn(tamp.sample_grasp_openable('Close')),
+        'sampleCloseTransition': from_fn(tamp.sample_close_conf)
     }
 
     return domain_pddl, constant_map, stream_pddl, stream_map, init, goal

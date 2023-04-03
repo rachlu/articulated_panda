@@ -75,6 +75,17 @@ class TAMP_Functions:
         new_conf = [vobj.BodyConf(obj, conf.conf + delta.conf)]
         return new_conf
 
+    def sample_close_conf(self, obj, conf, knob):
+        if obj == 'cabinet':
+            if 'top' in knob:
+                new_conf = [vobj.BodyConf(obj, (0, conf.conf[1]))]
+            else:
+                new_conf = [vobj.BodyConf(obj, (conf.conf[0], 0))]
+        else:
+            new_conf = [vobj.BodyConf(obj, (0,))]
+        return new_conf
+
+
     def test_open_enough(self, obj, obj_conf, knob):
         print('test_open_enough', obj_conf.conf)
         if obj == 'door':
@@ -126,12 +137,6 @@ class TAMP_Functions:
             return None
 
         return func
-
-    # def sample_grasp_open(self, obj, obj_conf, knob):
-    #     return self.sample_grasp_openable(obj, obj_conf, knob, 'Open')
-    
-    # def sample_grasp_close(self, obj, obj_conf, knob):
-    #     return self.sample_grasp_openable(obj, obj_conf, knob, 'Close')
 
     def sampleGrabPose(self, obj, obj_pose):
         # grasp_pose is grasp in world frame

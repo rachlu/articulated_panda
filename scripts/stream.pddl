@@ -97,6 +97,13 @@
         :certified (and (ObjState ?o ?p1) (ValidStateTransition ?o ?p ?p1 ?h))
     )
 
+    (:stream sampleCloseTransition
+        :inputs (?o ?p ?h)
+        :domain (and (Openable ?o) (ObjState ?o ?p) (Handle ?o ?h))
+        :outputs (?p2)
+        :certified (and (ObjState ?o ?p2) (ValidCloseTransition ?o ?p ?p2 ?h))
+    )
+
     (:stream testOpenEnough
         :inputs (?o ?p ?h)
         :domain (and (Openable ?o) (Handle ?o ?h) (ObjState ?o ?p))
