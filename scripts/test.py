@@ -19,16 +19,16 @@ if __name__ == '__main__':
     tamp = TAMP_Functions(robot, objects, floor, openable)
     open_class = Open(robot, objects, floor)
 
-    # while True:
-    #     g, q = grasp.grasp('cabinetClose', objects['cabinet'].link_from_name('bottom_drawer_knob').get_link_tform(True))
-    #     robot.arm.SetJointValues(q)
-    #     print(robot.arm.IsCollisionFree(q))
-    #     input('next')
+    objects['cabinet'].set_configuration((0, 0.15))
+    while True:
+        g, q = grasp.grasp('cabinetClose', objects['cabinet'].link_from_name('bottom_drawer_knob').get_link_tform(True))
+        robot.arm.SetJointValues(q)
+        print(robot.arm.IsCollisionFree(q))
+        input('next')
     obj = 'cabinet'
     knob = 'bottom_drawer_knob'
     pose = objects['cabinet'].link_from_name(knob).get_link_tform(True)
 
-    objects['cabinet'].set_configuration((0, 0.15))
     obj_conf = vobj.BodyConf(obj, objects['cabinet'].get_configuration())
 
     end_conf = vobj.BodyConf(obj, (0, 0))
