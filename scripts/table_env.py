@@ -84,6 +84,7 @@ def execute():
     rotate = util.get_rotation_arr('Z', 2 * math.pi)
     cabinet.set_transform(numpy.dot(pos, rotate))
     cabinet.setIK(cabinetIK(cabinet))
+    cabinet.set_configuration((0, 0.15))
 
     # Add fork object
     fork_file = os.path.join(objects_path, 'fork.urdf')

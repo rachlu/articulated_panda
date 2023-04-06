@@ -124,16 +124,18 @@ class TAMP_Functions:
             old_pos = self.objects[obj].get_configuration()
             self.objects[obj].set_configuration(obj_conf.conf)
             new_obj_pose = self.objects[obj].link_from_name(knob).get_link_tform(True)
-            self.objects[obj].set_configuration(old_pos)
             for _ in range(20):
                 grasp_pose, q = self.grasp.grasp(obj+status, new_obj_pose)
+                print('q', q)
                 print('grasp collision', status, self.robot.arm.IsCollisionFree(q, obstacles=[self.floor]))
                 print('grasp collision cabinet', self.robot.arm.IsCollisionFree(q, obstacles=[self.floor, self.objects[obj]]))
                 if q is not None and self.robot.arm.IsCollisionFree(q, obstacles=[self.floor, self.objects[obj]]):
                     # Grasp in object frame
                     relative_grasp = numpy.dot(numpy.linalg.inv(new_obj_pose), grasp_pose)
                     cmd1 = [vobj.Pose(obj, relative_grasp)]
+                    self.objects[obj].set_configuration(old_pos)
                     return cmd1
+            self.objects[obj].set_configuration(old_pos)
             return None
 
         return func

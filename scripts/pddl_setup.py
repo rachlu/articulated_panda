@@ -37,9 +37,8 @@ def pddlstream_from_tamp(robot, movable, tamp, panda=None):
         ('Handle', 'door', 'knob'),
         ('Handle', 'cabinet', 'top_drawer_knob'),
         ('Handle', 'cabinet', 'bottom_drawer_knob'),
-        ('Close', 'cabinet', 'top_drawer_knob'),
-        #('Close', 'cabinet', 'bottom_drawer_knob'),
-        ('Close', 'door', 'knob')
+        ('ObjState', 'cabinet', vobj.BodyConf('cabinet', (0, 0))),
+        ('ObjState', 'door', vobj.BodyConf('door', (0,))),
     ]
     # goal = ('and', ('Open', 'cabinet', 'bottom_drawer_knob'), ('Open', 'cabinet', 'top_drawer_knob'), ('AtConf', conf))
     # goal = (('Open', 'cabinet', 'bottom_drawer_knob'))
@@ -67,11 +66,20 @@ def pddlstream_from_tamp(robot, movable, tamp, panda=None):
     #        ('On', 'bowl', 'bowl_region'), ('Open', 'door'), ('AtConf', conf))
     # objPoses = {}
     for obj in movable:
-        if obj in ['door', 'cabinet']:
+        if obj in ['door', 'cabinet']:                
             position = vobj.BodyConf(obj, movable[obj].get_configuration())
             init.extend([
                          ('ObjState', obj, position),
+                         ('AtObjState', obj, position)
                          ])
+            if obj == 'door' and position.conf[0] == 0:
+                init.extend([('Close', 'door', 'knob')])
+            
+            if obj == 'cabinet':
+                if position.conf[0] == 0:
+                    init.extend([('Close', 'cabinet', 'top_drawer_knob')])
+                if position.conf[1] == 0:
+                    init.extend([('Close', 'cabinet', 'bottom_drawer_knob')])
         else:
             init.extend([('Placeable', obj)])
             position = vobj.Pose(robot, movable[obj].get_transform())
@@ -79,10 +87,6 @@ def pddlstream_from_tamp(robot, movable, tamp, panda=None):
                          ('ObjState', obj, position)
                          ])
         init.extend([('Graspable', obj)])
-    
-    movable['cabinet'].set_configuration((0, 0.15))
-    position = vobj.BodyConf(obj, movable['cabinet'].get_configuration())
-    init.extend([('AtObjState', 'cabinet', position), ('ObjState', 'cabinet', position)])
         
     stream_map = {
         'get_trajectory': from_fn(tamp.calculate_path),

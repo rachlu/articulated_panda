@@ -1,5 +1,6 @@
 import time
 import util
+import numpy
 
 
 class BodyConf:
@@ -32,7 +33,21 @@ class TrajPath:
             if not self.impedance: 
                 arm.execute_position_path(util.convert(arm, self.path)) 
             else: 
-                arm.execute_cart_impedance_traj_recover(self.path)
+                success = arm.execute_cart_impedance_traj_recover(self.path)
+                
+                if not success:
+                    current_q = arm.joint_angles()
+                    self.robot.arm.SetJointValues(current_q)
+                    current_pose = self.robot.arm.GetEETransform()
+                    back = numpy.array([[1, 0, 0, 0],
+                            [0, 1, 0, 0],
+                            [0, 0, 1, -.07],
+                            [0., 0., 0., 1.]])
+                    back_grasp = numpy.dot(current_pose, back)
+                    recover_q = self.robot.arm.ComputeIKQ(back_grasp, current_q)
+                    arm.execute_position_path(util.convert(arm, [current_q, recover_q]))
+                    
+                    # TODO: Add replan
 
 
 class HandCmd:
