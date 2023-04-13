@@ -70,7 +70,8 @@ class TAMP_Functions:
         delta_pose = [vobj.BodyConf(obj, delta_pose)]
         return delta_pose
 
-    def sample_openableconf(self, obj, conf, delta, knob):
+    def sample_openableconf(self, obj, conf, knob):
+        delta = self.sample_delta_openableconf(obj, knob)
         print('sample_openable', conf, delta)
         new_conf = [vobj.BodyConf(obj, conf.conf + delta.conf)]
         return new_conf

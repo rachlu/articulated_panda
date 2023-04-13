@@ -103,7 +103,6 @@ def pddlstream_from_tamp(robot, movable, tamp, panda=None):
         'close_traj': from_fn(tamp.get_openable_traj),
         'inverse-nonplaceable-kinematics': from_fn(tamp.compute_nonplaceable_IK),
         'sampleGraspOpenable': from_fn(tamp.sample_grasp_openable('Open')),
-        'sampleDeltaOpenableConf': from_fn(tamp.sample_delta_openableconf),
         'sampleOpenableConf': from_fn(tamp.sample_openableconf),
         'testOpenEnough': from_test(tamp.test_open_enough),
         'sampleGraspCloseable': from_fn(tamp.sample_grasp_openable('Close')),
