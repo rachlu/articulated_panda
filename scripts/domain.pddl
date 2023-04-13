@@ -161,8 +161,7 @@
 
     (:action place
         :parameters (?o ?p ?g ?q ?t)
-        :precondition (and (not (HandEmpty))
-                          (Placeable ?o)
+        :precondition (and (Placeable ?o)
                           (ObjState ?o ?p)
                           (Conf ?q)
                           (AtConf ?q)

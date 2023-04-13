@@ -1,6 +1,7 @@
 import time
 import util
 import numpy
+from pddl_setup import *
 
 
 class BodyConf:
@@ -48,6 +49,7 @@ class TrajPath:
                 #     arm.execute_position_path(util.convert(arm, [current_q, recover_q]))
                     
                     # TODO: Add replan
+                    # Pddl.replan()
 
 
 class HandCmd:

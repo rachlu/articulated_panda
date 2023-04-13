@@ -6,13 +6,12 @@ import IPython
 import pb_robot
 import table_env
 
-
 if __name__ == '__main__':
     objects, openable, floor, robot = table_env.execute()
     robot.arm.hand.Open()
 
     tamp = TAMP_Functions(robot, objects, floor, openable)
-    pddlstream_problem = pddlstream_from_tamp(robot, objects, tamp)
+    pddlstream_problem = Pddl.pddlstream_from_tamp(robot, objects, tamp)
     _, _, _, stream_map, init, goal = pddlstream_problem
     print('stream', stream_map)
     print('init', init)

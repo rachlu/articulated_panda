@@ -164,4 +164,3 @@ def wrenchFrameTransform(w, frame):
     new_w = numpy.dot(numpy.transpose(adjointTransform(frame)), w)
     return new_w
 
-
