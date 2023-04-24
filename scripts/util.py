@@ -18,6 +18,15 @@ def execute_path(path, objects, arm):
         #             cmd.execute(arm)
         #     action.args[-1][-1].execute(arm)
         #     continue
+        if action.name == 'open_obj' or action.name == 'close_obj':
+            cmd1 = action.args[-2]
+            cmd2 = action.args[-1]
+            cmd1.extend(cmd2)
+            for cmd in cmd1:
+                cmd.execute(arm)
+                time.sleep(1)
+            continue
+            
         for cmd in action.args[-1]:
             cmd.execute(arm)
             time.sleep(1)

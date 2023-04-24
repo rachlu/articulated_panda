@@ -24,7 +24,7 @@ class TAMP_Functions:
         if not self.robot.arm.IsCollisionFree(q2.conf, obstacles=[self.floor]):
             return None
         rrt = RRT(self.robot, self.objects, nonmovable=[self.floor], constraint=constraint)
-        for _ in range(3):
+        for _ in range(5):
             path = rrt.motion(q1.conf, q2.conf)
             if path is not None:
                 cmd = [[vobj.TrajPath(self.robot, path)]]
@@ -71,7 +71,9 @@ class TAMP_Functions:
         return delta_pose
 
     def sample_openableconf(self, obj, conf, knob):
-        delta = self.sample_delta_openableconf(obj, knob)
+        print('====== In sample Openable =======')
+        print(obj, conf, knob)
+        delta = self.sample_delta_openableconf(obj, knob)[0]
         print('sample_openable', conf, delta)
         new_conf = [vobj.BodyConf(obj, conf.conf + delta.conf)]
         return new_conf
@@ -90,20 +92,48 @@ class TAMP_Functions:
     def test_open_enough(self, obj, obj_conf, knob):
         print('test_open_enough', obj_conf.conf)
         if obj == 'door':
-            if 40 < obj_conf.conf[0] < 50:
+            if 40 <= obj_conf.conf[0] <= 50:
                 return True
 
         current = obj_conf.conf[0] if 'top' in knob else obj_conf.conf[1]
-        if 0.13 < current < 0.17:
+        if 0.13 <= current <= 0.17:
             return True
 
         return False
 
-    def get_openable_traj(self, obj, obj_conf, end_conf,  start_q, relative_grasp, knob):
-        print('================= Openable Traj =================')
-        print('start_conf', obj_conf.conf)
-        print('end_conf', end_conf.conf)
+    def get_open_traj_merge(self, obj, obj_conf, end_conf, start_q, knob):
+        relative_grasp = self.sample_grasp_openable('Open')(obj, obj_conf, knob)[0]
+        for _ in range(3):
+            for _ in range(3):
+                q, q_grasp, grab_t = self.compute_nonplaceable_IK(obj, obj_conf, relative_grasp, knob)
+                t = self.calculate_path(start_q, q)
+                if t is not None:
+                    t = t[0]
+                    break
+            result = self.get_openable_traj(obj, obj_conf, end_conf, q_grasp, relative_grasp, knob)
+            if result is not None:
+                t2, end_q = result
+                t.extend(grab_t)
+                return [end_q, relative_grasp, t, t2]
+        return None
+    
+    def get_close_traj_merge(self, obj, obj_conf, end_conf, start_q, knob):
+        relative_grasp = self.sample_grasp_openable('Close')(obj, obj_conf, knob)[0]
+        for _ in range(3):
+            for _ in range(3):
+                q, q_grasp, grab_t = self.compute_nonplaceable_IK(obj, obj_conf, relative_grasp, knob)
+                t = self.calculate_path(start_q, q)
+                if t is not None:
+                    t = t[0]
+                    break
+            result = self.get_openable_traj(obj, obj_conf, end_conf, q_grasp, relative_grasp, knob)
+            if result is not None:
+                t2, end_q = result
+                t.extend(grab_t)
+                return [end_q, relative_grasp, t, t2]
+        return None
 
+    def get_openable_traj(self, obj, obj_conf, end_conf,  start_q, relative_grasp, knob):
         diff = end_conf.conf - obj_conf.conf
         if knob == 'knob' or 'top' in knob:
             total = diff[0]

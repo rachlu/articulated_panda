@@ -21,31 +21,17 @@
     )
 
     (:stream open_traj
-        :inputs (?o ?c1 ?c2 ?q1 ?g ?h)
-        :domain (and (Conf ?q1) (Handle ?o ?h) (Openable ?o) (GraspOpenable ?o ?g ?h) (OpenGrasp ?o ?g ?h) (ObjState ?o ?c1) (ObjState ?o ?c2))
-        :outputs (?t ?q2)
-        :certified (and (Open_Traj ?o ?g ?q1 ?q2 ?c1 ?c2 ?h ?t) (Conf ?q2) (Traj_Holding ?t ?o ?g))
+        :inputs (?o ?c1 ?c2 ?q1 ?h)
+        :domain (and (Conf ?q1) (Handle ?o ?h) (Openable ?o) (ObjState ?o ?c1) (ObjState ?o ?c2))
+        :outputs (?q2 ?g ?t1 ?t2)
+        :certified (and (Trajectory ?q1 ?q2 ?t1) (OpenGrasp ?o ?g ?h) (Traj ?t1) (Open_Traj ?o ?g ?q1 ?q2 ?c1 ?c2 ?h ?t1 ?t2) (Conf ?q2) (Traj_Holding ?t2 ?o ?g))
     )
 
-   (:stream close_traj
-        :inputs (?o ?c1 ?c2 ?q1 ?g ?h)
-        :domain (and (Conf ?q1) (Handle ?o ?h) (Openable ?o) (GraspOpenable ?o ?g ?h) (CloseGrasp ?o ?g ?h) (ObjState ?o ?c1) (ObjState ?o ?c2))
-        :outputs (?t ?q2)
-        :certified (and (Close_Traj ?o ?g ?q1 ?q2 ?c1 ?c2 ?h ?t) (Conf ?q2) (Traj_Holding ?t ?o ?g))
-    )
-
-    (:stream sampleGraspOpenable
-        :inputs (?o ?c ?h)
-        :domain (and (Openable ?o) (ObjState ?o ?c) (Handle ?o ?h))
-        :outputs (?g)
-        :certified (and (GraspOpenable ?o ?g ?h) (OpenGrasp ?o ?g ?h))
-    )
-
-    (:stream sampleGraspCloseable
-        :inputs (?o ?c ?h)
-        :domain (and (Openable ?o) (ObjState ?o ?c) (Handle ?o ?h))
-        :outputs (?g)
-        :certified (and (GraspOpenable ?o ?g ?h) (CloseGrasp ?o ?g ?h))
+    (:stream close_traj
+        :inputs (?o ?c1 ?c2 ?q1 ?h)
+        :domain (and (Conf ?q1) (Handle ?o ?h) (Openable ?o) (ObjState ?o ?c1) (ObjState ?o ?c2))
+        :outputs (?q2 ?g ?t1 ?t2)
+        :certified (and (Trajectory ?q1 ?q2 ?t1) (CloseGrasp ?o ?g ?h) (Traj ?t1) (Close_Traj ?o ?g ?q1 ?q2 ?c1 ?c2 ?h ?t1 ?t2) (Conf ?q2) (Traj_Holding ?t2 ?o ?g))
     )
 
     (:stream sampleGraspPose
@@ -60,13 +46,6 @@
         :domain (and (ObjState ?o ?p) (Placeable ?o) (Grasp ?o ?g))
         :outputs (?q ?t)
         :certified (and (Conf ?q) (Kin ?o ?p ?g ?q ?t) (Traj ?t))
-    )
-
-    (:stream inverse-nonplaceable-kinematics
-        :inputs (?o ?c ?g ?h)
-        :domain (and (ObjState ?o ?c) (Handle ?o ?h) (Openable ?o) (GraspOpenable ?o ?g ?h))
-        :outputs (?q1 ?q2 ?t)
-        :certified (and (Conf ?q1) (Conf ?q2) (KinOpen ?o ?c ?g ?q1 ?q2 ?t) (Traj ?t))
     )
 
     (:stream samplePlacePose
