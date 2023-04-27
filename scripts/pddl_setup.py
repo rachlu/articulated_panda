@@ -46,8 +46,8 @@ def pddlstream_from_tamp(robot, movable, tamp, panda=None):
         ('ObjState', 'door', vobj.BodyConf('door', (0,))),
     ]
     # goal = ('and', ('Open', 'cabinet', 'bottom_drawer_knob'), ('Open', 'cabinet', 'top_drawer_knob'), ('AtConf', conf))
-    # goal = ('and', ('Close', 'cabinet', 'bottom_drawer_knob'), ('AtConf', conf))
-    goal = (('Close', 'cabinet', 'bottom_drawer_knob'))
+    goal = ('and', ('Close', 'cabinet', 'bottom_drawer_knob'), ('AtConf', conf))
+    # goal = (('Close', 'cabinet', 'bottom_drawer_knob'))
 
     # goal = ('and', ('Open', 'cabinet', 'top_drawer_knob'), ('Open', 'cabinet', 'bottom_drawer_knob'))
     # goal = (('Holding_Openable', 'cabinet', 'bottom_drawer_knob'))

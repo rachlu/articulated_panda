@@ -34,7 +34,7 @@ class TrajPath:
             if not self.impedance: 
                 arm.execute_position_path(util.convert(arm, self.path)) 
             else: 
-                success = arm.execute_cart_impedance_traj_recover(self.path)
+                success = arm.execute_joint_impedance_traj_recover(self.path)
                 
                 # if not success:
                 #     current_q = arm.joint_angles()
