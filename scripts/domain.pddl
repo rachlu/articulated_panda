@@ -63,7 +63,7 @@
                             (AtConf ?q1)
                             (Grasp ?o ?g)
                             (AtGrasp ?o ?g)
-                            (not (UnSafeHolding ?t ?o ?g))
+                            ;(not (UnSafeHolding ?t ?o ?g))
                             (CanMove)
                             (not (UprightObj ?o))
                             )
@@ -148,7 +148,8 @@
                           (Grasp ?o ?g)
                           (AtGrasp ?o ?g)
                           (not (InCollision ?o ?p))
-                          (not (UnSafeHolding ?t ?o ?g)))
+                          (not (UnSafeHolding ?t ?o ?g))
+                          )
         :effect (and (HandEmpty) (AtObjState ?o ?p) (not (AtGrasp ?o ?g)) (CanMove))
     )
 

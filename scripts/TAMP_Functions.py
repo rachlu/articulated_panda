@@ -61,7 +61,7 @@ class TAMP_Functions:
             # delta_pose = numpy.array((50, ))
         else:
             # Cabinet open all the way is 0.3
-            random_conf = random.uniform(0.13, 0.17)
+            random_conf = random.uniform(0.17, 0.2)
             # random_conf = 0.17
             if 'top' in knob:
                 delta_pose = numpy.array((random_conf, 0))
@@ -96,7 +96,7 @@ class TAMP_Functions:
                 return True
 
         current = obj_conf.conf[0] if 'top' in knob else obj_conf.conf[1]
-        if 0.13 <= current <= 0.17:
+        if 0.17 <= current:
             return True
 
         return False

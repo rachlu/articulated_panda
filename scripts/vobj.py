@@ -47,7 +47,7 @@ class TrajPath:
                 #     back_grasp = numpy.dot(current_pose, back)
                 #     recover_q = self.robot.arm.ComputeIKQ(back_grasp, current_q)
                 #     arm.execute_position_path(util.convert(arm, [current_q, recover_q]))
-                    
+            
                     # TODO: Add replan
                     # Pddl.replan()
 

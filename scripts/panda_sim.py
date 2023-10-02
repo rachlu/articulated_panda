@@ -57,6 +57,7 @@ if __name__ == '__main__':
             pose = objects[obj].get_transform()
             print(obj, pose)
 
+    # util.execute_path(plan, objects, arm) To execute plan
     IPython.embed()
     pb_robot.utils.wait_for_user()
     pb_robot.utils.disconnect()

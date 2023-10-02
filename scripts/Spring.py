@@ -134,7 +134,10 @@ class Spring:
         return new_q
 
     # Tested!
-    def qp_from_distance(self, distance):
+    def qp_from_distance(self, distance, direction):
+        """
+        direction equals 0, 1, or 2 (x, y, or z)
+        """
         # end_effector = self.robot.arm.GetEETransform()
         # current_q = self.robot.arm.GetJointValues()
         # end_effector[2][-1] += distance
@@ -146,16 +149,16 @@ class Spring:
         end_effector = self.arm.endpoint_pose()
         current_q = self.arm.convertToList(self.arm.joint_angles())
         end_effector = get_matrix(end_effector)
-        end_effector[2][-1] += distance
+        end_effector[direction][-1] += distance
         new_q = self.robot.arm.ComputeIKQ(end_effector, current_q)
         return get_cartesian(end_effector), new_q
 
-    def move_to_distance_offset(self, distance, stiffness, error=0.01):
+    def move_to_distance_offset(self, distance, direction, stiffness, error=0.01):
         cart, q = numpy.array(self.qp_from_distance(distance))
         goal = cart['position'][-1]
         print('goal', goal)
         current_pose = self.arm.endpoint_pose()
-        offset = current_pose['position'][-1]
+        offset = current_pose['position'][direction]
         diff = 9999
         while diff > error:
             # force, matrix = stiffness_and_force(offset)
@@ -171,17 +174,17 @@ class Spring:
                 break
             execute_pose = {'position': numpy.array(current_pose['position']),
                             'orientation': current_pose['orientation']}
-            execute_pose['position'][-1] = offset
+            execute_pose['position'][direction] = offset
             print('parameters')
             print(execute_pose, matrix)
             self.arm.set_cart_impedance_pose(execute_pose, matrix)
-            current = self.arm.endpoint_pose()['position'][-1]
+            current = self.arm.endpoint_pose()['position'][direction]
             print('current', current)
             diff = current - goal
             print('diff', diff)
         print('Position Reached!')
 
-    def move_to_distance_force(self, distance, error=0.01):
+    def move_to_distance_force(self, distance, direction, error=0.01):
         cart, q = numpy.array(self.qp_from_distance(distance))
         goal = cart['position'][-1]
         print('goal', goal)
@@ -191,6 +194,7 @@ class Spring:
         if force is None:
             print('No force and stiffness matrix')
             return
+            
         while diff > error:
             print('diff', diff)
             ans = input('Apply force?')
@@ -198,7 +202,7 @@ class Spring:
                 break
             self.apply_force(force)
             current_pose = self.arm.endpoint_pose()
-            current = current_pose['position'][-1]
+            current = current_pose['position'][direction]
             print('current', current)
             diff = current - goal
             print('diff', diff)
