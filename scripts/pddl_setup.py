@@ -36,6 +36,7 @@ def pddlstream_from_tamp(robot, movable, tamp, panda=None):
         ('Region', 'fork_region'),
         ('Region', 'bowl_region'),
         ('Region', 'knife_region'),
+        ('Region', 'cabinet_region'),
         ('UprightObj', 'bowl'),
         ('Openable', 'door'),
         ('Openable', 'cabinet'),
@@ -46,9 +47,9 @@ def pddlstream_from_tamp(robot, movable, tamp, panda=None):
         ('ObjState', 'door', vobj.BodyConf('door', (0,))),
     ]
     # goal = ('and', ('Open', 'cabinet', 'bottom_drawer_knob'), ('Open', 'cabinet', 'top_drawer_knob'), ('AtConf', conf))
-    goal = ('and', ('Close', 'cabinet', 'bottom_drawer_knob'), ('AtConf', conf))
+    # goal = ('and', ('Close', 'cabinet', 'bottom_drawer_knob'), ('AtConf', conf))
     # goal = (('Close', 'cabinet', 'bottom_drawer_knob'))
-
+    goal = ('and', ('Open', 'cabinet', 'bottom_drawer_knob'), ('On', 'bowl', 'cabinet_region'))
     # goal = ('and', ('Open', 'cabinet', 'top_drawer_knob'), ('Open', 'cabinet', 'bottom_drawer_knob'))
     # goal = (('Holding_Openable', 'cabinet', 'bottom_drawer_knob'))
     # goal = ('and', ('Holding_Openable', 'cabinet', 'top_drawer_knob'), ('AtConf', conf))

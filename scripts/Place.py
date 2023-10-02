@@ -16,11 +16,11 @@ class Place:
         self.set_tsr()
 
     def set_info(self):
-        import Placements.Front, Placements.Left, Placements.Right
+        import Placements.Front, Placements.Left, Placements.Right, Placements.Cabinet
 
         # choice = random.choice([Placements.Left, Placements.Right, Placements.Front])
-        choice = random.choice([Placements.Left, Placements.Right])
-
+        # choice = random.choice([Placements.Left, Placements.Right])
+        choice = Placements.Cabinet
         self.relative['bowl'] = choice.bowl_place
     
         self.bw_range['bowl'] = choice.bowl_bw
