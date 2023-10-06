@@ -99,7 +99,7 @@ class Grasp:
         rel = numpy.dot(rotation, translation)
         self.relative['cabinetOpen'].append(rel)
 
-        bw = numpy.array([[0, 0], [0, 0], [-0.018, 0.018], [0, 0], [0, 0], [0, 0]])
+        bw = numpy.array([[0, 0], [-0.02, 0.02], [0, 0], [0, 0], [0, 0], [0, 0]])
         self.bw_range['cabinetOpen'] = bw
 
         # Door
