@@ -4,7 +4,8 @@ import numpy as np
 from pddl_setup import *
 
 def get_euclDist(p1, p2):
-    return np.sqrt((p1[1] - p2[1])**2)
+    # return np.linalg.norm(p1-p2)
+    return (p1[1] - p2[1])
 
 class BodyConf:
     def __init__(self, body, q):
@@ -37,29 +38,35 @@ class TrajPath:
                 arm.execute_position_path(util.convert(arm, self.path)) 
             else: 
                 i = 0
-                stiffness = [200, 200, 200, 20, 20, 20]
+                # [150, 130, 130, 110, 60, 50, 90] 
+                stiffness = [120, 100, 100, 80, 30, 20, 50] # 50 (Last value) is end effector joint
                 while i < len(self.path):
                     q = self.path[i]
                     # if (not self.robot.arm.InsideTorqueLimits(q, stiffness)):
                     #     raise AssertionError("Over Torque Limit, need to replan")
                     cart_pose = self.robot.arm.ComputeFK(q)
-                    new_pose = arm.endpoint_pose()
-                    new_pose['position'][0] = cart_pose[0][-1]
-                    new_pose['position'][1] = cart_pose[1][-1]
-                    new_pose['position'][2] = cart_pose[2][-1]
-                    arm.set_cart_impedance_pose(new_pose, stiffness)
+                    cart_pose = np.array(cart_pose)[:-1, -1]
+                    # new_pose = arm.endpoint_pose()
+                    # new_pose['position'][0] = cart_pose[0][-1]
+                    # new_pose['position'][1] = cart_pose[1][-1]
+                    # new_pose['position'][2] = cart_pose[2][-1]
+                    # arm.set_cart_impedance_pose(new_pose, stiffness)
+                    try:
+                        arm.set_joint_impedance_config(q, stiffness)
+                    except:
+                        print("Error Detected!!")
+                        return
                     curr_pose = arm.endpoint_pose()
-
-                    dist = get_euclDist(new_pose['position'], curr_pose['position'])
-                    if (dist > 0.01):
-                        print('Did not reach desired position\n')
-                        print('Current Pose: {0}\nExpected Pose: {1}\n'.format(curr_pose['position'], new_pose['position']))
-                        stiffness[0] += 10
-                        print('Raising Stiffness to {0}\n', stiffness)
-                        # raise AssertionError("Did not reach desired position")
-                        if (stiffness[0] > 300):
-                            break
-                        continue
+                    print('Current Pose: {0}\nExpected Pose: {1}\n'.format(curr_pose['position'], cart_pose))
+                    dist = get_euclDist(cart_pose, curr_pose['position'])
+                    # if (dist > 0.1):
+                    #     print('Did not reach desired position\n')
+                    #     stiffness[-1] += 10
+                    #     print('Raising Stiffness to {0}\n'.format(stiffness))
+                    #     # raise AssertionError("Did not reach desired position")
+                    #     if (stiffness[-1] > 100):
+                    #         break
+                    #     continue
                     i += 1
 
                 # success = arm.execute_joint_impedance_traj_recover(self.path)
