@@ -39,8 +39,10 @@ class TrajPath:
             else: 
                 i = 0
                 # [150, 130, 130, 110, 60, 50, 90] 
-                stiffness = [120, 100, 100, 80, 30, 20, 50] # 50 (Last value) is end effector joint
+                stiffness = np.array([120, 100, 100, 80, 30, 20, 50]) # 50 (Last value) is end effector joint
                 while i < len(self.path):
+                    if stiffness[0] >= 250:
+                        raise Exception("Hit max stiffness. Need to replan")
                     q = self.path[i]
                     # if (not self.robot.arm.InsideTorqueLimits(q, stiffness)):
                     #     raise AssertionError("Over Torque Limit, need to replan")
@@ -51,10 +53,17 @@ class TrajPath:
                     # new_pose['position'][1] = cart_pose[1][-1]
                     # new_pose['position'][2] = cart_pose[2][-1]
                     # arm.set_cart_impedance_pose(new_pose, stiffness)
-                    try:
-                        arm.set_joint_impedance_config(q, stiffness)
-                    except:
-                        print("Error Detected!!")
+                    arm.set_joint_impedance_config(q, stiffness)
+                    status = arm.get_robot_status()
+                    if status['robot_mode'] == 4: # Cartesian reflex error
+                        print("Collision!")
+                        arm.resetErrors()
+                        arm.hand.close()
+                        stiffness = stiffness + 30
+                        input("Increasing Stiffnes to {0}. Continue?".format(stiffness))
+                        continue
+                    if status['robot_mode'] != 2:
+                        print("Other error")
                         return
                     curr_pose = arm.endpoint_pose()
                     print('Current Pose: {0}\nExpected Pose: {1}\n'.format(curr_pose['position'], cart_pose))
