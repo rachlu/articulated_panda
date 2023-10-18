@@ -22,11 +22,7 @@ def reset():
     path = util.convert(arm, path)
     arm.execute_position_path(path)
 
-
-if __name__ == '__main__':
-    rospy.init_node('testing_node')
-    arm = ArmInterface()
-    objects, openable, floor, robot = table_env.execute()
+def plan_solution(arm, robot, objects, openable, floor):
     arm.hand.open()
     robot.arm.hand.Open()
     
@@ -49,7 +45,13 @@ if __name__ == '__main__':
     print_solution(solution)
     plan, cost, evaluations = solution
     print('plan', plan)
+    return plan
 
+if __name__ == '__main__':
+    rospy.init_node('testing_node')
+    arm = ArmInterface()
+    objects, openable, floor, robot = table_env.execute()
+    plan = plan_solution(arm, robot, objects, openable, floor)
     if plan is None:
         print('No plan found')
     else:

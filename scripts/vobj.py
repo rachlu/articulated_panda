@@ -41,8 +41,6 @@ class TrajPath:
                 # [150, 130, 130, 110, 60, 50, 90] 
                 stiffness = np.array([120, 100, 100, 80, 30, 20, 50]) # 50 (Last value) is end effector joint
                 while i < len(self.path):
-                    if stiffness[0] >= 250:
-                        raise Exception("Hit max stiffness. Need to replan")
                     q = self.path[i]
                     # if (not self.robot.arm.InsideTorqueLimits(q, stiffness)):
                     #     raise AssertionError("Over Torque Limit, need to replan")
@@ -59,7 +57,31 @@ class TrajPath:
                         print("Collision!")
                         arm.resetErrors()
                         arm.hand.close()
-                        stiffness = stiffness + 30
+                        new_stiffness = util.increment_stiffness(stiffness, 30, [300, 280, 280, 260, 210, 120, 120])
+                        if (stiffness == new_stiffness).all():
+                            print("Reached max Stiffness, need to replan")
+                            # Recover
+                            self.robot.arm.SetJointValues(q)
+                            arm.hand.open()
+                            self.robot.arm.hand.Open()
+                            self.robot.arm.ReleaseAll()
+                            obj = self.robot.grabbedObjects
+                            print(obj)
+                            while(obj):
+                                self.robot.ReleaseAll()
+                                print(obj)
+                                input("next")
+                            ans = input("Go to Recovery Position")
+                            while 'N' in ans.upper():
+                                arm.hand.open()
+                                ans = input("Go to Recovery Position")
+                            arm.resetErrors()
+                            current_q = arm.joint_angles()
+                            current_q = arm.convertToList(current_q)
+                            arm.execute_position_path(util.convert(arm, [current_q, self.path[i+1]]))
+                            self.robot.arm.SetJointValues(self.path[i+1])
+                            return False # Need to Replan
+                        stiffness = new_stiffness
                         input("Increasing Stiffnes to {0}. Continue?".format(stiffness))
                         continue
                     if status['robot_mode'] != 2:
@@ -77,7 +99,7 @@ class TrajPath:
                     #         break
                     #     continue
                     i += 1
-
+            return True
                 # success = arm.execute_joint_impedance_traj_recover(self.path)
                 
                 # if not success:

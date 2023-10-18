@@ -1,10 +1,18 @@
 import random
-import numpy
+import numpy 
 import vobj
 import math
 import pb_robot
 import time
 
+def increment_stiffness(s1, increment, max_stiffness=None):
+    s1 = numpy.array(s1)
+    if not max:
+        return s1 + increment
+    s1 += increment
+    for i in range(len(s1)):
+        s1[i] = min(s1[i], max_stiffness[i])
+    return s1
 
 def execute_path(path, objects, arm):
     for action in path:
@@ -23,8 +31,11 @@ def execute_path(path, objects, arm):
             cmd2 = action.args[-1]
             cmd1.extend(cmd2)
             for cmd in cmd1:
-                cmd.execute(arm)
+                result = cmd.execute(arm)
                 time.sleep(1)
+                if result == False:
+                    print("Failed Need to replan")
+                    return
             continue
             
         for cmd in action.args[-1]:
