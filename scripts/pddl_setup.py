@@ -9,11 +9,6 @@ from pddlstream.language.stream import StreamInfo
 import vobj
 import util
 
-# class Pddl:
-#     def replan(self):
-#         self.pddlstream_from_tamp(*self.state)
-
-
 def pddlstream_from_tamp(robot, movable, tamp, panda=None):
     domain_pddl = read('domain.pddl')
     stream_pddl = read('stream.pddl')
@@ -36,7 +31,8 @@ def pddlstream_from_tamp(robot, movable, tamp, panda=None):
         ('Region', 'fork_region'),
         ('Region', 'bowl_region'),
         ('Region', 'knife_region'),
-        ('Region', 'cabinet_region'),
+        ('Region', 'top_cabinet_region'),
+        ('Region', 'bottom_cabinet_region'),
         ('UprightObj', 'bowl'),
         ('Openable', 'door'),
         ('Openable', 'cabinet'),
@@ -46,7 +42,7 @@ def pddlstream_from_tamp(robot, movable, tamp, panda=None):
         ('ObjState', 'cabinet', vobj.BodyConf('cabinet', (0, 0))),
         ('ObjState', 'door', vobj.BodyConf('door', (0,))),
     ]
-    goal = ('and', ('Open', 'cabinet', 'bottom_drawer_knob'))
+    goal = ('and', ('Open', 'cabinet', 'bottom_drawer_knob'), ('On', 'fork', 'bottom_cabinet_region'))
     # goal = ('and', ('Close', 'cabinet', 'bottom_drawer_knob'), ('AtConf', conf))
     # goal = (('Close', 'cabinet', 'bottom_drawer_knob'))
     # goal = ('and', ('Open', 'cabinet', 'bottom_drawer_knob'), ('On', 'fork', 'fork_region'))

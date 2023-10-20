@@ -16,15 +16,23 @@ if __name__ == '__main__':
     objects, openable, floor, robot = table_env.execute()
     robot.arm.hand.Open()
     grasp = Grasp(robot, objects)
+    print('objects', objects)
     tamp = TAMP_Functions(robot, objects, floor, openable)
     open_class = Open(robot, objects, floor)
 
-    objects['cabinet'].set_configuration((0, 0.15))
+    objects['cabinet'].set_configuration((0.15, 0))
     while True:
-        g, q = grasp.grasp('cabinetOpen', objects['cabinet'].link_from_name('bottom_drawer_knob').get_link_tform(True))
-        robot.arm.SetJointValues(q)
-        robot.arm.hand.Close()
-        print(robot.arm.IsCollisionFree(q))
+        # g, q = grasp.grasp('cabinetOpen', objects['cabinet'].link_from_name('bottom_drawer_knob').get_link_tform(True))
+        # robot.arm.SetJointValues(q)
+        # robot.arm.hand.Close()
+        # print(robot.arm.IsCollisionFree(q))
+        # input('next')
+        p = tamp.samplePlacePose('fork', 'top_cabinet_region')[0]
+        objects['fork'].set_transform(p.pose)
+        g, q = grasp.grasp('fork', p.pose)
+        print(q)
+        if q:
+            robot.arm.SetJointValues(q)
         input('next')
     obj = 'cabinet'
     knob = 'bottom_drawer_knob'

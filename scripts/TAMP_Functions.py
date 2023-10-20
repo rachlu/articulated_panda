@@ -14,8 +14,7 @@ class TAMP_Functions:
         self.objects = objects
         self.floor = floor
         self.openable = openable
-        placable = {key: objects[key] for key in (set(objects.keys()) - set(self.openable)-{'spring'})}
-        self.place = Place(robot, placable, floor)
+        self.place = Place(robot, objects, floor)
         self.grasp = Grasp(robot, objects)
         self.open_class = Open(robot, objects, floor)
 
@@ -71,10 +70,7 @@ class TAMP_Functions:
         return delta_pose
 
     def sample_openableconf(self, obj, conf, knob):
-        print('====== In sample Openable =======')
-        print(obj, conf, knob)
         delta = self.sample_delta_openableconf(obj, knob)[0]
-        print('sample_openable', conf, delta)
         new_conf = [vobj.BodyConf(obj, conf.conf + delta.conf)]
         return new_conf
 
@@ -102,18 +98,23 @@ class TAMP_Functions:
         return False
 
     def get_open_traj_merge(self, obj, obj_conf, end_conf, start_q, knob):
+        print('Open Start Conf', start_q.conf)
         relative_grasp = self.sample_grasp_openable('Open')(obj, obj_conf, knob)[0]
         for _ in range(3):
             for _ in range(3):
                 q, q_grasp, grab_t = self.compute_nonplaceable_IK(obj, obj_conf, relative_grasp, knob)
+                print("Open grasp q", q.conf)
                 t = self.calculate_path(start_q, q)
                 if t is not None:
                     t = t[0]
+                    print("Open Traj", t)
                     break
             result = self.get_openable_traj(obj, obj_conf, end_conf, q_grasp, relative_grasp, knob)
             if result is not None:
                 t2, end_q = result
                 t.extend(grab_t)
+                print("Open end t", t)
+                print("Open Traj", t2)
                 return [end_q, relative_grasp, t, t2]
         return None
     
@@ -157,9 +158,6 @@ class TAMP_Functions:
             new_obj_pose = self.objects[obj].link_from_name(knob).get_link_tform(True)
             for _ in range(20):
                 grasp_pose, q = self.grasp.grasp(obj+status, new_obj_pose)
-                print('q', q)
-                print('grasp collision', status, self.robot.arm.IsCollisionFree(q, obstacles=[self.floor]))
-                print('grasp collision cabinet', self.robot.arm.IsCollisionFree(q, obstacles=[self.floor, self.objects[obj]]))
                 if q is not None and self.robot.arm.IsCollisionFree(q, obstacles=[self.floor, self.objects[obj]]):
                     # Grasp in object frame
                     relative_grasp = numpy.dot(numpy.linalg.inv(new_obj_pose), grasp_pose)
@@ -219,7 +217,7 @@ class TAMP_Functions:
         grasp_in_world = numpy.dot(obj_pose.pose, grasp.pose)
         q_g = self.robot.arm.ComputeIK(grasp_in_world)
         if q_g is None or not self.robot.arm.IsCollisionFree(q_g, obstacles=[self.floor]):
-            print('q_g None')
+            print('q_g None', obj_pose.pose)
             return None
         up = numpy.array([[1, 0, 0, 0],
                           [0, 1, 0, 0],
@@ -241,7 +239,7 @@ class TAMP_Functions:
 
     def samplePlacePose(self, obj, region):
         # Obj pose in world frame
-        place_pose = self.place.place_tsr[obj].sample()
+        place_pose = self.place.samplePlacePose(obj, region)
         cmd = [vobj.Pose(obj, place_pose)]
         return cmd
 

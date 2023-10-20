@@ -61,23 +61,18 @@ class TrajPath:
                         if (stiffness == new_stiffness).all():
                             print("Reached max Stiffness, need to replan")
                             # Recover
-                            self.robot.arm.SetJointValues(q)
+                            current_q = arm.joint_angles()
+                            current_q = arm.convertToList(current_q)
+                            self.robot.arm.SetJointValues(current_q)
                             arm.hand.open()
                             self.robot.arm.hand.Open()
                             self.robot.arm.ReleaseAll()
                             obj = self.robot.grabbedObjects
-                            print(obj)
-                            while(obj):
-                                self.robot.ReleaseAll()
-                                print(obj)
-                                input("next")
                             ans = input("Go to Recovery Position")
                             while 'N' in ans.upper():
                                 arm.hand.open()
                                 ans = input("Go to Recovery Position")
                             arm.resetErrors()
-                            current_q = arm.joint_angles()
-                            current_q = arm.convertToList(current_q)
                             arm.execute_position_path(util.convert(arm, [current_q, self.path[i+1]]))
                             self.robot.arm.SetJointValues(self.path[i+1])
                             return False # Need to Replan
@@ -131,7 +126,10 @@ class HandCmd:
             self.robot.arm.Release(self.obj)
             if arm:
                 input('Open')
-                arm.hand.open()
+                ans = 'Y'
+                while 'Y' in ans.upper():
+                    arm.hand.open()
+                    ans = input('Repeat?')
         else:
             print('grabbed')
             self.robot.arm.hand.Close()

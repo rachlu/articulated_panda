@@ -147,7 +147,7 @@
                           (Kin ?o ?p ?g ?q ?t)
                           (Grasp ?o ?g)
                           (AtGrasp ?o ?g)
-                          (not (InCollision ?o ?p))
+                          ;(not (InCollision ?o ?p))
                           (not (UnSafeHolding ?t ?o ?g))
                           )
         :effect (and (HandEmpty) (AtObjState ?o ?p) (not (AtGrasp ?o ?g)) (CanMove))

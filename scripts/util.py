@@ -16,16 +16,6 @@ def increment_stiffness(s1, increment, max_stiffness=None):
 
 def execute_path(path, objects, arm):
     for action in path:
-        # if action.name == 'open_obj':
-        #     increment = action.args[-3]
-        #     for cmd in action.args[-1][:-1]:
-        #         print(cmd)
-        #         if action.args[0] == 'knob':
-        #             cmd.execute(arm)
-        #         else:
-        #             cmd.execute(arm)
-        #     action.args[-1][-1].execute(arm)
-        #     continue
         if action.name == 'open_obj' or action.name == 'close_obj':
             cmd1 = action.args[-2]
             cmd2 = action.args[-1]

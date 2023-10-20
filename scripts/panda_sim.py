@@ -23,6 +23,13 @@ def reset():
     arm.execute_position_path(path)
 
 def plan_solution(arm, robot, objects, openable, floor):
+    iteration += 1
+    if iteration >= max_iteration:
+        print("Reached Max iteration. Failed")
+        return
+
+    print("Starting Iteration", iteration)
+
     arm.hand.open()
     robot.arm.hand.Open()
     
@@ -50,6 +57,10 @@ def plan_solution(arm, robot, objects, openable, floor):
 if __name__ == '__main__':
     rospy.init_node('testing_node')
     arm = ArmInterface()
+    global iteration 
+    iteration = 1
+    global max_iteration
+    max_iteration = 2
     objects, openable, floor, robot = table_env.execute()
     plan = plan_solution(arm, robot, objects, openable, floor)
     if plan is None:
