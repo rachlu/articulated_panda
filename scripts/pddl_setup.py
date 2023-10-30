@@ -31,8 +31,8 @@ def pddlstream_from_tamp(robot, movable, tamp, panda=None):
         ('Region', 'fork_region'),
         ('Region', 'bowl_region'),
         ('Region', 'knife_region'),
-        ('Region', 'top_cabinet_region'),
-        ('Region', 'bottom_cabinet_region'),
+        ('CabinetRegion', 'top_cabinet_region'),
+        ('CabinetRegion', 'bottom_cabinet_region'),
         ('UprightObj', 'bowl'),
         ('Openable', 'door'),
         ('Openable', 'cabinet'),
@@ -42,7 +42,7 @@ def pddlstream_from_tamp(robot, movable, tamp, panda=None):
         ('ObjState', 'cabinet', vobj.BodyConf('cabinet', (0, 0))),
         ('ObjState', 'door', vobj.BodyConf('door', (0,))),
     ]
-    goal = ('and', ('Open', 'cabinet', 'bottom_drawer_knob'), ('On', 'fork', 'bottom_cabinet_region'))
+    goal = ('and', ('Open', 'cabinet', 'bottom_drawer_knob'), ('In', 'fork', 'cabinet', 'bottom_cabinet_region'))
     # goal = ('and', ('Close', 'cabinet', 'bottom_drawer_knob'), ('AtConf', conf))
     # goal = (('Close', 'cabinet', 'bottom_drawer_knob'))
     # goal = ('and', ('Open', 'cabinet', 'bottom_drawer_knob'), ('On', 'fork', 'fork_region'))
@@ -108,7 +108,8 @@ def pddlstream_from_tamp(robot, movable, tamp, panda=None):
         'close_traj': from_fn(tamp.get_close_traj_merge),
         'sampleOpenableConf': from_fn(tamp.sample_openableconf),
         'testOpenEnough': from_test(tamp.test_open_enough),
-        'sampleCloseTransition': from_fn(tamp.sample_close_conf)
+        'sampleCloseTransition': from_fn(tamp.sample_close_conf),
+        'samplePlaceCabinetPose': from_fn(tamp.samplePlaceCabinetPose)
     }
 
     return domain_pddl, constant_map, stream_pddl, stream_map, init, goal

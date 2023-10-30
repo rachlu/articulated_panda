@@ -9,7 +9,7 @@ import pb_robot
 
 
 class TAMP_Functions:
-    def __init__(self, robot, objects, floor, openable):
+    def __init__(self, robot, objects, floor, openable, forbiddenQs=[]):
         self.robot = robot
         self.objects = objects
         self.floor = floor
@@ -17,6 +17,7 @@ class TAMP_Functions:
         self.place = Place(robot, objects, floor)
         self.grasp = Grasp(robot, objects)
         self.open_class = Open(robot, objects, floor)
+        self.forbiddenQs = forbiddenQs
 
     def calculate_path(self, q1, q2, constraint=None):
         print(q1, q2)
@@ -134,7 +135,7 @@ class TAMP_Functions:
                 return [end_q, relative_grasp, t, t2]
         return None
 
-    def get_openable_traj(self, obj, obj_conf, end_conf,  start_q, relative_grasp, knob):
+    def get_openable_traj(self, obj, obj_conf, end_conf, start_q, relative_grasp, knob):
         diff = end_conf.conf - obj_conf.conf
         if knob == 'knob' or 'top' in knob:
             total = diff[0]
@@ -226,7 +227,7 @@ class TAMP_Functions:
         new_g = numpy.dot(grasp_in_world, up)
         translated_q = self.robot.arm.ComputeIK(new_g, seed_q=q_g)
         if translated_q is None:
-            print('translated none')
+            print('translated none', obj_pose.pose, grasp.pose)
             return None
         translated_q = numpy.array(translated_q)
         q_g = numpy.array(q_g)
@@ -240,6 +241,11 @@ class TAMP_Functions:
     def samplePlacePose(self, obj, region):
         # Obj pose in world frame
         place_pose = self.place.samplePlacePose(obj, region)
+        cmd = [vobj.Pose(obj, place_pose)]
+        return cmd
+    
+    def samplePlaceCabinetPose(self, obj, cabinet, region, conf):
+        place_pose = self.place.samplePlacePose(obj, region, conf.conf)
         cmd = [vobj.Pose(obj, place_pose)]
         return cmd
 

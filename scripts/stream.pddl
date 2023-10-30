@@ -55,6 +55,13 @@
         :certified (and (ObjState ?o ?p) (Supported ?o ?p ?r))
     )
 
+    (:stream samplePlaceCabinetPose
+        :inputs (?o1 ?o2 ?r ?c)
+        :domain (and (Placeable ?o1) (CabinetRegion ?r) (ObjState ?o2 ?c) (Openable ?o2))
+        :outputs (?p)
+        :certified (and (ObjState ?o1 ?p) (SupportedCabinet ?o1 ?p ?r ?c))   
+    )
+    
     (:stream sampleTable
         :inputs (?o)
         :domain (Placeable ?o)

@@ -7,6 +7,7 @@
         (AtObjState ?o ?s)
         (Grasp ?o ?g)
         (On ?o ?r)
+        (In ?o ?o2 ?r)
         (Kin ?o ?p ?g ?q ?t)
 	    (KinOpen ?o ?c ?g ?q1 ?q2 ?t)
         (Holding ?o)
@@ -22,7 +23,9 @@
         (UnSafeHolding ?t ?o ?g)
         (CFreeHolding ?t ?o ?g ?o2 ?p)
         (Region ?r)
+        (CabinetRegion ?r)
         (Supported ?o ?p ?r)
+        (SupportedCabinet ?o1 ?p ?r ?c)
         (AtGrasp ?o ?g)
         (InCollision ?o ?p)
         (Safe ?o ?p ?o2 ?p2)
@@ -92,6 +95,7 @@
                             (Conf ?q1)
                             (Conf ?q2)
                             (AtConf ?q1)
+                            (HandEmpty)
                             (ValidStateTransition ?o ?c1 ?c2 ?h)
                             (ObjState ?o ?c1)
                             (AtObjState ?o ?c1)
@@ -155,6 +159,10 @@
 
     (:derived (On ?o ?r)
         (exists (?p) (and (Region ?r) (ObjState ?o ?p) (AtObjState ?o ?p) (Supported ?o ?p ?r)))
+    )
+
+    (:derived (In ?o ?o2 ?r)
+        (exists (?p ?c) (and (CabinetRegion ?r) (ObjState ?o ?p) (AtObjState ?o ?p) (ObjState ?o2 ?c) (AtObjState ?o2 ?c) (SupportedCabinet ?o ?p ?r ?c)))
     )
 
     (:derived (Holding ?o)
