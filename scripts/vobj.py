@@ -26,6 +26,7 @@ class TrajPath:
         return 't{}'.format(id(self) % 1000)
 
     def execute(self, arm, imped=False):
+        print(self.path)
         ans = 'Y'
         while ans.upper() == 'Y':
             for q in self.path:
@@ -75,7 +76,8 @@ class TrajPath:
                             arm.resetErrors()
                             arm.execute_position_path(util.convert(arm, [current_q, self.path[i+1]]))
                             self.robot.arm.SetJointValues(self.path[i+1])
-                            return False # Need to Replan
+                            minForce = np.dot(np.linalg.inv(np.array(self.robot.arm.GetJacobian(q)).T), self.robot.arm.GetJointTorques())
+                            return False, minForce # Need to Replan
                         stiffness = new_stiffness
                         input("Increasing Stiffnes to {0}. Continue?".format(stiffness))
                         continue
@@ -85,32 +87,8 @@ class TrajPath:
                     curr_pose = arm.endpoint_pose()
                     print('Current Pose: {0}\nExpected Pose: {1}\n'.format(curr_pose['position'], cart_pose))
                     dist = get_euclDist(cart_pose, curr_pose['position'])
-                    # if (dist > 0.1):
-                    #     print('Did not reach desired position\n')
-                    #     stiffness[-1] += 10
-                    #     print('Raising Stiffness to {0}\n'.format(stiffness))
-                    #     # raise AssertionError("Did not reach desired position")
-                    #     if (stiffness[-1] > 100):
-                    #         break
-                    #     continue
                     i += 1
-            return True
-                # success = arm.execute_joint_impedance_traj_recover(self.path)
-                
-                # if not success:
-                #     current_q = arm.joint_angles()
-                #     self.robot.arm.SetJointValues(current_q)
-                #     current_pose = self.robot.arm.GetEETransform()
-                #     back = numpy.array([[1, 0, 0, 0],
-                #             [0, 1, 0, 0],
-                #             [0, 0, 1, -.07],
-                #             [0., 0., 0., 1.]])
-                #     back_grasp = numpy.dot(current_pose, back)
-                #     recover_q = self.robot.arm.ComputeIKQ(back_grasp, current_q)
-                #     arm.execute_position_path(util.convert(arm, [current_q, recover_q]))
-            
-                    # TODO: Add replan
-                    # Pddl.replan()
+            return True, None
 
 
 class HandCmd:

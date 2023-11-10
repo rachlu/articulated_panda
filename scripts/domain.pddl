@@ -44,6 +44,7 @@
 	    (Handle ?o ?h)
 	    (ValidStateTransition ?o ?q1 ?q2 ?k)
 	    (ValidCloseTransition ?o ?q1 ?q2 ?h)
+        (ForceNeeded ?o ?h ?f)
 	)
 
     (:action move_free
@@ -101,11 +102,12 @@
                             (AtObjState ?o ?c1)
                             (ObjState ?o ?c2)
                             (Open_Traj ?o ?g ?q1 ?q2 ?c1 ?c2 ?h ?t1 ?t2)
-                            (not (UnSafeHolding ?t2 ?o ?g))
-                            (not (UnSafeTraj ?t1))
+                            ;(not (UnSafeHolding ?t2 ?o ?g))
+                            ;(not (UnSafeTraj ?t1)
 			    )
         :effect (and (HandEmpty) (AtObjState ?o ?c2) (not (AtObjState ?o ?c1)) (AtConf ?q2) (not (AtConf ?q1)) 
-                    (CanMove) (not (Close ?o ?h)))
+                    (CanMove) (not (Close ?o ?h)) (Open ?o ?h)
+                )
     )
 
     (:action close_obj
@@ -157,13 +159,35 @@
         :effect (and (HandEmpty) (AtObjState ?o ?p) (not (AtGrasp ?o ?g)) (CanMove))
     )
 
+    (:action placeInCabinet
+        :parameters (?o ?o2 ?c ?r ?p ?g ?q ?t)
+        :precondition (and (Placeable ?o)
+                          (Openable ?o2)
+                          (ObjState ?o ?p)
+                          (ObjState ?o2 ?c)
+                          (AtObjState ?o2 ?c)
+                          (Handle ?o2 ?r)
+                          (CabinetRegion ?r)
+                          (SupportedCabinet ?o ?p ?r ?c)
+                          (Conf ?q)
+                          (AtConf ?q)
+                          (Kin ?o ?p ?g ?q ?t)
+                          (Grasp ?o ?g)
+                          (AtGrasp ?o ?g)
+                          ;(not (InCollision ?o ?p))
+                          ;(not (UnSafeHolding ?t ?o ?g))
+                          (Open ?o2 ?r)
+                          )
+        :effect (and (HandEmpty) (AtObjState ?o ?p) (not (AtGrasp ?o ?g)) (CanMove) (In ?o ?o2 ?r))
+    )
+
     (:derived (On ?o ?r)
         (exists (?p) (and (Region ?r) (ObjState ?o ?p) (AtObjState ?o ?p) (Supported ?o ?p ?r)))
     )
 
-    (:derived (In ?o ?o2 ?r)
-        (exists (?p ?c) (and (CabinetRegion ?r) (ObjState ?o ?p) (AtObjState ?o ?p) (ObjState ?o2 ?c) (AtObjState ?o2 ?c) (SupportedCabinet ?o ?p ?r ?c)))
-    )
+    ;(:derived (In ?o ?o2 ?r)
+    ;    (exists (?p ?c) (and (CabinetRegion ?r) (Openable ?o2) (ObjState ?o ?p) (AtObjState ?o ?p) (ObjState ?o2 ?c) (AtObjState ?o2 ?c) (SupportedCabinet ?o ?p ?r ?c)))
+    ;)
 
     (:derived (Holding ?o)
         (exists (?g) (and (Graspable ?o) (Grasp ?o ?g) (AtGrasp ?o ?g)))
@@ -181,7 +205,7 @@
         (exists (?o2 ?p) (and (Grasp ?o ?g) (ObjState ?o2 ?p) (AtGrasp ?o ?g) (AtObjState ?o2 ?p) (not (CFreeHolding ?t ?o ?g ?o2 ?p))))
     )
 
-    (:derived (Open ?o ?h)
-        (exists (?p) (and (Openable ?o) (Handle ?o ?h) (ObjState ?o ?p) (AtObjState ?o ?p) (OpenEnough ?o ?p ?h)))
-    )
+    ;(:derived (Open ?o ?h)
+    ;    (exists (?p) (and (Openable ?o) (Handle ?o ?h) (ObjState ?o ?p) (AtObjState ?o ?p) (OpenEnough ?o ?p ?h)))
+    ;)
 )

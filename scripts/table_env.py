@@ -63,8 +63,7 @@ def execute():
 
     # Create robot object
     robot = pb_robot.panda.Panda()
-
-    pb_robot.viz.draw_tform(robot.arm.GetEETransform())
+    # pb_robot.viz.draw_tform(robot.arm.GetEETransform())
 
     # Add floor object 
     objects_path = pb_robot.helper.getDirectory("YCB_Robot")
@@ -85,7 +84,7 @@ def execute():
     rotate = util.get_rotation_arr('Z', 2 * math.pi)
     cabinet.set_transform(numpy.dot(pos, rotate))
     cabinet.setIK(cabinetIK(cabinet))
-    cabinet.set_configuration((0, 0))
+    cabinet.set_configuration((0., 0.))
 
     # # Add fork object
     fork_file = os.path.join(objects_path, 'fork.urdf')

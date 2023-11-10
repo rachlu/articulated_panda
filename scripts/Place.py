@@ -61,7 +61,7 @@ class Place:
 
     def samplePlacePose(self, obj, region, conf=None):
         # Object pose in world frame
-        if 'cabinet' in region:
+        if 'knob' in region:
             self.set_cabinet_info(region, conf)
         else:
             self.set_table_info()

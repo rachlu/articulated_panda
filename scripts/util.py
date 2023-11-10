@@ -23,7 +23,7 @@ def execute_path(path, objects, arm):
             for cmd in cmd1:
                 result = cmd.execute(arm)
                 time.sleep(1)
-                if result == False:
+                if result and result[0] == False:
                     print("Failed Need to replan")
                     return
             continue

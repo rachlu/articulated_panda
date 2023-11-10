@@ -72,8 +72,14 @@ class TAMP_Functions:
 
     def sample_openableconf(self, obj, conf, knob):
         delta = self.sample_delta_openableconf(obj, knob)[0]
-        new_conf = [vobj.BodyConf(obj, conf.conf + delta.conf)]
-        return new_conf
+        new_conf = vobj.BodyConf(obj, conf.conf + delta.conf)
+        if delta.conf[0]:
+            if 0.17 <= new_conf.conf[0] <= 0.2:
+                return [new_conf]
+        else:
+            if 0.17 <= new_conf.conf[1] <= 0.2:
+                return [new_conf]        
+        return None
 
     def sample_close_conf(self, obj, conf, knob):
         if obj == 'cabinet':
@@ -98,7 +104,7 @@ class TAMP_Functions:
 
         return False
 
-    def get_open_traj_merge(self, obj, obj_conf, end_conf, start_q, knob):
+    def get_open_traj_merge(self, obj, obj_conf, end_conf, start_q, knob, minForce):
         print('Open Start Conf', start_q.conf)
         relative_grasp = self.sample_grasp_openable('Open')(obj, obj_conf, knob)[0]
         for _ in range(3):
@@ -110,7 +116,7 @@ class TAMP_Functions:
                     t = t[0]
                     print("Open Traj", t)
                     break
-            result = self.get_openable_traj(obj, obj_conf, end_conf, q_grasp, relative_grasp, knob)
+            result = self.get_openable_traj(obj, obj_conf, end_conf, q_grasp, relative_grasp, knob, minForce)
             if result is not None:
                 t2, end_q = result
                 t.extend(grab_t)
@@ -119,7 +125,7 @@ class TAMP_Functions:
                 return [end_q, relative_grasp, t, t2]
         return None
     
-    def get_close_traj_merge(self, obj, obj_conf, end_conf, start_q, knob):
+    def get_close_traj_merge(self, obj, obj_conf, end_conf, start_q, knob, minForce):
         relative_grasp = self.sample_grasp_openable('Close')(obj, obj_conf, knob)[0]
         for _ in range(3):
             for _ in range(3):
@@ -128,14 +134,14 @@ class TAMP_Functions:
                 if t is not None:
                     t = t[0]
                     break
-            result = self.get_openable_traj(obj, obj_conf, end_conf, q_grasp, relative_grasp, knob)
+            result = self.get_openable_traj(obj, obj_conf, end_conf, q_grasp, relative_grasp, knob, minForce)
             if result is not None:
                 t2, end_q = result
                 t.extend(grab_t)
                 return [end_q, relative_grasp, t, t2]
         return None
 
-    def get_openable_traj(self, obj, obj_conf, end_conf, start_q, relative_grasp, knob):
+    def get_openable_traj(self, obj, obj_conf, end_conf, start_q, relative_grasp, knob, minForce):
         diff = end_conf.conf - obj_conf.conf
         if knob == 'knob' or 'top' in knob:
             total = diff[0]
@@ -145,7 +151,7 @@ class TAMP_Functions:
         for _ in range(5):
             increment, sample = util.get_increment(obj, obj_conf.conf, total, knob)
             print('INCREMENT', increment, 'SAMPLE', sample)
-            t2 = self.open_class.open_obj(obj, start_q.conf, relative_grasp.pose, obj_conf.conf, increment, sample, knob)
+            t2 = self.open_class.open_obj(obj, start_q.conf, relative_grasp.pose, obj_conf.conf, increment, sample, knob, minForce)
             if t2 is not None:
                 # t2 = cmds, end_conf
                 cmds = [t2[0], t2[1]]
@@ -245,6 +251,7 @@ class TAMP_Functions:
         return cmd
     
     def samplePlaceCabinetPose(self, obj, cabinet, region, conf):
+        print("Sample Place", conf.conf)
         place_pose = self.place.samplePlacePose(obj, region, conf.conf)
         cmd = [vobj.Pose(obj, place_pose)]
         return cmd

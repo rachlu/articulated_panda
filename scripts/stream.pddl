@@ -21,15 +21,15 @@
     )
 
     (:stream open_traj
-        :inputs (?o ?c1 ?c2 ?q1 ?h)
-        :domain (and (Conf ?q1) (Handle ?o ?h) (Openable ?o) (ObjState ?o ?c1) (ObjState ?o ?c2))
+        :inputs (?o ?c1 ?c2 ?q1 ?h ?f)
+        :domain (and (Conf ?q1) (Handle ?o ?h) (Openable ?o) (ObjState ?o ?c1) (ObjState ?o ?c2) (ForceNeeded ?o ?h ?f))
         :outputs (?q2 ?g ?t1 ?t2)
         :certified (and (Trajectory ?q1 ?q2 ?t1) (OpenGrasp ?o ?g ?h) (Traj ?t1) (Open_Traj ?o ?g ?q1 ?q2 ?c1 ?c2 ?h ?t1 ?t2) (Conf ?q2) (Traj_Holding ?t2 ?o ?g))
     )
 
     (:stream close_traj
-        :inputs (?o ?c1 ?c2 ?q1 ?h)
-        :domain (and (Conf ?q1) (Handle ?o ?h) (Openable ?o) (ObjState ?o ?c1) (ObjState ?o ?c2))
+        :inputs (?o ?c1 ?c2 ?q1 ?h ?f)
+        :domain (and (Conf ?q1) (Handle ?o ?h) (Openable ?o) (ObjState ?o ?c1) (ObjState ?o ?c2) (ForceNeeded ?o ?h ?f))
         :outputs (?q2 ?g ?t1 ?t2)
         :certified (and (Trajectory ?q1 ?q2 ?t1) (CloseGrasp ?o ?g ?h) (Traj ?t1) (Close_Traj ?o ?g ?q1 ?q2 ?c1 ?c2 ?h ?t1 ?t2) (Conf ?q2) (Traj_Holding ?t2 ?o ?g))
     )
@@ -57,7 +57,12 @@
 
     (:stream samplePlaceCabinetPose
         :inputs (?o1 ?o2 ?r ?c)
-        :domain (and (Placeable ?o1) (CabinetRegion ?r) (ObjState ?o2 ?c) (Openable ?o2))
+        :domain (and (Placeable ?o1) 
+                    (Handle ?o2 ?r) 
+                    (Openable ?o2) 
+                    (ObjState ?o2 ?c) 
+                    (OpenEnough ?o2 ?c ?r) 
+                    (CabinetRegion ?r))
         :outputs (?p)
         :certified (and (ObjState ?o1 ?p) (SupportedCabinet ?o1 ?p ?r ?c))   
     )
@@ -73,7 +78,7 @@
         :inputs (?o ?c ?h)
         :domain (and (Openable ?o) (ObjState ?o ?c) (Handle ?o ?h))
         :outputs (?c2)
-        :certified (and (ObjState ?o ?c2) (ValidStateTransition ?o ?c ?c2 ?h))
+        :certified (and (ObjState ?o ?c2) (OpenEnough ?o ?c2 ?h) (ValidStateTransition ?o ?c ?c2 ?h))
     )
 
     (:stream sampleCloseTransition
@@ -83,11 +88,11 @@
         :certified (and (ObjState ?o ?c2) (ValidCloseTransition ?o ?c ?c2 ?h))
     )
 
-    (:stream testOpenEnough
-        :inputs (?o ?c ?h)
-        :domain (and (Openable ?o) (Handle ?o ?h) (ObjState ?o ?c))
-        :certified (OpenEnough ?o ?c ?h)
-    )
+    ;(:stream testOpenEnough
+    ;    :inputs (?o ?c ?h)
+    ;    :domain (and (Openable ?o) (Handle ?o ?h) (ObjState ?o ?c))
+    ;    :certified (OpenEnough ?o ?c ?h)
+    ;)
 
     (:stream collisionCheck
         :inputs (?o ?p ?o2 ?p2)

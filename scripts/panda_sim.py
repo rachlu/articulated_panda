@@ -22,7 +22,7 @@ def reset():
     path = util.convert(arm, path)
     arm.execute_position_path(path)
 
-def plan_solution(arm, robot, objects, openable, floor, forbiddenQs=[]):
+def plan_solution(arm, robot, objects, openable, floor, minForce=None):
     iteration += 1
     if iteration >= max_iteration:
         print("Reached Max iteration. Failed")
@@ -39,9 +39,9 @@ def plan_solution(arm, robot, objects, openable, floor, forbiddenQs=[]):
     for obj in objects:
         init_conditions[obj] = objects[obj].get_transform()
 
-    tamp = TAMP_Functions(robot, objects, floor, openable, forbiddenQs)
+    tamp = TAMP_Functions(robot, objects, floor, openable)
 
-    pddlstream_problem = pddlstream_from_tamp(robot, objects, tamp, arm)
+    pddlstream_problem = pddlstream_from_tamp(robot, objects, tamp, arm, minForce)
     _, _, _, stream_map, init, goal = pddlstream_problem
     print('stream', stream_map)
     print('init', init)
