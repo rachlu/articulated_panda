@@ -76,7 +76,7 @@ class TrajPath:
                             arm.resetErrors()
                             arm.execute_position_path(util.convert(arm, [current_q, self.path[i+1]]))
                             self.robot.arm.SetJointValues(self.path[i+1])
-                            minForce = np.dot(np.linalg.inv(np.array(self.robot.arm.GetJacobian(q)).T), self.robot.arm.GetJointTorques())
+                            minForce = np.dot(np.linalg.pinv(np.array(self.robot.arm.GetJacobian(q)).T), arm.coriolis_comp())
                             return False, minForce # Need to Replan
                         stiffness = new_stiffness
                         input("Increasing Stiffnes to {0}. Continue?".format(stiffness))

@@ -79,7 +79,7 @@ def execute():
     cabinet = pb_robot.body.createBody(cabinet_file)
     pos = numpy.array([[1, 0, 0, 0.8],
                        [0, 1, 0, -0.3],
-                       [0, 0, 1, pb_robot.placements.stable_z(cabinet, floor)+0.012],
+                       [0, 0, 1, pb_robot.placements.stable_z(cabinet, floor)-0.034], #+0.012 for bottom
                        [0, 0, 0, 1]])
     rotate = util.get_rotation_arr('Z', 2 * math.pi)
     cabinet.set_transform(numpy.dot(pos, rotate))

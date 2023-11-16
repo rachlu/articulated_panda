@@ -43,10 +43,10 @@ def pddlstream_from_tamp(robot, movable, tamp, panda=None, minForce=None):
         ('ObjState', 'cabinet', vobj.BodyConf('cabinet', (0, 0))),
         ('ObjState', 'door', vobj.BodyConf('door', (0,))),
     ]
-    goal = ('and', ('In', 'fork', 'cabinet', 'bottom_drawer_knob'), ('Close', 'cabinet', 'bottom_drawer_knob'), ('AtConf', conf))
+    goal = ('and', ('In', 'fork', 'cabinet', 'top_drawer_knob'), ('Open', 'cabinet', 'top_drawer_knob'))
     # goal = ('and', ('Open', 'cabinet', 'bottom_drawer_knob'), ('Holding', 'fork'))
     # goal = (('On', 'fork', 'fork_region'))
-    # goal = ('and', ('Open', 'cabinet', 'bottom_drawer_knob'), ('AtConf', conf))
+    # goal = ('and', ('Open', 'cabinet', 'top_drawer_knob'))
     # goal = ('and', ('Close', 'cabinet', 'bottom_drawer_knob'), ('AtConf', conf))
     # goal = ('In', 'fork', 'cabinet', 'bottom_drawer_knob')
     # goal = ('and', ('Close', 'cabinet', 'bottom_drawer_knob'), ('AtConf', conf))
@@ -100,8 +100,10 @@ def pddlstream_from_tamp(robot, movable, tamp, panda=None, minForce=None):
         init.extend([('Graspable', obj)])
     if minForce:
         init.extend([('ForceNeeded', 'cabinet', 'bottom_drawer_knob', minForce)])
+        init.extend([('ForceNeeded', 'cabinet', 'top_drawer_knob', minForce)])
     else:
         init.extend([('ForceNeeded', 'cabinet', 'bottom_drawer_knob', np.zeros(6))])
+        init.extend([('ForceNeeded', 'cabinet', 'top_drawer_knob', np.zeros(6))])
 
     stream_map = {
         'get_trajectory': from_fn(tamp.calculate_path),

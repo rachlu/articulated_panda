@@ -93,6 +93,7 @@
         :parameters (?o ?c1 ?c2 ?g ?q1 ?q2 ?h ?t1 ?t2)
         :precondition (and (Openable ?o)
                             (OpenGrasp ?o ?g ?h)
+                            (Handle ?o ?h)
                             (Conf ?q1)
                             (Conf ?q2)
                             (AtConf ?q1)

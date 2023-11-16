@@ -23,14 +23,15 @@ def execute_path(path, objects, arm):
             for cmd in cmd1:
                 result = cmd.execute(arm)
                 time.sleep(1)
-                if result and result[0] == False:
+                if result and not result[0]:
                     print("Failed Need to replan")
-                    return
+                    return result
             continue
             
         for cmd in action.args[-1]:
             cmd.execute(arm)
             time.sleep(1)
+    return True, None
 
 
 def sampleTable(obj):
