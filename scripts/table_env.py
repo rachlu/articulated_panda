@@ -34,10 +34,13 @@ def cabinetIK(obj):
             if 'knob' not in l.get_link_name():
                 continue
             position = l.get_link_tform(True)
-            if abs(z - position[2][-1]) < 0.01:
+            if abs(z - position[2][-1]) < 0.02:
                 name = l.get_link_name()
                 link = l
                 break
+        if not link:
+            print(l.get_link_name(), position[2][-1], z)
+            return None
         current = obj.get_configuration()
         position = link.get_link_tform(True)
         x = position[0][-1] - pose_worldF[0][-1]
@@ -79,7 +82,7 @@ def execute():
     cabinet = pb_robot.body.createBody(cabinet_file)
     pos = numpy.array([[1, 0, 0, 0.8],
                        [0, 1, 0, -0.3],
-                       [0, 0, 1, pb_robot.placements.stable_z(cabinet, floor)-0.034], #+0.012 for bottom
+                       [0, 0, 1, pb_robot.placements.stable_z(cabinet, floor)-0.05], #+0.012 for bottom
                        [0, 0, 0, 1]])
     rotate = util.get_rotation_arr('Z', 2 * math.pi)
     cabinet.set_transform(numpy.dot(pos, rotate))
@@ -90,10 +93,15 @@ def execute():
     fork_file = os.path.join(objects_path, 'fork.urdf')
     fork = pb_robot.body.createBody(fork_file)
 
-    while not collision_free([robot, cabinet], fork):
-        random_pos = util.sampleTable('fork')[0].pose
-        fork.set_transform(random_pos)
-    
+    # while not collision_free([robot, cabinet], fork):
+    #     random_pos = util.sampleTable('fork')[0].pose
+    #     fork.set_transform(random_pos)
+    fork.set_transform([[-0.79085342, -0.61200561,  0.,          0.23726321],
+            [ 0.61200561, -0.79085342,  0.,          0.41937854],
+            [ 0.,          0.,          1.,          0.        ],
+            [ 0.,          0.,          0.,          1.        ]]
+    )
+
     # # Add knife object
     # knife_file = os.path.join(objects_path, 'knife.urdf')
     # knife = pb_robot.body.createBody(knife_file)

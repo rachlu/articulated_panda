@@ -1,12 +1,12 @@
 import random
-import numpy 
+import numpy as np
 import vobj
 import math
 import pb_robot
 import time
 
 def increment_stiffness(s1, increment, max_stiffness=None):
-    s1 = numpy.array(s1)
+    s1 = np.array(s1)
     if not max:
         return s1 + increment
     s1 += increment
@@ -44,12 +44,12 @@ def sampleTable(obj):
     angle = random.uniform(0, 2 * math.pi)
     rotate = get_rotation_arr('Z', angle)
 
-    translation = numpy.array([[1, 0, 0, x],
+    translation = np.array([[1, 0, 0, x],
                                [0, 1, 0, y],
                                [0, 0, 1, 0],
                                [0., 0., 0., 1.]])
 
-    pose = numpy.dot(translation, rotate)
+    pose = np.dot(translation, rotate)
     cmd = [vobj.Pose(obj, pose)]
     return cmd
 
@@ -72,7 +72,7 @@ def getDistance(q1, q2):
     Returns the total radian distance from configuration q1 to configuration q2.
     """
     x = q1 - q2
-    return numpy.sqrt(x.dot(x))
+    return np.sqrt(x.dot(x))
 
 
 def get_increment(obj, start_conf, total, knob):
@@ -94,22 +94,22 @@ def get_increment(obj, start_conf, total, knob):
             increment = (increment, 0)
         else:
             increment = (0, increment)
-    return increment, sample
+    return np.array(increment), sample
 
 
 def get_rotation_arr(axis, angle):
     if axis.upper() == 'X':
-        return numpy.array([[1, 0, 0, 0],
+        return np.array([[1, 0, 0, 0],
                             [0, math.cos(angle), -math.sin(angle), 0],
                             [0, math.sin(angle), math.cos(angle), 0],
                             [0., 0., 0., 1.]])
     elif axis.upper() == 'Y':
-        return numpy.array([[math.cos(angle), 0, math.sin(angle), 0],
+        return np.array([[math.cos(angle), 0, math.sin(angle), 0],
                             [0, 1, 0, 0],
                             [-math.sin(angle), 0, math.cos(angle), 0],
                             [0., 0., 0., 1.]])
     elif axis.upper() == 'Z':
-        return numpy.array([[math.cos(angle), -math.sin(angle), 0, 0],
+        return np.array([[math.cos(angle), -math.sin(angle), 0, 0],
                             [math.sin(angle), math.cos(angle), 0, 0],
                             [0, 0, 1, 0],
                             [0., 0., 0., 1.]])
@@ -146,7 +146,7 @@ def skewMatrix(v):
     :return: 3x3 skew symmetric matrix
     """
 
-    skew = numpy.array([[0, -v[2], v[1]],
+    skew = np.array([[0, -v[2], v[1]],
                         [v[2], 0, -v[0]],
                         [-v[1], v[0], 0]])
     return skew
@@ -163,8 +163,8 @@ def adjointTransform(T):
     rotation = T[:3, :3]
     transform = T[:3, 3]
 
-    adj = numpy.zeros((6, 6))
-    adj[:3, :3] = numpy.dot(skewMatrix(transform), rotation)
+    adj = np.zeros((6, 6))
+    adj[:3, :3] = np.dot(skewMatrix(transform), rotation)
     adj[:3, 3:6] = rotation
     adj[3:6, :3] = rotation
 
@@ -172,6 +172,6 @@ def adjointTransform(T):
 
 
 def wrenchFrameTransform(w, frame):
-    new_w = numpy.dot(numpy.transpose(adjointTransform(frame)), w)
+    new_w = np.dot(np.transpose(adjointTransform(frame)), w)
     return new_w
 

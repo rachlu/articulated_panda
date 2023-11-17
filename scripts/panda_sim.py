@@ -32,7 +32,7 @@ def plan_solution(arm, robot, objects, openable, floor):
         arm.hand.open()
         robot.arm.hand.Open()
         result, newForce = iteration(robot, objects, tamp, arm, minForce)
-        if result[0]:
+        if result:
             # Completed
             return
         else:
