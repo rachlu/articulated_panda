@@ -61,7 +61,7 @@ class TAMP_Functions:
             # delta_pose = np.array((50, ))
         else:
             # Cabinet open all the way is 0.3
-            random_conf = random.uniform(0.17, 0.2)
+            random_conf = random.uniform(0, 0.17)
             # random_conf = 0.17
             if 'top' in knob:
                 delta_pose = np.array((random_conf, 0))
@@ -71,14 +71,15 @@ class TAMP_Functions:
         return delta_pose
 
     def sample_openableconf(self, obj, conf, knob):
-        delta = self.sample_delta_openableconf(obj, knob)[0]
-        new_conf = vobj.BodyConf(obj, conf.conf + delta.conf)
-        if delta.conf[0]:
-            if 0.17 <= new_conf.conf[0] <= 0.2:
-                return [new_conf]
-        else:
-            if 0.17 <= new_conf.conf[1] <= 0.2:
-                return [new_conf]        
+        for _ in range(15):
+            delta = self.sample_delta_openableconf(obj, knob)[0]
+            new_conf = vobj.BodyConf(obj, conf.conf + delta.conf)
+            if delta.conf[0]:
+                if 0.15 <= new_conf.conf[0] <= 0.17:
+                    return [new_conf]
+            else:
+                if 0.15 <= new_conf.conf[1] <= 0.17:
+                    return [new_conf]        
         return None
 
     def sample_close_conf(self, obj, conf, knob):
@@ -99,7 +100,7 @@ class TAMP_Functions:
                 return True
 
         current = obj_conf.conf[0] if 'top' in knob else obj_conf.conf[1]
-        if 0.17 <= current:
+        if 0.15 <= current:
             return True
 
         return False
@@ -107,8 +108,8 @@ class TAMP_Functions:
     def get_open_traj_merge(self, obj, obj_conf, end_conf, start_q, knob, minForce):
         print('Open Start Conf', start_q.conf)
         relative_grasp = self.sample_grasp_openable('Open')(obj, obj_conf, knob)[0]
-        for _ in range(3):
-            for _ in range(3):
+        for _ in range(5):
+            for _ in range(5):
                 q, q_grasp, grab_t = self.compute_nonplaceable_IK(obj, obj_conf, relative_grasp, knob)
                 print("Open grasp q", q.conf)
                 t = self.calculate_path(start_q, q)

@@ -42,7 +42,7 @@ class Open:
 
         back = numpy.array([[1, 0, 0, 0],
                             [0, 1, 0, 0],
-                            [0, 0, 1, -.1],
+                            [0, 0, 1, -.07],
                             [0., 0., 0., 1.]])
         back_grasp = numpy.dot(new_grasp, back)
         q = self.robot.arm.ComputeIKQ(back_grasp, path[-1])
