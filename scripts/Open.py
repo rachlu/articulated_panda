@@ -19,7 +19,7 @@ class Open:
         self.objects[obj].set_configuration(obj_conf)
         q = numpy.array(start_q)
         path = [q]
-        t = numpy.array(obj_conf)
+        t = numpy.array(obj_conf).astype(float)
         for _ in range(sample):
             t += increment
             self.objects[obj].set_configuration(t)

@@ -68,16 +68,24 @@ class TrajPath:
                             arm.hand.open()
                             self.robot.arm.hand.Open()
                             self.robot.arm.ReleaseAll()
-                            obj = self.robot.grabbedObjects
                             ans = input("Go to Recovery Position")
                             while 'N' in ans.upper():
                                 arm.hand.open()
                                 ans = input("Go to Recovery Position")
                             arm.resetErrors()
-                            arm.execute_position_path(util.convert(arm, [current_q, self.path[i+1]]))
-                            self.robot.arm.SetJointValues(self.path[i+1])
-                            minForce = np.dot(np.linalg.pinv(np.array(self.robot.arm.GetJacobian(q)).T), arm.coriolis_comp())
+
+                            # Calculate Recovery Configuration
+                            current_pos = self.robot.arm.GetEETransform()
+                            current_pos[0][-1] -= 0.05
+                            recover_q = self.robot.arm.ComputeIK(current_pos, seed_q=current_q)
+
+                            # Move to recovery Position
+                            arm.execute_position_path(util.convert(arm, [current_q, recover_q]))
+                            self.robot.arm.SetJointValues(recover_q)
+
+                            minForce = np.dot(np.linalg.pinv(np.array(self.robot.arm.GetJacobian(current_q)).T), arm.coriolis_comp())
                             return False, minForce # Need to Replan
+
                         stiffness = new_stiffness
                         input("Increasing Stiffnes to {0}. Continue?".format(stiffness))
                         continue

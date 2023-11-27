@@ -108,6 +108,7 @@ class TAMP_Functions:
     def get_open_traj_merge(self, obj, obj_conf, end_conf, start_q, knob, minForce):
         print('Open Start Conf', start_q.conf)
         relative_grasp = self.sample_grasp_openable('Open')(obj, obj_conf, knob)[0]
+        init_q = self.robot.arm.GetJointValues()
         for _ in range(5):
             for _ in range(5):
                 q, q_grasp, grab_t = self.compute_nonplaceable_IK(obj, obj_conf, relative_grasp, knob)
@@ -115,6 +116,12 @@ class TAMP_Functions:
                 t = self.calculate_path(start_q, q)
                 if t is not None:
                     t = t[0]
+                    # cur_q = t[0].path[-1]
+                    # self.robot.arm.SetJointValues(cur_q)
+                    # current_pos = self.robot.arm.GetEETransform
+                    # current_pos[0][-1] -= 0.05
+                    # recover_q = self.robot.ComputeIK(current_pos, seed_q=current_q)
+
                     print("Open Traj", t)
                     break
             result = self.get_openable_traj(obj, obj_conf, end_conf, q_grasp, relative_grasp, knob, minForce)
@@ -135,6 +142,7 @@ class TAMP_Functions:
                 if t is not None:
                     t = t[0]
                     break
+
             result = self.get_openable_traj(obj, obj_conf, end_conf, q_grasp, relative_grasp, knob, minForce)
             if result is not None:
                 t2, end_q = result
@@ -144,7 +152,7 @@ class TAMP_Functions:
 
     def get_openable_traj(self, obj, obj_conf, end_conf, start_q, relative_grasp, knob, minForce):
         print("Openable Traj", end_conf.conf, obj_conf.conf)
-        diff = end_conf.conf - obj_conf.conf
+        diff = np.array(end_conf.conf) - np.array(obj_conf.conf)
         if knob == 'knob' or 'top' in knob:
             total = diff[0]
         else:

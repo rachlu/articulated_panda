@@ -64,10 +64,11 @@ class Grasp:
         bw = numpy.array([[-0.03, 0.03], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]])
         self.bw_range[self.utensils] = bw
 
+        # Out and down
         # Close Cabinet
-        translation = numpy.array([[1, 0, 0, -0.07],
+        translation = numpy.array([[1, 0, 0, -0.10],
                                    [0, 1, 0, 0],
-                                   [0, 0, 1, 0.08],
+                                   [0, 0, 1, 0],
                                    [0, 0, 0, 1]])
         t1 = util.get_rotation_arr('X', math.pi)
         t2 = util.get_rotation_arr('Y', math.pi/6)
