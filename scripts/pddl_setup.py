@@ -43,9 +43,9 @@ def pddlstream_from_tamp(robot, movable, tamp, panda=None, minForce=None):
         ('ObjState', 'cabinet', vobj.BodyConf('cabinet', (0, 0))),
         ('ObjState', 'door', vobj.BodyConf('door', (0,))),
     ]
-    # goal = ('and', ('In', 'fork', 'cabinet', 'bottom_drawer_knob'), ('Close', 'cabinet', 'bottom_drawer_knob'), ('AtConf', conf))
+    goal = ('and', ('In', 'fork', 'cabinet', 'bottom_drawer_knob'), ('Close', 'cabinet', 'bottom_drawer_knob'), ('AtConf', conf))
     # goal = ('and', ('In', 'fork', 'cabinet', 'bottom_drawer_knob'), ('Open', 'cabinet', 'bottom_drawer_knob'))
-    goal = ('and', ('Close', 'cabinet', 'bottom_drawer_knob'))
+    # goal = ('and', ('Close', 'cabinet', 'bottom_drawer_knob'))
     # goal = (('On', 'fork', 'fork_region'))
     # goal = ('and', ('Open', 'cabinet', 'top_drawer_knob'))
     # goal = ('and', ('Close', 'cabinet', 'bottom_drawer_knob'), ('AtConf', conf))
@@ -123,7 +123,8 @@ def pddlstream_from_tamp(robot, movable, tamp, panda=None, minForce=None):
         'sampleOpenableConf': from_fn(tamp.sample_openableconf),
         #'testOpenEnough': from_test(tamp.test_open_enough),
         'sampleCloseTransition': from_fn(tamp.sample_close_conf),
-        'samplePlaceCabinetPose': from_fn(tamp.samplePlaceCabinetPose)
+        'samplePlaceCabinetPose': from_fn(tamp.samplePlaceCabinetPose),
+        'randomRobotConf': from_fn(tamp.randomConf)
     }
 
     return domain_pddl, constant_map, stream_pddl, stream_map, init, goal

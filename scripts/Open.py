@@ -13,7 +13,7 @@ class Open:
         self.objects = objects
         self.floor = floor
 
-    def open_obj(self, obj, start_q, relative_grasp, obj_conf, increment, sample, knob, minForce):
+    def open_obj(self, obj, start_q, relative_grasp, obj_conf, increment, sample, knob, minForce, action):
         print(increment, sample)
         old_pos = self.objects[obj].get_configuration()
         self.objects[obj].set_configuration(obj_conf)
@@ -39,11 +39,16 @@ class Open:
                 print('q', q)
                 self.objects[obj].set_configuration(old_pos)
                 return None
-
-        back = numpy.array([[1, 0, 0, 0],
-                            [0, 1, 0, 0],
-                            [0, 0, 1, -.07],
-                            [0., 0., 0., 1.]])
+        if action == "Open":
+            back = numpy.array([[1, 0, 0, 0],
+                                [0, 1, 0, 0],
+                                [0, 0, 1, -.07],
+                                [0., 0., 0., 1.]])
+        else:
+            back = numpy.array([[1, 0, 0, -0.05],
+                                [0, 1, 0, 0],
+                                [0, 0, 1, -.07],
+                                [0., 0., 0., 1.]])            
         back_grasp = numpy.dot(new_grasp, back)
         q = self.robot.arm.ComputeIKQ(back_grasp, path[-1])
         if q is None:

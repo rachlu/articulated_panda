@@ -34,6 +34,11 @@
         :certified (and (Trajectory ?q1 ?q2 ?t1) (CloseGrasp ?o ?g ?h) (Traj ?t1) (Close_Traj ?o ?g ?q1 ?q2 ?c1 ?c2 ?h ?t1 ?t2) (Conf ?q2) (Traj_Holding ?t2 ?o ?g))
     )
 
+    (:stream randomRobotConf
+        :outputs (?q)
+        :certified (Conf ?q)
+    )
+
     (:stream sampleGraspPose
         :inputs (?o ?p)
         :domain (and (Placeable ?o) (ObjState ?o ?p))
