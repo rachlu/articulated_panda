@@ -22,7 +22,7 @@ if __name__ == '__main__':
     while True:
         objects['cabinet'].set_configuration((0, 0))
         # while True:
-        g, q = grasp.grasp('cabinetOpen', objects['cabinet'].link_from_name('bottom_drawer_knob').get_link_tform(True))
+        g, q = grasp.grasp('cabinetClose', objects['cabinet'].link_from_name('bottom_drawer_knob').get_link_tform(True))
         robot.arm.SetJointValues(q)
         robot.arm.hand.Close()
         print(robot.arm.IsCollisionFree(q))

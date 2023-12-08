@@ -36,7 +36,8 @@ def plan_solution(arm, robot, objects, openable, floor):
             # Completed
             return
         else:
-            minForce = newForce
+            if newForce:
+                minForce = newForce
 
 def iteration(robot, objects, tamp, arm, minForce):
     pddlstream_problem = pddlstream_from_tamp(robot, objects, tamp, arm, minForce)
@@ -50,21 +51,14 @@ def iteration(robot, objects, tamp, arm, minForce):
     print_solution(solution)
     plan, cost, evaluations = solution
     print('plan', plan)
-    return util.execute_path(plan, objects, arm)
+    return util.execute_path(plan, tamp, arm)
 
 if __name__ == '__main__':
     rospy.init_node('testing_node')
     arm = ArmInterface()
     objects, openable, floor, robot = table_env.execute()
-    plan = plan_solution(arm, robot, objects, openable, floor)
-    if plan is None:
-        print('No plan found')
-    else:
-        for obj in objects:
-            pose = objects[obj].get_transform()
-            print(obj, pose)
+    plan_solution(arm, robot, objects, openable, floor)
 
-    # util.execute_path(plan, objects, arm) To execute plan
     IPython.embed()
     pb_robot.utils.wait_for_user()
     pb_robot.utils.disconnect()

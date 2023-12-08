@@ -115,7 +115,7 @@ class RRT:
         while time.time() - start < self.max_time:
             # if int((time.time() - start)) % 5 == 0:
             # print('Time', time.time()-start)
-            if random.random() < 0.1:
+            if random.random() < 0.05:
                 q_rand = q_goal
                 node_closest = self.closest_node(q_rand)
             else:

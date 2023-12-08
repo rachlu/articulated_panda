@@ -14,12 +14,22 @@ def increment_stiffness(s1, increment, max_stiffness=None):
         s1[i] = min(s1[i], max_stiffness[i])
     return s1
 
-def execute_path(path, objects, arm):
+def execute_path(path, tamp, arm):
+    objects = set(tamp.objects.keys())
     for action in path:
+        if action.name == 'placeInCabinet':
+            print("Placed Obj", action.args[0])
+            objects.remove(action.args[0])
         if action.name == 'open_obj' or action.name == 'close_obj':
             cmd1 = action.args[-2]
             cmd2 = action.args[-1]
             cmd1.extend(cmd2)
+            if not tamp.testCollisionAndReplan(cmd1, list(objects))[0]:
+                print("Failed Collision Check. Need to replan")
+                return False, None
+            else:
+                print(cmd1)
+                print("Success Collision Check")
             for cmd in cmd1:
                 result = cmd.execute(arm)
                 time.sleep(1)
@@ -27,8 +37,14 @@ def execute_path(path, objects, arm):
                     print("Failed Need to replan")
                     return result
             continue
-            
-        for cmd in action.args[-1]:
+        cmds = action.args[-1]
+        if not tamp.testCollisionAndReplan(cmds, list(objects))[0]:
+            print("Failed Collision Check. Need to replan")
+            return False, None
+        else:
+            print(cmds)
+            print("Success Collision Check")
+        for cmd in cmds:
             cmd.execute(arm)
             time.sleep(1)
     return True, None

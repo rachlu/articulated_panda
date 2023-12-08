@@ -66,12 +66,12 @@ class Grasp:
 
         # Out and down
         # Close Cabinet
-        translation = numpy.array([[1, 0, 0, -0.065],
+        translation = numpy.array([[1, 0, 0, -0.062],
                                    [0, 1, 0, 0],
-                                   [0, 0, 1, -0.02],
+                                   [0, 0, 1, -0.03],
                                    [0, 0, 0, 1]])
         t1 = util.get_rotation_arr('X', math.pi)
-        t2 = util.get_rotation_arr('Y', math.pi/6)
+        t2 = util.get_rotation_arr('Y', math.pi/8)
         rotation = numpy.dot(t1, t2)
         rel = numpy.dot(translation, rotation)
         self.relative['cabinetClose'] = [rel]

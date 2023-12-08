@@ -72,13 +72,13 @@
     <visual>
       <origin xyz="-0.02 0 0" rpy="0 0 0" />
       <geometry>
-        <sphere radius="0.01" />
+        <sphere radius="0.005" />
       </geometry>
     </visual>
     <collision>
       <origin xyz="-0.02 0 0" rpy="0 0 0" />
       <geometry>
-        <sphere radius="0.01" />
+        <sphere radius="0.005" />
       </geometry>
     </collision>
   </link>
@@ -134,13 +134,13 @@
     <visual>
       <origin xyz="-0.02 0 0" rpy="0 0 0" />
       <geometry>
-        <sphere radius="0.01" />
+        <sphere radius="0.005" />
       </geometry>
     </visual>
     <collision>
       <origin xyz="-0.02 0 0" rpy="0 0 0" />
       <geometry>
-        <sphere radius="0.01" />
+        <sphere radius="0.005" />
       </geometry>
     </collision>
   </link>

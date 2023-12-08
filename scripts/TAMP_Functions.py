@@ -19,11 +19,11 @@ class TAMP_Functions:
         self.open_class = Open(robot, objects, floor)
         self.forbiddenQs = forbiddenQs
 
-    def calculate_path(self, q1, q2, constraint=None):
+    def calculate_path(self, q1, q2, constraint=None, nonmovable=[]):
         print(q1, q2)
         if not self.robot.arm.IsCollisionFree(q2.conf, obstacles=[self.floor]):
             return None
-        rrt = RRT(self.robot, self.objects, nonmovable=[self.floor], constraint=constraint)
+        rrt = RRT(self.robot, self.objects, nonmovable=[self.floor].extend(nonmovable), constraint=constraint)
         for _ in range(5):
             path = rrt.motion(q1.conf, q2.conf)
             if path is not None:
@@ -366,6 +366,32 @@ class TAMP_Functions:
         else:
             self.objects[obj].set_transform(obj_oldpos)
         return True
+    
+    def testCollisionAndReplan(self, cmds, objects):
+        objects = [self.floor]
+        objects.extend(objects)
+        for i in range(len(cmds)):
+            traj = cmds[i]
+            if isinstance(traj, vobj.TrajPath):
+                collision = False
+                traj = traj.path
+                for num in range(len(traj) - 1):
+                    if not util.collision_Test(self.robot, self.objects, objects, traj[num], traj[num + 1], 50):
+                        collision = True
+                        break
+                if collision:
+                    print("Collision detected!")
+                    found = false
+                    for _ in range(3):
+                        traj = self.calculate_path(traj[0], traj[-1], nonmovable=objects)
+                        if traj is None:
+                            continue
+                        cmds[i] = traj[0][0]
+                        found = True
+                        break
+                    if not found:
+                        return False, None
+        return True, cmds
 
     def cfreeTrajHolding_Check(self, traj, obj, grasp, obj2, pose):
         old_pos = self.objects[obj].get_transform()
