@@ -62,7 +62,7 @@ class TAMP_Functions:
     def sample_delta_openableconf(self, obj, knob):
         # Assuming that we only want the door or cabinet to open all the way
         if obj == 'door':
-            random_conf = random.uniform(40, 50)
+            random_conf = random.uniform(0, 50)
             delta_pose = np.array((random_conf, ))
             # delta_pose = np.array((50, ))
         else:
@@ -77,16 +77,25 @@ class TAMP_Functions:
         return delta_pose
 
     def sample_openableconf(self, obj, conf, knob):
-        for _ in range(15):
-            delta = self.sample_delta_openableconf(obj, knob)[0]
-            new_conf = vobj.BodyConf(obj, conf.conf + delta.conf)
-            if delta.conf[0]:
-                if 0.15 <= new_conf.conf[0] <= 0.17:
-                    return [new_conf]
+        # for _ in range(25):
+        #     delta = self.sample_delta_openableconf(obj, knob)[0]
+        #     new_conf = vobj.BodyConf(obj, conf.conf + delta.conf)
+        #     if delta.conf[0]:
+        #         if 0.15 <= new_conf.conf[0] <= 0.17:
+        #             return [new_conf]
+        #     else:
+        #         if 0.15 <= new_conf.conf[1] <= 0.17:
+        #             return [new_conf]        
+        if obj == 'door':
+            random_conf = random.uniform(40, 50)
+            new_conf = vobj.BodyConf(obj, (random_conf,))
+        else:
+            random_conf = random.uniform(0.15, 0.17)
+            if 'top' in knob:
+                new_conf = vobj.BodyConf(obj, (random_conf, conf.conf[1]))
             else:
-                if 0.15 <= new_conf.conf[1] <= 0.17:
-                    return [new_conf]        
-        return None
+                new_conf = vobj.BodyConf(obj, (conf.conf[0], random_conf))
+        return [new_conf]
 
     def sample_close_conf(self, obj, conf, knob):
         if obj == 'cabinet':
@@ -368,25 +377,28 @@ class TAMP_Functions:
         return True
     
     def testCollisionAndReplan(self, cmds, objects):
-        objects = [self.floor]
-        objects.extend(objects)
+        objs = [self.floor]
+        for obj in objects:
+            objs.append(self.objects[obj])
         for i in range(len(cmds)):
             traj = cmds[i]
             if isinstance(traj, vobj.TrajPath):
                 collision = False
                 traj = traj.path
                 for num in range(len(traj) - 1):
-                    if not util.collision_Test(self.robot, self.objects, objects, traj[num], traj[num + 1], 50):
+                    if not util.collision_Test(self.robot, self.objects, objs, traj[num], traj[num + 1], 75):
                         collision = True
                         break
                 if collision:
                     print("Collision detected!")
-                    found = false
+                    found = False
+                    start = vobj.BodyConf(self.robot, traj[0])
+                    end = vobj.BodyConf(self.robot, traj[-1])
                     for _ in range(3):
-                        traj = self.calculate_path(traj[0], traj[-1], nonmovable=objects)
-                        if traj is None:
+                        new_traj = self.calculate_path(start, end, nonmovable=objs)
+                        if new_traj is None:
                             continue
-                        cmds[i] = traj[0][0]
+                        cmds[i] = new_traj[0][0]
                         found = True
                         break
                     if not found:

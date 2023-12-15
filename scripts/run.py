@@ -5,25 +5,29 @@ from TAMP_Functions import *
 import IPython
 import pb_robot
 import table_env
+from util import Status
 
 def plan_solution(robot, objects, openable, floor):
     max_iteration = 2
     cur_iteration = 1
     tamp = TAMP_Functions(robot, objects, floor, openable)
     minForce = [0, 0, 0, 0, 0, 0]
+    placed = set()
     while cur_iteration <= max_iteration:
         print("Starting Iteration", cur_iteration, minForce)
         robot.arm.hand.Open()
-        result, newForce = iteration(robot, objects, tamp, minForce)
-        if result:
+        result = iteration(robot, objects, tamp, minForce, placed)
+        if result[0] == Status.SUCCESS:
             # Completed
             return
         else:
-            if newForce:
-                minForce = newForce
+            if result[1] is not None: # newForce
+                minForce = result[1]
+            if result[0] == Status.COLLISION:
+                placed = result[2]
 
-def iteration(robot, objects, tamp, minForce):
-    pddlstream_problem = pddlstream_from_tamp(robot, objects, tamp, None, minForce)
+def iteration(robot, objects, tamp, minForce, placed):
+    pddlstream_problem = pddlstream_from_tamp(robot, objects, tamp, None, minForce, placed)
     _, _, _, stream_map, init, goal = pddlstream_problem
     print('stream', stream_map)
     print('init', init)
@@ -34,7 +38,10 @@ def iteration(robot, objects, tamp, minForce):
     print_solution(solution)
     plan, cost, evaluations = solution
     print('plan', plan)
-    return util.execute_path(plan, tamp, None)
+    util.execute_path(plan, tamp, None, True)
+    print('plan', plan)
+    input("Next")
+    util.execute_path(plan, tamp, None, False)
 
 if __name__ == '__main__':
     objects, openable, floor, robot = table_env.execute()

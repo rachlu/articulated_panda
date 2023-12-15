@@ -80,7 +80,7 @@ def execute():
 
     cabinet_file = os.path.join(objects_path, 'cabinet.urdf')
     cabinet = pb_robot.body.createBody(cabinet_file)
-    pos = numpy.array([[1, 0, 0, 0.8],
+    pos = numpy.array([[1, 0, 0, 0.70],
                        [0, 1, 0, -0.3],
                        [0, 0, 1, pb_robot.placements.stable_z(cabinet, floor)+0.01], #+0.01 for bottom and -0.05 for top
                        [0, 0, 0, 1]])

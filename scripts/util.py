@@ -4,6 +4,12 @@ import vobj
 import math
 import pb_robot
 import time
+from enum import Enum
+
+class Status(Enum):
+    SUCCESS = 1
+    COLLISION = 2
+    IMPEDANCE = 3
 
 def increment_stiffness(s1, increment, max_stiffness=None):
     s1 = np.array(s1)
@@ -14,40 +20,45 @@ def increment_stiffness(s1, increment, max_stiffness=None):
         s1[i] = min(s1[i], max_stiffness[i])
     return s1
 
-def execute_path(path, tamp, arm):
+def execute_path(path, tamp, arm, collision):
     objects = set(tamp.objects.keys())
+    placed = set()
     for action in path:
-        if action.name == 'placeInCabinet':
+        print(action.name)
+        if action.name == 'placeincabinet':
             print("Placed Obj", action.args[0])
             objects.remove(action.args[0])
+            placed.add(action.args[0])
         if action.name == 'open_obj' or action.name == 'close_obj':
             cmd1 = action.args[-2]
             cmd2 = action.args[-1]
-            cmd1.extend(cmd2)
-            if not tamp.testCollisionAndReplan(cmd1, list(objects))[0]:
+            print("Collision Objects", objects)
+            if collision and not tamp.testCollisionAndReplan(cmd1, list(objects))[0]:
                 print("Failed Collision Check. Need to replan")
-                return False, None
+                return Status.COLLISION, None, placed
             else:
                 print(cmd1)
                 print("Success Collision Check")
-            for cmd in cmd1:
+            cmds = cmd1.copy()
+            cmds.extend(cmd2)
+            for cmd in cmds:
                 result = cmd.execute(arm)
                 time.sleep(1)
                 if result and not result[0]:
                     print("Failed Need to replan")
-                    return result
+                    return Status.IMPEDANCE, result[1]
             continue
         cmds = action.args[-1]
-        if not tamp.testCollisionAndReplan(cmds, list(objects))[0]:
+        if collision and not tamp.testCollisionAndReplan(cmds, list(objects))[0]:
             print("Failed Collision Check. Need to replan")
-            return False, None
+            return Status.COLLISION, None, placed
         else:
             print(cmds)
             print("Success Collision Check")
         for cmd in cmds:
             cmd.execute(arm)
             time.sleep(1)
-    return True, None
+    return Status.SUCCESS, None
 
 
 def sampleTable(obj):
@@ -74,6 +85,9 @@ def collision_Test(robot, objects, nonmovable, q1, q2, sample, constraint=None):
     """
     Returns True if q1 to q2 is collision free.
     """
+    for obj in objects:
+        if obj == 'cabinet':
+            objects[obj].get_configuration()
     for num in range(sample + 1):
         if constraint is not None:
             if not constraint[0](robot, q1 + (q2 - q1) / sample * num, objects[constraint[1]]):

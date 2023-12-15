@@ -28,7 +28,7 @@ class Open:
             print('new_grasp', new_grasp)
             print('q', q)
             q = self.robot.arm.ComputeIKQ(new_grasp, q)
-            if q is not None and self.robot.arm.IsCollisionFree(q, obstacles=[self.floor]):
+            if q is not None and self.robot.arm.IsCollisionFree(q, obstacles=[self.floor, self.objects['cabinet']]):
                 if self.robot.arm.InsideTorqueLimits(q, minForce):
                     path.append(numpy.array(q))
                 else:

@@ -76,9 +76,9 @@ class Grasp:
         rel = numpy.dot(translation, rotation)
         self.relative['cabinetClose'] = [rel]
 
-        # t3 = util.get_rotation_arr('Z', math.pi)
-        # rotation = numpy.dot(rotation, t3)
-        # rel = numpy.dot(translation, rotation)
+        t3 = util.get_rotation_arr('Z', math.pi)
+        rotation = numpy.dot(rotation, t3)
+        rel = numpy.dot(translation, rotation)
         self.relative['cabinetClose'].append(rel)
 
         bw = numpy.array([[0, 0], [-0.02, 0.02], [0, 0], [0, 0], [0, 0], [0, 0]])

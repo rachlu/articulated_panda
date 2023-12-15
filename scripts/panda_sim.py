@@ -27,20 +27,24 @@ def plan_solution(arm, robot, objects, openable, floor):
     cur_iteration = 1
     tamp = TAMP_Functions(robot, objects, floor, openable)
     minForce = [0, 0, 0, 0, 0, 0]
+    placed = set()
     while cur_iteration <= max_iteration:
         print("Starting Iteration", cur_iteration, minForce)
         arm.hand.open()
         robot.arm.hand.Open()
-        result, newForce = iteration(robot, objects, tamp, arm, minForce)
-        if result:
+        result = iteration(robot, objects, tamp, arm, minForce, placed)
+        print("Plan Solution", result)
+        if result[0] == 1:
             # Completed
             return
         else:
-            if newForce:
-                minForce = newForce
+            if result[1] is not None: # newForce
+                minForce = result[1]
+            if result[0] == 2:
+                placed = result[2]
 
-def iteration(robot, objects, tamp, arm, minForce):
-    pddlstream_problem = pddlstream_from_tamp(robot, objects, tamp, arm, minForce)
+def iteration(robot, objects, tamp, arm, minForce, placed):
+    pddlstream_problem = pddlstream_from_tamp(robot, objects, tamp, arm, minForce, placed)
     _, _, _, stream_map, init, goal = pddlstream_problem
     print('stream', stream_map)
     print('init', init)
@@ -51,7 +55,10 @@ def iteration(robot, objects, tamp, arm, minForce):
     print_solution(solution)
     plan, cost, evaluations = solution
     print('plan', plan)
-    return util.execute_path(plan, tamp, arm)
+    input("Run in Sim?")
+    util.execute_path(plan, tamp, None, True)
+    input("Execute on panda?")
+    return util.execute_path(plan, tamp, arm, False)
 
 if __name__ == '__main__':
     rospy.init_node('testing_node')
