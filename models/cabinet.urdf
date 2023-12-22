@@ -42,13 +42,13 @@
     <visual>
       <origin xyz="-0.001 0 0" rpy="0 0 0" />
       <geometry>
-        <box size="0.3 0.25 0.2" />
+        <box size="0.3 0.25 0.4" />
       </geometry>
     </visual>
     <collision>
       <origin xyz="-0.001 0 0" rpy="0 0 0" />
       <geometry>
-        <box size="0.3 0.25 0.2" />
+        <box size="0.3 0.25 0.4" />
       </geometry>
     </collision>
   </link>

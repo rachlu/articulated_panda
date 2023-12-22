@@ -23,11 +23,18 @@ def increment_stiffness(s1, increment, max_stiffness=None):
 def execute_path(path, tamp, arm, collision):
     objects = set(tamp.objects.keys())
     placed = set()
-    for action in path:
+    for i in range(len(path)):
+        action = path[i]
         print(action.name)
+        if action.name == 'grab':
+            print("Grabbed", action.args[0])
+            objects.remove(action.args[0])
+        if action.name == 'place':
+            print("Placed", action.args[0])
+            objects.add(action.args[0])
         if action.name == 'placeincabinet':
             print("Placed Obj", action.args[0])
-            objects.remove(action.args[0])
+            # objects.remove(action.args[0])
             placed.add(action.args[0])
         if action.name == 'open_obj' or action.name == 'close_obj':
             cmd1 = action.args[-2]
@@ -35,7 +42,7 @@ def execute_path(path, tamp, arm, collision):
             print("Collision Objects", objects)
             if collision and not tamp.testCollisionAndReplan(cmd1, list(objects))[0]:
                 print("Failed Collision Check. Need to replan")
-                return Status.COLLISION, None, placed
+                return Status.COLLISION, i, placed
             else:
                 print(cmd1)
                 print("Success Collision Check")

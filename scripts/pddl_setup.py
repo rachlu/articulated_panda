@@ -90,8 +90,12 @@ def pddlstream_from_tamp(robot, movable, tamp, panda=None, minForce=None, placed
             if obj == 'cabinet':
                 if position.conf[0] == 0:
                     init.extend([('Close', 'cabinet', 'top_drawer_knob')])
+                else:
+                    init.extend([('Open', 'cabinet', 'top_drawer_knob')])
                 if position.conf[1] == 0:
                     init.extend([('Close', 'cabinet', 'bottom_drawer_knob')])
+                else:
+                    init.extend([('Open', 'cabinet', 'bottom_drawer_knob')])
         else:
             init.extend([('Placeable', obj)])
             if obj in placed:

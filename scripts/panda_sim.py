@@ -7,6 +7,7 @@ import pb_robot
 import IPython
 import vobj
 import util
+from util import Status
 
 
 # def reset():
@@ -34,13 +35,13 @@ def plan_solution(arm, robot, objects, openable, floor):
         robot.arm.hand.Open()
         result = iteration(robot, objects, tamp, arm, minForce, placed)
         print("Plan Solution", result)
-        if result[0] == 1:
+        if result[0] == Status.SUCCESS:
             # Completed
             return
         else:
             if result[1] is not None: # newForce
                 minForce = result[1]
-            if result[0] == 2:
+            if result[0] == Status.COLLISION:
                 placed = result[2]
 
 def iteration(robot, objects, tamp, arm, minForce, placed):
@@ -56,7 +57,11 @@ def iteration(robot, objects, tamp, arm, minForce, placed):
     plan, cost, evaluations = solution
     print('plan', plan)
     input("Run in Sim?")
-    util.execute_path(plan, tamp, None, True)
+    result = util.execute_path(plan, tamp, None, True)
+    if result[0] == Status.COLLISION:
+        input('Execute Up to?')
+        util.execute_path(plan[:result[1]], tamp, arm, False)
+        return Status.COLLISION, None, result[-1]
     input("Execute on panda?")
     return util.execute_path(plan, tamp, arm, False)
 

@@ -23,8 +23,10 @@ class TAMP_Functions:
         print(q1, q2)
         if not self.robot.arm.IsCollisionFree(q2.conf, obstacles=[self.floor]):
             return None
-        rrt = RRT(self.robot, self.objects, nonmovable=[self.floor].extend(nonmovable), constraint=constraint)
-        for _ in range(5):
+        nonmovable.extend([self.floor])
+        rrt = RRT(self.robot, self.objects, nonmovable=nonmovable, constraint=constraint)
+        for _ in range(7):
+            print("Iteration:", _)
             path = rrt.motion(q1.conf, q2.conf)
             if path is not None:
                 cmd = [[vobj.TrajPath(self.robot, path)]]
@@ -377,7 +379,7 @@ class TAMP_Functions:
         return True
     
     def testCollisionAndReplan(self, cmds, objects):
-        objs = [self.floor]
+        objs = []
         for obj in objects:
             objs.append(self.objects[obj])
         for i in range(len(cmds)):
@@ -391,18 +393,12 @@ class TAMP_Functions:
                         break
                 if collision:
                     print("Collision detected!")
-                    found = False
                     start = vobj.BodyConf(self.robot, traj[0])
                     end = vobj.BodyConf(self.robot, traj[-1])
-                    for _ in range(3):
-                        new_traj = self.calculate_path(start, end, nonmovable=objs)
-                        if new_traj is None:
-                            continue
-                        cmds[i] = new_traj[0][0]
-                        found = True
-                        break
-                    if not found:
+                    new_traj = self.calculate_path(start, end, nonmovable=objs)
+                    if new_traj is None:
                         return False, None
+                    cmds[i] = new_traj[0][0]
         return True, cmds
 
     def cfreeTrajHolding_Check(self, traj, obj, grasp, obj2, pose):

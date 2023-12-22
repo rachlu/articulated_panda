@@ -38,10 +38,13 @@ def iteration(robot, objects, tamp, minForce, placed):
     print_solution(solution)
     plan, cost, evaluations = solution
     print('plan', plan)
-    util.execute_path(plan, tamp, None, True)
-    print('plan', plan)
-    input("Next")
-    util.execute_path(plan, tamp, None, False)
+    result = util.execute_path(plan, tamp, None, True)
+    if result[0] == Status.COLLISION:
+        input('Execute Up to?')
+        util.execute_path(plan[:result[1]], tamp, None, False)
+        return Status.COLLISION, None, result[-1]
+    input("Execute all?")
+    return util.execute_path(plan, tamp, None, False)
 
 if __name__ == '__main__':
     objects, openable, floor, robot = table_env.execute()
