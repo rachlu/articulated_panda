@@ -96,11 +96,11 @@ def execute():
     # while not collision_free([robot, cabinet], fork):
     #     random_pos = util.sampleTable('fork')[0].pose
     #     fork.set_transform(random_pos)
-    fork.set_transform([[-0.79085342, -0.61200561,  0.,          0.23726321],
-            [ 0.61200561, -0.79085342,  0.,          0.41937854],
-            [ 0.,          0.,          1.,          0.        ],
-            [ 0.,          0.,          0.,          1.        ]]
-    )
+    # fork.set_transform([[-0.79085342, -0.61200561,  0.,          0.23726321],
+    #         [ 0.61200561, -0.79085342,  0.,          0.41937854],
+    #         [ 0.,          0.,          1.,          0.        ],
+    #         [ 0.,          0.,          0.,          1.        ]]
+    # )
 
     # # Add knife object
     # knife_file = os.path.join(objects_path, 'knife.urdf')
@@ -163,5 +163,7 @@ def execute():
     # objects = {'fork': fork, 'spoon': spoon, 'knife': knife, 'bowl': bowl, 'cabinet': cabinet}
 
     # objects = {'door': door, 'cabinet': cabinet, 'spring':spring}
-    objects = {'cabinet': cabinet, 'fork': fork}
+    # objects = {'cabinet': cabinet, 'fork': fork}
+    objects = {'cabinet': cabinet}
+
     return objects, openable, floor, robot

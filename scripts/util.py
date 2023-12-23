@@ -42,7 +42,7 @@ def execute_path(path, tamp, arm, collision):
             print("Collision Objects", objects)
             if collision and not tamp.testCollisionAndReplan(cmd1, list(objects))[0]:
                 print("Failed Collision Check. Need to replan")
-                return Status.COLLISION, i, placed
+                return Status.COLLISION, i-1, placed
             else:
                 print(cmd1)
                 print("Success Collision Check")
@@ -53,12 +53,18 @@ def execute_path(path, tamp, arm, collision):
                 time.sleep(1)
                 if result and not result[0]:
                     print("Failed Need to replan")
-                    return Status.IMPEDANCE, result[1]
+                    return Status.IMPEDANCE, result[1], placed
             continue
         cmds = action.args[-1]
         if collision and not tamp.testCollisionAndReplan(cmds, list(objects))[0]:
             print("Failed Collision Check. Need to replan")
-            return Status.COLLISION, None, placed
+            for obj in objects:
+                if obj not in placed and obj != 'cabinet':
+                    tamp.objects[obj].set_transform([[-0.79085342, -0.61200561,  0.,          0.23726321],
+            [ 0.61200561, -0.79085342,  0.,          0.41937854],
+            [ 0.,          0.,          1.,          0.        ],
+            [ 0.,          0.,          0.,          1.        ]])
+            return Status.COLLISION, i-1, placed
         else:
             print(cmds)
             print("Success Collision Check")

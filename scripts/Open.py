@@ -39,16 +39,15 @@ class Open:
                 print('q', q)
                 self.objects[obj].set_configuration(old_pos)
                 return None
-        if action == "Open":
-            back = numpy.array([[1, 0, 0, 0],
-                                [0, 1, 0, 0],
-                                [0, 0, 1, -.07],
-                                [0., 0., 0., 1.]])
-        else:
-            back = numpy.array([[1, 0, 0, -0.05],
-                                [0, 1, 0, 0],
-                                [0, 0, 1, -.07],
-                                [0., 0., 0., 1.]])            
+        back = numpy.array([[1, 0, 0, 0],
+                            [0, 1, 0, 0],
+                            [0, 0, 1, -.08],
+                            [0., 0., 0., 1.]])
+        # else:
+        #     back = numpy.array([[1, 0, 0, -0.05],
+        #                         [0, 1, 0, 0],
+        #                         [0, 0, 1, -.07],
+        #                         [0., 0., 0., 1.]])            
         back_grasp = numpy.dot(new_grasp, back)
         q = self.robot.arm.ComputeIKQ(back_grasp, path[-1])
         if q is None:

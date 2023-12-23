@@ -58,7 +58,7 @@ class TrajPath:
                         print("Collision!")
                         arm.resetErrors()
                         arm.hand.close()
-                        new_stiffness = util.increment_stiffness(stiffness, 30, [300, 280, 280, 260, 210, 120, 120])
+                        new_stiffness = util.increment_stiffness(stiffness, 40, [210, 190, 190, 170, 120, 110, 120])
                         if (stiffness == new_stiffness).all():
                             print("Reached max Stiffness, need to replan")
                             # Recover
@@ -72,8 +72,10 @@ class TrajPath:
                             while 'N' in ans.upper():
                                 arm.hand.open()
                                 ans = input("Go to Recovery Position")
-                            arm.resetErrors()
-
+                            ans = input("Reset Errors?")
+                            while 'Y' in ans.upper():
+                                arm.resetErrors()
+                                ans = input("Reset Errors?")
                             # Calculate Recovery Configuration
                             current_pos = self.robot.arm.GetEETransform()
                             current_pos[0][-1] -= 0.05
@@ -81,6 +83,10 @@ class TrajPath:
 
                             # Move to recovery Position
                             arm.execute_position_path(util.convert(arm, [current_q, recover_q]))
+                            ans = input("Recovery?")
+                            while 'Y' in ans.upper():
+                                arm.execute_position_path(util.convert(arm, [current_q, recover_q]))
+                                ans = input("Recovery?")
                             self.robot.arm.SetJointValues(recover_q)
 
                             minForce = np.dot(np.linalg.pinv(np.array(self.robot.arm.GetJacobian(current_q)).T), arm.coriolis_comp())

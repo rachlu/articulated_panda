@@ -40,7 +40,7 @@ def rotation_constraint(robot, q, obj):
 
 class RRT:
     # Test step size
-    def __init__(self, robot, objects, nonmovable=None, max_step=0.5, max_time=7, max_shortcut=3, constraint=None):
+    def __init__(self, robot, objects, nonmovable=None, max_step=0.5, max_time=10, max_shortcut=3, constraint=None):
         self.robot = robot
         self.max_time = max_time
         self.max_step = max_step
@@ -114,7 +114,7 @@ class RRT:
         while time.time() - start < self.max_time:
             # if int((time.time() - start)) % 5 == 0:
             # print('Time', time.time()-start)
-            if random.random() < 0.2:
+            if random.random() < 0.15:
                 q_rand = q_goal
                 node_closest = self.closest_node(q_rand)
             else:

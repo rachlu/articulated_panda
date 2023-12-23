@@ -43,11 +43,11 @@ def pddlstream_from_tamp(robot, movable, tamp, panda=None, minForce=None, placed
         ('ObjState', 'cabinet', vobj.BodyConf('cabisnet', (0, 0))),
         ('ObjState', 'door', vobj.BodyConf('door', (0,))),
     ]
-    goal = ('and', ('In', 'fork', 'cabinet', 'bottom_drawer_knob'), ('Close', 'cabinet', 'bottom_drawer_knob'), ('AtConf', conf))
+    # goal = ('and', ('In', 'fork', 'cabinet', 'bottom_drawer_knob'), ('Close', 'cabinet', 'bottom_drawer_knob'), ('AtConf', conf))
     # goal = ('and', ('In', 'fork', 'cabinet', 'bottom_drawer_knob'), ('Open', 'cabinet', 'bottom_drawer_knob'))
     # goal = ('and', ('Close', 'cabinet', 'bottom_drawer_knob'))
     # goal = (('On', 'fork', 'fork_region'))
-    # goal = ('and', ('Open', 'cabinet', 'bottom_drawer_knob'), ('AtConf', conf))
+    goal = ('and', ('Open', 'cabinet', 'bottom_drawer_knob'))
     # goal = ('and', ('Close', 'cabinet', 'bottom_drawer_knob'), ('AtConf', conf))
     # goal = ('In', 'fork', 'cabinet', 'bottom_drawer_knob')
     # goal = ('and', ('Close', 'cabinet', 'bottom_drawer_knob'), ('AtConf', conf))
@@ -90,16 +90,16 @@ def pddlstream_from_tamp(robot, movable, tamp, panda=None, minForce=None, placed
             if obj == 'cabinet':
                 if position.conf[0] == 0:
                     init.extend([('Close', 'cabinet', 'top_drawer_knob')])
-                else:
-                    init.extend([('Open', 'cabinet', 'top_drawer_knob')])
+                # else:
+                #     init.extend([('Open', 'cabinet', 'top_drawer_knob')])
                 if position.conf[1] == 0:
                     init.extend([('Close', 'cabinet', 'bottom_drawer_knob')])
-                else:
-                    init.extend([('Open', 'cabinet', 'bottom_drawer_knob')])
+                # else:
+                #     init.extend([('Open', 'cabinet', 'bottom_drawer_knob')])
         else:
             init.extend([('Placeable', obj)])
             if obj in placed:
-                init.extend(('In', obj, 'cabinet', 'bottom_drawer_knob'))
+                init.extend([('In', obj, 'cabinet', 'bottom_drawer_knob')])
                 continue
             position = vobj.Pose(robot, movable[obj].get_transform())
             init.extend([('AtObjState', obj, position),

@@ -124,10 +124,10 @@ class TAMP_Functions:
         
     def get_open_traj_merge(self, obj, obj_conf, end_conf, start_q, knob, minForce):
         print('Open Start Conf', start_q.conf)
-        relative_grasp = self.sample_grasp_openable('Open')(obj, obj_conf, knob)[0]
         init_q = self.robot.arm.GetJointValues()
         for _ in range(5):
             for _ in range(5):
+                relative_grasp = self.sample_grasp_openable('Open')(obj, obj_conf, knob)[0]
                 q, q_grasp, grab_t = self.compute_nonplaceable_IK(obj, obj_conf, relative_grasp, knob, 'Open')
                 print("Open grasp q", q.conf)
                 t = self.calculate_path(start_q, q)
@@ -151,15 +151,17 @@ class TAMP_Functions:
         return None
     
     def get_close_traj_merge(self, obj, obj_conf, end_conf, start_q, knob, minForce):
-        relative_grasp = self.sample_grasp_openable('Close')(obj, obj_conf, knob)[0]
-        for _ in range(3):
-            for _ in range(3):
+        for _ in range(10):
+            for _ in range(10):
+                relative_grasp = self.sample_grasp_openable('Close')(obj, obj_conf, knob)[0]
                 q, q_grasp, grab_t = self.compute_nonplaceable_IK(obj, obj_conf, relative_grasp, knob, 'Close')
                 t = self.calculate_path(start_q, q)
                 if t is not None:
                     t = t[0]
                     break
-
+            if t is None:
+                print("t None for close")
+                continue
             result = self.get_openable_traj(obj, obj_conf, end_conf, q_grasp, relative_grasp, knob, minForce, 'Close')
             if result is not None:
                 t2, end_q = result
@@ -223,21 +225,17 @@ class TAMP_Functions:
         self.objects[obj].set_configuration(old_pos)
         grasp_in_world = np.dot(obj_pose, grasp.pose)
         q_g = self.robot.arm.ComputeIK(grasp_in_world)
-        if q_g is None or not self.robot.arm.IsCollisionFree(q_g, obstacles=[self.floor]):
+        if q_g is None or not self.robot.arm.IsCollisionFree(q_g, obstacles=[self.floor, self.objects[obj]]):
+            print("None q_q", q_g)
             return None
-        if action == 'Open':
-            up = np.array([[1, 0, 0, 0],
-                            [0, 1, 0, 0],
-                            [0, 0, 1, -.08],
-                            [0., 0., 0., 1.]])
-        else:
-            up = np.array([[1, 0, 0, -0.05],
+        up = np.array([[1, 0, 0, 0],
                         [0, 1, 0, 0],
                         [0, 0, 1, -.08],
-                        [0., 0., 0., 1.]])           
+                        [0., 0., 0., 1.]])          
         new_g = np.dot(grasp_in_world, up)
         translated_q = self.robot.arm.ComputeIK(new_g, seed_q=q_g)
         if translated_q is None:
+            print("None translated q", translated_q)
             return None
         translated_q = np.array(translated_q)
         q_g = np.array(q_g)
