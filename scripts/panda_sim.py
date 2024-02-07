@@ -7,38 +7,45 @@ import pb_robot
 import IPython
 import vobj
 import util
+from util import Status
 
 
-def reset():
-    """
-    Reset all objects to their initial conditions.
-    """
-    for obj in objects:
-        objects[obj].set_transform(init_conditions[obj])
-    for obj in list(robot.arm.grabbedObjects):
-        robot.arm.Release(robot.arm.grabbedObjects[obj])
-    robot.arm.SetJointValues(init_conditions['initial_q'])
-    path = [arm.joint_angles(), init_conditions['initial_q']]
-    path = util.convert(arm, path)
-    arm.execute_position_path(path)
+# def reset():
+#     """
+#     Reset all objects to their initial conditions.
+#     """
+#     for obj in objects:
+#         objects[obj].set_transform(init_conditions[obj])
+#     for obj in list(robot.arm.grabbedObjects):
+#         robot.arm.Release(robot.arm.grabbedObjects[obj])
+#     robot.arm.SetJointValues(init_conditions['initial_q'])
+#     path = [arm.joint_angles(), init_conditions['initial_q']]
+#     path = util.convert(arm, path)
+#     arm.execute_position_path(path)
 
-
-if __name__ == '__main__':
-    rospy.init_node('testing_node')
-    arm = ArmInterface()
-    objects, openable, floor, robot = table_env.execute()
-    arm.hand.open()
-    robot.arm.hand.Open()
-    
-    global init_conditions
-    init_conditions = {'initial_q': robot.arm.GetJointValues()}
-    
-    for obj in objects:
-        init_conditions[obj] = objects[obj].get_transform()
-
+def plan_solution(arm, robot, objects, openable, floor):
+    max_iteration = 2
+    cur_iteration = 1
     tamp = TAMP_Functions(robot, objects, floor, openable)
+    minForce = [0, 0, 0, 0, 0, 0]
+    placed = set()
+    while cur_iteration <= max_iteration:
+        print("Starting Iteration", cur_iteration, minForce)
+        arm.hand.open()
+        robot.arm.hand.Open()
+        result = iteration(robot, objects, tamp, arm, minForce, placed)
+        print("Plan Solution", result)
+        if result[0] == Status.SUCCESS:
+            # Completed
+            return
+        else:
+            if result[1] is not None: # newForce
+                minForce = result[1]
+            if result[0] == Status.COLLISION:
+                placed = result[2]
 
-    pddlstream_problem = pddlstream_from_tamp(robot, objects, tamp, arm)
+def iteration(robot, objects, tamp, arm, minForce, placed):
+    pddlstream_problem = pddlstream_from_tamp(robot, objects, tamp, arm, minForce, placed)
     _, _, _, stream_map, init, goal = pddlstream_problem
     print('stream', stream_map)
     print('init', init)
@@ -49,13 +56,20 @@ if __name__ == '__main__':
     print_solution(solution)
     plan, cost, evaluations = solution
     print('plan', plan)
+    input("Run in Sim?")
+    result = util.execute_path(plan, tamp, None, True)
+    if result[0] == Status.COLLISION:
+        input('Execute Up to?')
+        util.execute_path(plan[:result[1]], tamp, arm, False)
+        return Status.COLLISION, None, result[-1]
+    input("Execute on panda?")
+    return util.execute_path(plan, tamp, arm, False)
 
-    if plan is None:
-        print('No plan found')
-    else:
-        for obj in objects:
-            pose = objects[obj].get_transform()
-            print(obj, pose)
+if __name__ == '__main__':
+    rospy.init_node('testing_node')
+    arm = ArmInterface()
+    objects, openable, floor, robot = table_env.execute()
+    plan_solution(arm, robot, objects, openable, floor)
 
     IPython.embed()
     pb_robot.utils.wait_for_user()

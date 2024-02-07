@@ -21,17 +21,22 @@
     )
 
     (:stream open_traj
-        :inputs (?o ?p1 ?p2 ?q1 ?g ?h)
-        :domain (and (Conf ?q1) (Handle ?o ?h) (Openable ?o) (GraspOpenable ?o ?g ?h) (ObjState ?o ?p1) (ObjState ?o ?p2))
-        :outputs (?t ?q2)
-        :certified (and (Open_Traj ?o ?g ?q1 ?q2 ?p1 ?p2 ?h ?t) (Conf ?q2) (Traj_Holding ?t ?o ?g))
+        :inputs (?o ?c1 ?c2 ?q1 ?h ?f)
+        :domain (and (Conf ?q1) (Handle ?o ?h) (Openable ?o) (ObjState ?o ?c1) (ObjState ?o ?c2) (ForceNeeded ?o ?h ?f))
+        :outputs (?q2 ?g ?t1 ?t2)
+        :certified (and (Trajectory ?q1 ?q2 ?t1) (OpenGrasp ?o ?g ?h) (Traj ?t1) (Open_Traj ?o ?g ?q1 ?q2 ?c1 ?c2 ?h ?t1 ?t2) (Conf ?q2) (Traj_Holding ?t2 ?o ?g))
     )
 
-    (:stream sampleGraspOpenable
-        :inputs (?o ?p ?h)
-        :domain (and (Openable ?o) (ObjState ?o ?p) (Handle ?o ?h))
-        :outputs (?g)
-        :certified (GraspOpenable ?o ?g ?h)
+    (:stream close_traj
+        :inputs (?o ?c1 ?c2 ?q1 ?h ?f)
+        :domain (and (Conf ?q1) (Handle ?o ?h) (Openable ?o) (ObjState ?o ?c1) (ObjState ?o ?c2) (ForceNeeded ?o ?h ?f))
+        :outputs (?q2 ?g ?t1 ?t2)
+        :certified (and (Trajectory ?q1 ?q2 ?t1) (CloseGrasp ?o ?g ?h) (Traj ?t1) (Close_Traj ?o ?g ?q1 ?q2 ?c1 ?c2 ?h ?t1 ?t2) (Conf ?q2) (Traj_Holding ?t2 ?o ?g))
+    )
+
+    (:stream randomRobotConf
+        :outputs (?q)
+        :certified (Conf ?q)
     )
 
     (:stream sampleGraspPose
@@ -48,13 +53,6 @@
         :certified (and (Conf ?q) (Kin ?o ?p ?g ?q ?t) (Traj ?t))
     )
 
-    (:stream inverse-nonplaceable-kinematics
-        :inputs (?o ?p ?g ?h)
-        :domain (and (ObjState ?o ?p) (Handle ?o ?h) (Openable ?o) (GraspOpenable ?o ?g ?h))
-        :outputs (?q1 ?q2 ?t)
-        :certified (and (Conf ?q1) (Conf ?q2) (KinOpen ?o ?p ?g ?q1 ?q2 ?t) (Traj ?t))
-    )
-
     (:stream samplePlacePose
         :inputs (?o ?r)
         :domain (and (Placeable ?o) (Region ?r))
@@ -62,6 +60,18 @@
         :certified (and (ObjState ?o ?p) (Supported ?o ?p ?r))
     )
 
+    (:stream samplePlaceCabinetPose
+        :inputs (?o1 ?o2 ?r ?c)
+        :domain (and (Placeable ?o1) 
+                    (Handle ?o2 ?r) 
+                    (Openable ?o2) 
+                    (ObjState ?o2 ?c) 
+                    (OpenEnough ?o2 ?c ?r) 
+                    (CabinetRegion ?r))
+        :outputs (?p)
+        :certified (and (ObjState ?o1 ?p) (SupportedCabinet ?o1 ?p ?r ?c))   
+    )
+    
     (:stream sampleTable
         :inputs (?o)
         :domain (Placeable ?o)
@@ -69,25 +79,25 @@
         :certified (ObjState ?o ?p)
     )
 
-    (:stream sampleDeltaOpenableConf
-        :inputs (?o ?h)
-        :domain (and (Openable ?o) (Handle ?o ?h))
-        :outputs (?d)
-        :certified (DeltaObjState ?o ?d ?h)
-    )
-
     (:stream sampleOpenableConf
-        :inputs (?o ?p ?d ?h)
-        :domain (and (Openable ?o) (ObjState ?o ?p) (DeltaObjState ?o ?d ?h))
-        :outputs (?p1)
-        :certified (and (ObjState ?o ?p1) (ValidStateTransition ?o ?p ?p1 ?h))
+        :inputs (?o ?c ?h)
+        :domain (and (Openable ?o) (ObjState ?o ?c) (Handle ?o ?h))
+        :outputs (?c2)
+        :certified (and (ObjState ?o ?c2) (OpenEnough ?o ?c2 ?h) (ValidStateTransition ?o ?c ?c2 ?h))
     )
 
-    (:stream testOpenEnough
-        :inputs (?o ?p ?h)
-        :domain (and (Openable ?o) (Handle ?o ?h) (ObjState ?o ?p))
-        :certified (OpenEnough ?o ?p ?h)
+    (:stream sampleCloseTransition
+        :inputs (?o ?c ?h)
+        :domain (and (Openable ?o) (ObjState ?o ?c) (Handle ?o ?h))
+        :outputs (?c2)
+        :certified (and (ObjState ?o ?c2) (ValidCloseTransition ?o ?c ?c2 ?h))
     )
+
+    ;(:stream testOpenEnough
+    ;    :inputs (?o ?c ?h)
+    ;    :domain (and (Openable ?o) (Handle ?o ?h) (ObjState ?o ?c))
+    ;    :certified (OpenEnough ?o ?c ?h)
+    ;)
 
     (:stream collisionCheck
         :inputs (?o ?p ?o2 ?p2)

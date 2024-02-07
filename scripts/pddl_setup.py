@@ -6,14 +6,15 @@ from pddlstream.algorithms.focused import solve_focused
 from pddlstream.language.constants import And, Equal, TOTAL_COST, print_solution, PDDLProblem
 from pddlstream.language.stream import StreamInfo
 
+import numpy as np
 import vobj
 import util
-import math
 
-
-def pddlstream_from_tamp(robot, movable, tamp, panda=None):
+def pddlstream_from_tamp(robot, movable, tamp, panda=None, minForce=None, placed=set()):
     domain_pddl = read('domain.pddl')
     stream_pddl = read('stream.pddl')
+
+    # self.state = [robot, movable, tamp, panda]
 
     constant_map = {}
     if panda is None:
@@ -21,7 +22,6 @@ def pddlstream_from_tamp(robot, movable, tamp, panda=None):
     else:
         robot.arm.SetJointValues(panda.convertToList(panda.joint_angles()))
         conf = vobj.BodyConf(robot, panda.convertToList(panda.joint_angles()))
-    # ('Pose', obj, obj.GetTransform()),
 
     init = [
         ('Conf', conf),
@@ -32,27 +32,41 @@ def pddlstream_from_tamp(robot, movable, tamp, panda=None):
         ('Region', 'fork_region'),
         ('Region', 'bowl_region'),
         ('Region', 'knife_region'),
+        ('CabinetRegion', 'top_drawer_knob'),
+        ('CabinetRegion', 'bottom_drawer_knob'),
         ('UprightObj', 'bowl'),
         ('Openable', 'door'),
         ('Openable', 'cabinet'),
         ('Handle', 'door', 'knob'),
         ('Handle', 'cabinet', 'top_drawer_knob'),
         ('Handle', 'cabinet', 'bottom_drawer_knob'),
+        ('ObjState', 'cabinet', vobj.BodyConf('cabisnet', (0, 0))),
+        ('ObjState', 'door', vobj.BodyConf('door', (0,))),
     ]
-    # goal = ('and', ('Open', 'cabinet', 'bottom_drawer_knob'), ('Open', 'cabinet', 'top_drawer_knob'), ('AtConf', conf))
-    # goal = (('Open', 'cabinet', 'top_drawer_knob'))
+    # goal = ('and', ('In', 'fork', 'cabinet', 'bottom_drawer_knob'), ('Close', 'cabinet', 'bottom_drawer_knob'), ('AtConf', conf))
+    # goal = ('and', ('In', 'fork', 'cabinet', 'bottom_drawer_knob'), ('Open', 'cabinet', 'bottom_drawer_knob'))
+    # goal = ('and', ('Close', 'cabinet', 'bottom_drawer_knob'))
+    # goal = (('On', 'fork', 'fork_region'))
+    goal = ('and', ('Open', 'cabinet', 'bottom_drawer_knob'))
+    # goal = ('and', ('Close', 'cabinet', 'bottom_drawer_knob'), ('AtConf', conf))
+    # goal = ('In', 'fork', 'cabinet', 'bottom_drawer_knob')
+    # goal = ('and', ('Close', 'cabinet', 'bottom_drawer_knob'), ('AtConf', conf))
+    # goal = (('Close', 'cabinet', 'bottom_drawer_knob'))
+    # goal = ('and', ('Open', 'cabinet', 'bottom_drawer_knob'), ('On', 'fork', 'fork_region'))
+    # goal = ('On', 'fork', 'cabinet_region')
+
     # goal = ('and', ('Open', 'cabinet', 'top_drawer_knob'), ('Open', 'cabinet', 'bottom_drawer_knob'))
     # goal = (('Holding_Openable', 'cabinet', 'bottom_drawer_knob'))
     # goal = ('and', ('Holding_Openable', 'cabinet', 'top_drawer_knob'), ('AtConf', conf))
-    #goal = (('Holding_Openable', 'cabinet', 'bottom_drawer_knob'))
-    # goal = (('Open', 'cabinet', 0.25))
+    # goal = (('Holding_Openable', 'cabinet', 'bottom_drawer_knob'))
+    # goal = (('Open', 'cabinet', "bottom_drawer_knob"))
     # goal = ('and', ('OpenAll', 'cabinet'), ('Open', 'door', math.pi/5))
     # goal = ('and', ('OpenAll', 'door'), ('Open', 'cabinet', 0.05))
     # goal = ('and', ('OpenAll', 'door'), ('Open', 'cabinet', 0.1))
     # goal = (('Holding', 'bowl'))
     #goal = ('and', ('Open', 'door'), ('AtConf', conf), ('Holding', 'knife'))
     # goal = (('On', 'bowl', 'bowl_region'))
-    goal = ('and', ('On', 'spoon', 'spoon_region'), ('Open', 'cabinet', 'top_drawer_knob'))
+    # goal = ('and', ('On', 'spoon', 'spoon_region'), ('AtConf', conf), ('Open', 'cabinet', 'top_drawer_knob'))
 
     # goal = ('and', ('On', 'knife', 'knife_region'), ('On', 'fork', 'fork_region'))
 
@@ -64,18 +78,42 @@ def pddlstream_from_tamp(robot, movable, tamp, panda=None):
     #        ('On', 'bowl', 'bowl_region'), ('Open', 'door'), ('AtConf', conf))
     # objPoses = {}
     for obj in movable:
-        if obj in ['door', 'cabinet']:
+        if obj in ['door', 'cabinet']:                
             position = vobj.BodyConf(obj, movable[obj].get_configuration())
-            init.extend([('AtObjState', obj, position),
-                         ('ObjState', obj, position),
-                         ])
+            init.extend([
+                        ('ObjState', obj, position),
+                        ('AtObjState', obj, position)
+                        ])
+            if obj == 'door' and position.conf[0] == 0:
+                init.extend([('Close', 'door', 'knob')])
+            
+            if obj == 'cabinet':
+                if position.conf[0] == 0:
+                    init.extend([('Close', 'cabinet', 'top_drawer_knob')])
+                # else:
+                #     init.extend([('Open', 'cabinet', 'top_drawer_knob')])
+                if position.conf[1] == 0:
+                    init.extend([('Close', 'cabinet', 'bottom_drawer_knob')])
+                # else:
+                #     init.extend([('Open', 'cabinet', 'bottom_drawer_knob')])
         else:
             init.extend([('Placeable', obj)])
+            if obj in placed:
+                init.extend([('In', obj, 'cabinet', 'bottom_drawer_knob')])
+                continue
             position = vobj.Pose(robot, movable[obj].get_transform())
             init.extend([('AtObjState', obj, position),
-                         ('ObjState', obj, position)
-                         ])
+                        ('ObjState', obj, position)
+                        ])
         init.extend([('Graspable', obj)])
+    if minForce is not None:
+        print("minForce", minForce)
+        init.extend([('ForceNeeded', 'cabinet', 'bottom_drawer_knob', minForce)])
+        # init.extend([('ForceNeeded', 'cabinet', 'top_drawer_knob', minForce)])
+    else:
+        init.extend([('ForceNeeded', 'cabinet', 'bottom_drawer_knob', np.zeros(6))])
+        # init.extend([('ForceNeeded', 'cabinet', 'top_drawer_knob', np.zeros(6))])
+
     stream_map = {
         'get_trajectory': from_fn(tamp.calculate_path),
         'sampleGraspPose': from_fn(tamp.sampleGrabPose),
@@ -87,12 +125,13 @@ def pddlstream_from_tamp(robot, movable, tamp, panda=None):
         'sampleTable': from_fn(util.sampleTable),
         'cfree': from_test(tamp.cfreeTraj_Check),
         'cfreeholding': from_test(tamp.cfreeTrajHolding_Check),
-        'open_traj': from_fn(tamp.get_open_traj),
-        'inverse-nonplaceable-kinematics': from_fn(tamp.compute_nonplaceable_IK),
-        'sampleGraspOpenable': from_fn(tamp.sample_grasp_openable),
-        'sampleDeltaOpenableConf': from_fn(tamp.sample_delta_openableconf),
+        'open_traj': from_fn(tamp.get_open_traj_merge),
+        'close_traj': from_fn(tamp.get_close_traj_merge),
         'sampleOpenableConf': from_fn(tamp.sample_openableconf),
-        'testOpenEnough': from_test(tamp.test_open_enough)
+        #'testOpenEnough': from_test(tamp.test_open_enough),
+        'sampleCloseTransition': from_fn(tamp.sample_close_conf),
+        'samplePlaceCabinetPose': from_fn(tamp.samplePlaceCabinetPose),
+        'randomRobotConf': from_fn(tamp.randomConf)
     }
 
     return domain_pddl, constant_map, stream_pddl, stream_map, init, goal

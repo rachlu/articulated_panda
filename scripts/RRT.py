@@ -40,7 +40,7 @@ def rotation_constraint(robot, q, obj):
 
 class RRT:
     # Test step size
-    def __init__(self, robot, objects, nonmovable=None, max_step=0.5, max_time=5, max_shortcut=3, constraint=None):
+    def __init__(self, robot, objects, nonmovable=None, max_step=0.5, max_time=10, max_shortcut=3, constraint=None):
         self.robot = robot
         self.max_time = max_time
         self.max_step = max_step
@@ -87,7 +87,6 @@ class RRT:
 
     def sample_config(self):
         q_rand = self.robot.arm.randomConfiguration()
-        
         while True:
             if self.robot.arm.IsCollisionFree(q_rand, obstacles=self.nonmovable):
                 if self.constraint is not None:
@@ -115,21 +114,19 @@ class RRT:
         while time.time() - start < self.max_time:
             # if int((time.time() - start)) % 5 == 0:
             # print('Time', time.time()-start)
-            if random.random() < 0.1:
+            if random.random() < 0.15:
                 q_rand = q_goal
                 node_closest = self.closest_node(q_rand)
             else:
                 q_rand = self.sample_config()
 
                 node_closest = self.closest_node(q_rand)
-
             q_list = self.collisionFree(self.G.nodes[node_closest]['config'], q_rand)
             for q in q_list:
                 new_node = self.G.number_of_nodes()
                 self.G.add_node(new_node, config=q)
                 self.G.add_edge(node_closest, new_node)
                 node_closest = self.closest_node(q)
-
             if not q_list:
                 continue
             q_rand = q_list[-1]

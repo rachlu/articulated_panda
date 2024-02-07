@@ -10,14 +10,14 @@
       <!-- visual origin is defined w.r.t. link local coordinate system -->
       <origin xyz="0 0 0.25" rpy="0 0 0" />
       <geometry>
-        <box size="0.3 0.3 0.525" />
+        <box size="0.3 0.4 0.525" />
       </geometry>
     </visual>
     <collision>
       <!-- collision origin is defined w.r.t. link local coordinate system -->
       <origin xyz="0 0 0.25" rpy="0 0 0 " />
       <geometry>
-        <box size="0.3 0.3 0.525" />
+        <box size="0.3 0.4 0.525" />
       </geometry>
     </collision>
   </link>
@@ -42,13 +42,13 @@
     <visual>
       <origin xyz="-0.001 0 0" rpy="0 0 0" />
       <geometry>
-        <box size="0.3 0.25 0.2" />
+        <box size="0.3 0.4 0.4" />
       </geometry>
     </visual>
     <collision>
       <origin xyz="-0.001 0 0" rpy="0 0 0" />
       <geometry>
-        <box size="0.3 0.25 0.2" />
+        <box size="0.3 0.4 0.4" />
       </geometry>
     </collision>
   </link>
@@ -61,7 +61,7 @@
   <joint name="top_drawer_knob_joint" type="fixed" >
     <parent link="top_drawer" />
     <child link="top_drawer_knob" />
-    <origin xyz="-0.15 0 0" rpy="0 0 0" />
+    <origin xyz="-0.15 0 0.1" rpy="0 0 0" />
   </joint>
   <link name="top_drawer_knob">
     <inertial>
@@ -72,13 +72,13 @@
     <visual>
       <origin xyz="-0.02 0 0" rpy="0 0 0" />
       <geometry>
-        <sphere radius="0.02" />
+        <box size="0.005 0.02 0.17" />
       </geometry>
     </visual>
     <collision>
       <origin xyz="-0.02 0 0" rpy="0 0 0" />
       <geometry>
-        <sphere radius="0.02" />
+        <box size="0.005 0.02 0.17" />
       </geometry>
     </collision>
   </link>
@@ -104,13 +104,13 @@
     <visual>
       <origin xyz="-0.001 0 0" rpy="0 0 0" />
       <geometry>
-        <box size="0.3 0.25 0.2" />
+        <box size="0.3 0.4 0.2" />
       </geometry>
     </visual>
     <collision>
       <origin xyz="-0.001 0 0" rpy="0 0 0" />
       <geometry>
-        <box size="0.3 0.25 0.2" />
+        <box size="0.3 0.4 0.2" />
       </geometry>
     </collision>
   </link>
@@ -134,13 +134,13 @@
     <visual>
       <origin xyz="-0.02 0 0" rpy="0 0 0" />
       <geometry>
-        <sphere radius="0.02" />
+        <sphere radius="0.005" />
       </geometry>
     </visual>
     <collision>
       <origin xyz="-0.02 0 0" rpy="0 0 0" />
       <geometry>
-        <sphere radius="0.02" />
+        <sphere radius="0.005" />
       </geometry>
     </collision>
   </link>

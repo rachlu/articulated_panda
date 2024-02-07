@@ -1,26 +1,77 @@
 import random
-import numpy
+import numpy as np
 import vobj
 import math
 import pb_robot
 import time
+from enum import Enum
 
+class Status(Enum):
+    SUCCESS = 1
+    COLLISION = 2
+    IMPEDANCE = 3
 
-def execute_path(path, objects, arm):
-    for action in path:
-        # if action.name == 'open_obj':
-        #     increment = action.args[-3]
-        #     for cmd in action.args[-1][:-1]:
-        #         print(cmd)
-        #         if action.args[0] == 'knob':
-        #             cmd.execute(arm)
-        #         else:
-        #             cmd.execute(arm)
-        #     action.args[-1][-1].execute(arm)
-        #     continue
-        for cmd in action.args[-1]:
+def increment_stiffness(s1, increment, max_stiffness=None):
+    s1 = np.array(s1)
+    if not max:
+        return s1 + increment
+    s1 += increment
+    for i in range(len(s1)):
+        s1[i] = min(s1[i], max_stiffness[i])
+    return s1
+
+def execute_path(path, tamp, arm, collision):
+    objects = set(tamp.objects.keys())
+    placed = set()
+    for i in range(len(path)):
+        action = path[i]
+        print(action.name)
+        if action.name == 'grab':
+            print("Grabbed", action.args[0])
+            objects.remove(action.args[0])
+        if action.name == 'place':
+            print("Placed", action.args[0])
+            objects.add(action.args[0])
+        if action.name == 'placeincabinet':
+            print("Placed Obj", action.args[0])
+            # objects.remove(action.args[0])
+            placed.add(action.args[0])
+        if action.name == 'open_obj' or action.name == 'close_obj':
+            cmd1 = action.args[-2]
+            cmd2 = action.args[-1]
+            print("Collision Objects", objects)
+            if collision and not tamp.testCollisionAndReplan(cmd1, list(objects))[0]:
+                print("Failed Collision Check. Need to replan")
+                return Status.COLLISION, i-1, placed
+            else:
+                print(cmd1)
+                print("Success Collision Check")
+            cmds = cmd1.copy()
+            cmds.extend(cmd2)
+            for cmd in cmds:
+                result = cmd.execute(arm)
+                time.sleep(1)
+                if result and not result[0]:
+                    print("Failed Need to replan")
+                    return Status.IMPEDANCE, result[1], placed
+            continue
+        cmds = action.args[-1]
+        if collision and not tamp.testCollisionAndReplan(cmds, list(objects))[0]:
+            print("Failed Collision Check. Need to replan")
+            for obj in objects:
+                if obj not in placed and obj != 'cabinet':
+                    tamp.objects[obj].set_transform([[-0.79085342, -0.61200561,  0.,          0.23726321],
+            [ 0.61200561, -0.79085342,  0.,          0.41937854],
+            [ 0.,          0.,          1.,          0.        ],
+            [ 0.,          0.,          0.,          1.        ]])
+            return Status.COLLISION, i-1, placed
+        else:
+            print(cmds)
+            print("Success Collision Check")
+        for cmd in cmds:
             cmd.execute(arm)
             time.sleep(1)
+    return Status.SUCCESS, None
 
 
 def sampleTable(obj):
@@ -33,20 +84,23 @@ def sampleTable(obj):
     angle = random.uniform(0, 2 * math.pi)
     rotate = get_rotation_arr('Z', angle)
 
-    translation = numpy.array([[1, 0, 0, x],
+    translation = np.array([[1, 0, 0, x],
                                [0, 1, 0, y],
                                [0, 0, 1, 0],
                                [0., 0., 0., 1.]])
 
-    pose = numpy.dot(translation, rotate)
+    pose = np.dot(translation, rotate)
     cmd = [vobj.Pose(obj, pose)]
-    return (cmd,)
+    return cmd
 
 
 def collision_Test(robot, objects, nonmovable, q1, q2, sample, constraint=None):
     """
     Returns True if q1 to q2 is collision free.
     """
+    for obj in objects:
+        if obj == 'cabinet':
+            objects[obj].get_configuration()
     for num in range(sample + 1):
         if constraint is not None:
             if not constraint[0](robot, q1 + (q2 - q1) / sample * num, objects[constraint[1]]):
@@ -61,7 +115,7 @@ def getDistance(q1, q2):
     Returns the total radian distance from configuration q1 to configuration q2.
     """
     x = q1 - q2
-    return numpy.sqrt(x.dot(x))
+    return np.sqrt(x.dot(x))
 
 
 def get_increment(obj, start_conf, total, knob):
@@ -83,22 +137,22 @@ def get_increment(obj, start_conf, total, knob):
             increment = (increment, 0)
         else:
             increment = (0, increment)
-    return increment, sample
+    return np.array(increment), sample
 
 
 def get_rotation_arr(axis, angle):
     if axis.upper() == 'X':
-        return numpy.array([[1, 0, 0, 0],
+        return np.array([[1, 0, 0, 0],
                             [0, math.cos(angle), -math.sin(angle), 0],
                             [0, math.sin(angle), math.cos(angle), 0],
                             [0., 0., 0., 1.]])
     elif axis.upper() == 'Y':
-        return numpy.array([[math.cos(angle), 0, math.sin(angle), 0],
+        return np.array([[math.cos(angle), 0, math.sin(angle), 0],
                             [0, 1, 0, 0],
                             [-math.sin(angle), 0, math.cos(angle), 0],
                             [0., 0., 0., 1.]])
     elif axis.upper() == 'Z':
-        return numpy.array([[math.cos(angle), -math.sin(angle), 0, 0],
+        return np.array([[math.cos(angle), -math.sin(angle), 0, 0],
                             [math.sin(angle), math.cos(angle), 0, 0],
                             [0, 0, 1, 0],
                             [0., 0., 0., 1.]])
@@ -135,7 +189,7 @@ def skewMatrix(v):
     :return: 3x3 skew symmetric matrix
     """
 
-    skew = numpy.array([[0, -v[2], v[1]],
+    skew = np.array([[0, -v[2], v[1]],
                         [v[2], 0, -v[0]],
                         [-v[1], v[0], 0]])
     return skew
@@ -152,8 +206,8 @@ def adjointTransform(T):
     rotation = T[:3, :3]
     transform = T[:3, 3]
 
-    adj = numpy.zeros((6, 6))
-    adj[:3, :3] = numpy.dot(skewMatrix(transform), rotation)
+    adj = np.zeros((6, 6))
+    adj[:3, :3] = np.dot(skewMatrix(transform), rotation)
     adj[:3, 3:6] = rotation
     adj[3:6, :3] = rotation
 
@@ -161,7 +215,6 @@ def adjointTransform(T):
 
 
 def wrenchFrameTransform(w, frame):
-    new_w = numpy.dot(numpy.transpose(adjointTransform(frame)), w)
+    new_w = np.dot(np.transpose(adjointTransform(frame)), w)
     return new_w
-
 

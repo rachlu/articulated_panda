@@ -13,30 +13,27 @@ class Open:
         self.objects = objects
         self.floor = floor
 
-    def open_obj(self, obj, start_q, relative_grasp, obj_conf, increment, sample, knob):
+    def open_obj(self, obj, start_q, relative_grasp, obj_conf, increment, sample, knob, minForce, action):
         print(increment, sample)
         old_pos = self.objects[obj].get_configuration()
         self.objects[obj].set_configuration(obj_conf)
         q = numpy.array(start_q)
         path = [q]
-        t = numpy.array(obj_conf)
+        t = numpy.array(obj_conf).astype(float)
         for _ in range(sample):
             t += increment
             self.objects[obj].set_configuration(t)
             knob_pose = self.objects[obj].link_from_name(knob).get_link_tform(True)
             new_grasp = numpy.dot(knob_pose, relative_grasp)
             print('new_grasp', new_grasp)
+            print('q', q)
             q = self.robot.arm.ComputeIKQ(new_grasp, q)
-            
-            '''
-            for o in set(self.objects.keys()) - {obj}:
-                if pb_robot.collisions.body_collision(self.objects[obj], self.objects[o]):
-                    self.objects[obj].set_configuration(old_pos)
-                    print('Open Collision')
+            if q is not None and self.robot.arm.IsCollisionFree(q, obstacles=[self.floor, self.objects['cabinet']]):
+                if self.robot.arm.InsideTorqueLimits(q, minForce):
+                    path.append(numpy.array(q))
+                else:
+                    print('Not within torque limits')
                     return None
-            '''
-            if q is not None and self.robot.arm.IsCollisionFree(q, obstacles=[self.floor]):
-                path.append(numpy.array(q))
             else:
                 print('grasp', new_grasp)
                 print('q', q)
@@ -44,8 +41,13 @@ class Open:
                 return None
         back = numpy.array([[1, 0, 0, 0],
                             [0, 1, 0, 0],
-                            [0, 0, 1, -.05],
+                            [0, 0, 1, -.08],
                             [0., 0., 0., 1.]])
+        # else:
+        #     back = numpy.array([[1, 0, 0, -0.05],
+        #                         [0, 1, 0, 0],
+        #                         [0, 0, 1, -.07],
+        #                         [0., 0., 0., 1.]])            
         back_grasp = numpy.dot(new_grasp, back)
         q = self.robot.arm.ComputeIKQ(back_grasp, path[-1])
         if q is None:
@@ -54,7 +56,7 @@ class Open:
             self.objects[obj].set_configuration(old_pos)
             return None
 
-        cmd = [vobj.TrajPath(self.robot, path), vobj.HandCmd(self.robot, self.objects[obj], status='Open'),
+        cmd = [vobj.TrajPath(self.robot, path, impedance=True), vobj.HandCmd(self.robot, self.objects[obj], status='M'),
                vobj.TrajPath(self.robot, [path[-1], q])]
         end_pose = self.objects[obj].get_configuration()
         self.objects[obj].set_configuration(old_pos)

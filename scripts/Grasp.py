@@ -64,24 +64,48 @@ class Grasp:
         bw = numpy.array([[-0.03, 0.03], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]])
         self.bw_range[self.utensils] = bw
 
+        # Out and down
+        # Close Cabinet
+        translation = numpy.array([[1, 0, 0, -0.062],
+                                   [0, 1, 0, 0],
+                                   [0, 0, 1, -0.03],
+                                   [0, 0, 0, 1]])
+        t1 = util.get_rotation_arr('X', math.pi)
+        t2 = util.get_rotation_arr('Y', math.pi/8)
+        rotation = numpy.dot(t1, t2)
+        rel = numpy.dot(translation, rotation)
+        self.relative['cabinetClose'] = [rel]
+
+        t3 = util.get_rotation_arr('Z', math.pi)
+        rotation = numpy.dot(rotation, t3)
+        rel = numpy.dot(translation, rotation)
+        self.relative['cabinetClose'].append(rel)
+
+        bw = numpy.array([[0, 0], [-0.02, 0.02], [0, 0], [0, 0], [0, 0], [0, 0]])
+        self.bw_range['cabinetClose'] = bw
+
         # Cabinet
         translation = numpy.array([[1, 0, 0, 0],
-                                   [0, 1, 0, 0],
+                                   [0, 1, 0, -0.006], # -0.01
                                    [0, 0, 1, -0.13],
                                    [0, 0, 0, 1]])
         t1 = util.get_rotation_arr('X', 3 * math.pi / 2)
         t2 = util.get_rotation_arr('Y', math.pi / 2)
         rotation = numpy.dot(t1, t2)
         rel = numpy.dot(rotation, translation)
-        self.relative['cabinet'] = [rel]
+        self.relative['cabinetOpen'] = [rel]
 
+        translation = numpy.array([[1, 0, 0, 0],
+                                   [0, 1, 0, 0.006], # -0.01
+                                   [0, 0, 1, -0.13],
+                                   [0, 0, 0, 1]])
         t1 = util.get_rotation_arr('X', math.pi / 2)
         rotation = numpy.dot(t1, t2)
         rel = numpy.dot(rotation, translation)
-        self.relative['cabinet'].append(rel)
+        self.relative['cabinetOpen'].append(rel)
 
-        bw = numpy.array([[0, 0], [0, 0], [-0.018, 0.018], [0, 0], [0, 0], [0, 0]])
-        self.bw_range['cabinet'] = bw
+        bw = numpy.array([[0, 0], [-0.02, 0.02], [0, 0], [0, 0], [0, 0], [0, 0]])
+        self.bw_range['cabinetOpen'] = bw
 
         # Door
         translation = numpy.array([[1, 0, 0, 0],
@@ -92,14 +116,14 @@ class Grasp:
         t2 = util.get_rotation_arr('Z', math.pi / 2)
         rotation = numpy.dot(t1, t2)
         rel = numpy.dot(translation, rotation)
-        self.relative['door'] = [rel]
+        self.relative['doorOpen'] = [rel]
 
         t2 = util.get_rotation_arr('Z', -math.pi / 2)
         rotation = numpy.dot(t1, t2)
         rel = numpy.dot(translation, rotation)
-        self.relative['door'].append(rel)
+        self.relative['doorOpen'].append(rel)
         bw = numpy.array([[0, 0], [-0.11, 0.11], [-0.018, 0.018], [0, 0], [0, 0], [0, 0]])
-        self.bw_range['door'] = bw
+        self.bw_range['doorOpen'] = bw
 
         # Spring
         rotation = util.get_rotation_arr('Y', math.pi)
