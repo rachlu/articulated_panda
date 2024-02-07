@@ -5,3 +5,5 @@ statistics/
 temp/
 *.swp
 *.patch
+*.idea
+.idea/

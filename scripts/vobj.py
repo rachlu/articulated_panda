@@ -43,15 +43,8 @@ class TrajPath:
                 stiffness = np.array([120, 100, 100, 80, 30, 20, 50]) # 50 (Last value) is end effector joint
                 while i < len(self.path):
                     q = self.path[i]
-                    # if (not self.robot.arm.InsideTorqueLimits(q, stiffness)):
-                    #     raise AssertionError("Over Torque Limit, need to replan")
                     cart_pose = self.robot.arm.ComputeFK(q)
                     cart_pose = np.array(cart_pose)[:-1, -1]
-                    # new_pose = arm.endpoint_pose()
-                    # new_pose['position'][0] = cart_pose[0][-1]
-                    # new_pose['position'][1] = cart_pose[1][-1]
-                    # new_pose['position'][2] = cart_pose[2][-1]
-                    # arm.set_cart_impedance_pose(new_pose, stiffness)
                     arm.set_joint_impedance_config(q, stiffness)
                     status = arm.get_robot_status()
                     if status['robot_mode'] == 4: # Cartesian reflex error

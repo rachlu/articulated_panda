@@ -93,12 +93,6 @@
         :certified (and (ObjState ?o ?c2) (ValidCloseTransition ?o ?c ?c2 ?h))
     )
 
-    ;(:stream testOpenEnough
-    ;    :inputs (?o ?c ?h)
-    ;    :domain (and (Openable ?o) (Handle ?o ?h) (ObjState ?o ?c))
-    ;    :certified (OpenEnough ?o ?c ?h)
-    ;)
-
     (:stream collisionCheck
         :inputs (?o ?p ?o2 ?p2)
         :domain (and (ObjState ?o ?p) (ObjState ?o2 ?p2))
